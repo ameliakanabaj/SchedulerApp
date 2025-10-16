@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
-const PORT = 8080;
+const PORT = 8083;
 
-console.log('a')
+app.get('/', (req, res) => {
+  console.log('hello', req.method);
+  res.sendStatus(200);
+});
 
 app.listen(PORT, () => console.log(`Server has started on: ${PORT}`));
