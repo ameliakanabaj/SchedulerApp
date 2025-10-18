@@ -1,10 +1,19 @@
 import { Spectator, createComponentFactory } from '@ngneat/spectator';
+import { ActivatedRoute } from '@angular/router';
 
 import { NavBar } from './nav-bar';
 
 describe('NavBar', () => {
     let sp: Spectator<NavBar>;
-    const createComponent = createComponentFactory(NavBar);
+    const createComponent = createComponentFactory({
+        component: NavBar,
+        providers: [
+            {
+                provide: ActivatedRoute,
+                useValue: { snapshot: { routeConfig: { path: 'dashboard' } } }
+            }
+        ]
+    });
 
     beforeEach(() => {
         sp = createComponent();

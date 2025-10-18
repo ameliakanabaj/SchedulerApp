@@ -1,16 +1,26 @@
-import { TestBed } from '@angular/core/testing';
+import { createComponentFactory, Spectator } from '@ngneat/spectator';
+import { ActivatedRoute } from '@angular/router';
+
 import { App } from './app';
 
 describe('App', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [App],
-    }).compileComponents();
-  });
+    let sp: Spectator<App>;
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
+    const createComponent = createComponentFactory({
+        component: App,
+        providers: [
+            {
+                provide: ActivatedRoute,
+                useValue: { snapshot: { routeConfig: { path: 'dashboard' } } }
+            }
+        ],
+    });
+
+    beforeEach(() => {
+        sp = createComponent();
+    });
+
+    it('should create', () => {
+        expect(sp.component).toBeTruthy();
+    });
 });
