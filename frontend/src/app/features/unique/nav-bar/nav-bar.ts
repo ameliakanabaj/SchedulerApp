@@ -6,17 +6,15 @@ import { RouterLink, ActivatedRoute } from '@angular/router';
   selector: 'app-nav-bar',
   imports: [NgClass, RouterLink],
   templateUrl: './nav-bar.html',
-  styleUrl: './nav-bar.scss'
+  styleUrl: './nav-bar.scss',
 })
 export class NavBar implements OnInit {
-    userAuthenticated = signal(true); // temp hardcode
-    route = signal('dashboard'); // temp hardcode
+  userAuthenticated = signal(true); // temp hardcode
+  route = signal('dashboard'); // temp hardcode
 
-    constructor(
-        private activatedRoute: ActivatedRoute
-    ) {}
+  constructor(private activatedRoute: ActivatedRoute) {}
 
-    ngOnInit(): void {
-        this.route.set(this.activatedRoute.snapshot.routeConfig?.path || 'dashboard');
-    }
+  ngOnInit(): void {
+    this.route.set(this.activatedRoute.snapshot.routeConfig?.path || 'dashboard');
+  }
 }
