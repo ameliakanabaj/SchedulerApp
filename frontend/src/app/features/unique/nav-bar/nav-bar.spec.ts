@@ -1,22 +1,19 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Spectator, createComponentFactory } from '@ngneat/spectator';
 
 import { NavBar } from './nav-bar';
 
 describe('NavBar', () => {
-  let component: NavBar;
-  let fixture: ComponentFixture<NavBar>;
+    let sp: Spectator<NavBar>;
+    const createComponent = createComponentFactory(NavBar);
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [NavBar],
-    }).compileComponents();
+    beforeEach(() => {
+        sp = createComponent();
+    });
 
-    fixture = TestBed.createComponent(NavBar);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    describe('ngOnInit', () => {
+        it('should properly set route and other signals', () => {
+            sp.component.ngOnInit();
+            expect(sp.component.route()).toBe('dashboard');
+        });
+    })
 });
