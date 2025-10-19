@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Login } from './login';
+import { ActivatedRoute } from '@angular/router';
 
 describe('Login', () => {
     let component: Login;
@@ -9,6 +10,9 @@ describe('Login', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [Login],
+            providers: [
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map() } } }
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(Login);
