@@ -1,4 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
+@font-face {
+    font-family: Inter;
+    src: url('/fonts/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+}
 
 :root {
   --primary-blue: #576ca8;
@@ -13,5 +16,14 @@ body {
   margin: 0;
   padding: 0;
   background-color: --var(--primary-white);
-  color: --var(--primary-white);
+  font-family: 'Inter', sans-serif;
+}
+
+// REUSABLE STYLES
+
+.divider {
+    height: 1px;
+    background-color: var(--secondary-white);
+    margin: 10px 0;
+    list-style-type: none;
 }
