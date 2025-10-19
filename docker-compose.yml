@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: scheduler-backend
+    ports:
+      - "8083:8083"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    networks:
+      - scheduler-net
+
+  db:
+    image: postgres:15
+    container_name: scheduler-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: scheduler
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - scheduler-net
+
+networks:
+  scheduler-net:
+    driver: bridge
+
+volumes:
+  pgdata:
