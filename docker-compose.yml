@@ -14,7 +14,7 @@ services:
       - scheduler-net
 
   db:
-    image: postgres:15
+    image: postgres:16
     container_name: scheduler-db
     restart: always
     environment:
