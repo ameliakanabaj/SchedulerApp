@@ -11,8 +11,8 @@ describe('App', () => {
         providers: [
             {
                 provide: ActivatedRoute,
-                useValue: { snapshot: { routeConfig: { path: 'dashboard' } } }
-            }
+                useValue: { snapshot: { routeConfig: { path: 'dashboard' } } },
+            },
         ],
     });
 
