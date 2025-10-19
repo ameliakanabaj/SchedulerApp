@@ -1,0 +1,27 @@
+<div class="nav-bar-container">
+  <button class="logo"><i class="fa-regular fa-calendar"></i></button>
+  @if (userAuthenticated()) {
+    <div class="nav-bar-buttons">
+      <button [ngClass]="{ 'active-button': route() === 'dashboard' }">
+        <a routerLink="/dashboard"> Dashboard </a>
+      </button>
+      <button [ngClass]="{ 'active-button': route() === 'schedules' }">
+        <a routerLink="/schedules"> Schedules </a>
+      </button>
+      <button [ngClass]="{ 'active-button': route() === 'organizations' }">
+        <a routerLink="/organizations"> Organizations </a>
+      </button>
+      <!-- <button> additional/wip </button> -->
+    </div>
+    <!-- login/register/logout -->
+    <div>
+      <button class="create-button">CREATE</button>
+      <button class="logout-button">Logout</button>
+    </div>
+  } @else {
+    <div>
+      <button class="sign-in-button">Sign in!</button>
+      <button class="sign-up-button">Sign up!</button>
+    </div>
+  }
+</div>

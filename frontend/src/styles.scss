@@ -1,7 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 
-@use 'styles/colors.scss' as *;
+:root {
+  --primary-blue: #576ca8;
 
-div {
-    color: $primary-blue;
+  --primary-dark: #1e1e1e;
+
+  --primary-white: #ffffff;
+  --secondary-white: #d9d9d9;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: --var(--primary-white);
+  color: --var(--primary-white);
 }
