@@ -1,17 +1,20 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'app-login',
-    imports: [RouterLink],
+    imports: [RouterLink, FormsModule],
     templateUrl: './login.html',
     styleUrl: './login.css',
 })
 export class Login {
-    email = signal('');
-    password = signal('');
+    email = '';
+    password = '';
 
     onLogin() {
+        console.log(`${this.email}, ${this.password}`);
+
         // implementacja gdy bedzie backend i serwis do autoryzacji
     }
 }

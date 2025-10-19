@@ -68,6 +68,10 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+
+            &:hover {
+                background-color: var(--secondary-white);
+            }
         }
     }
 }

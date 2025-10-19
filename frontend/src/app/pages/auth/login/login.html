@@ -4,18 +4,22 @@
         <form>
             <div class="form-group">
                 <label for="username"> Email: </label>
-                <input type="text" id="username" name="username" required />
+                <input type="text" id="username" name="username" [(ngModel)]="email" required />
             </div>
             <div class="form-group">
                 <label for="password"> Password: </label>
-                <input type="password" id="password" name="password" required />
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    [(ngModel)]="password"
+                    required
+                />
             </div>
             <li class="divider"></li>
             <div class="bottom-group">
-                <span class="">
-                    do not have an account? <a routerLink="/register"> Register </a></span
-                >
-                <button type="submit">Login</button>
+                <span> do not have an account? <a routerLink="/register"> Register </a></span>
+                <button type="submit" (click)="onLogin()">Login</button>
             </div>
         </form>
     </div>
