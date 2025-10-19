@@ -10,9 +10,9 @@ describe('NavBar', () => {
         providers: [
             {
                 provide: ActivatedRoute,
-                useValue: { snapshot: { routeConfig: { path: 'dashboard' } } }
-            }
-        ]
+                useValue: { snapshot: { routeConfig: { path: 'dashboard' } } },
+            },
+        ],
     });
 
     beforeEach(() => {
@@ -24,5 +24,5 @@ describe('NavBar', () => {
             sp.component.ngOnInit();
             expect(sp.component.route()).toBe('dashboard');
         });
-    })
+    });
 });

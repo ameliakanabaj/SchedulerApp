@@ -4,10 +4,10 @@ import { Login, Register } from './pages';
 export const routes: Routes = [
     {
         path: 'login',
-        component: Login
+        component: Login,
     },
     {
         path: 'register',
-        component: Register
-    }
+        component: Register,
+    },
 ];
