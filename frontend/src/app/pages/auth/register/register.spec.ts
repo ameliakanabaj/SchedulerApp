@@ -11,7 +11,7 @@ describe('Register', () => {
         await TestBed.configureTestingModule({
             imports: [Register],
             providers: [
-                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map() } } }
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map() } } },
             ],
         }).compileComponents();
 

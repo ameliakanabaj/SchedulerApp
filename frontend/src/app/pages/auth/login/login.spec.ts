@@ -11,7 +11,7 @@ describe('Login', () => {
         await TestBed.configureTestingModule({
             imports: [Login],
             providers: [
-                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map() } } }
+                { provide: ActivatedRoute, useValue: { snapshot: { paramMap: new Map() } } },
             ],
         }).compileComponents();
 

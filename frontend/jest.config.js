@@ -1,18 +1,16 @@
 module.exports = {
-  preset: 'jest-preset-angular',
-  testEnvironment: 'jsdom',
+    preset: 'jest-preset-angular',
+    testEnvironment: 'jsdom',
 
-  transform: {
-    '^.+\\.(ts|mjs|js|html)$': 'jest-preset-angular',
-  },
+    transform: {
+        '^.+\\.(ts|mjs|js|html)$': 'jest-preset-angular',
+    },
 
-  moduleNameMapper: {
-    '\\.(html|scss|css)$': 'identity-obj-proxy',
-  },
+    moduleNameMapper: {
+        '\\.(html|scss|css)$': 'identity-obj-proxy',
+    },
 
-  transformIgnorePatterns: [
-    'node_modules/(?!.*\\.mjs$)',
-  ],
+    transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
 
-  moduleFileExtensions: ['ts', 'html', 'js', 'json'],
+    moduleFileExtensions: ['ts', 'html', 'js', 'json'],
 };
