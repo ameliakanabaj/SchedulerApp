@@ -6,20 +6,23 @@ button {
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
+    box-shadow: 5px 5px 8px 2px rgb(94, 93, 93);
 
     &:hover {
-        background-color: var(--secondary-white);
+        background-color: rgb(70, 70, 70);
         transform: scale(1.05);
         transition: all 0.3s ease-in-out;
     }
 }
 
-.sign-up-button {
-    background-color: var(--primary-white);
-}
-
 .sign-in-button {
+
     margin-right: 10px;
     background-color: var(--primary-dark);
     color: var(--primary-white);
+}
+
+.xl {
+    font-size: 40px;
+    margin-right: 90px;
 }

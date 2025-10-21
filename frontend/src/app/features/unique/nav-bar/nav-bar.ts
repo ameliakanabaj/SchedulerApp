@@ -10,11 +10,11 @@ import { RouterLink, ActivatedRoute } from '@angular/router';
 })
 export class NavBar implements OnInit {
     userAuthenticated = signal(true); // temp hardcode
-    route = signal('dashboard'); // temp hardcode
+    route = signal(''); // temp hardcode
 
     constructor(private activatedRoute: ActivatedRoute) {}
 
     ngOnInit(): void {
-        this.route.set(this.activatedRoute.snapshot.routeConfig?.path || 'dashboard');
+        this.route.set(this.activatedRoute.snapshot.routeConfig?.path || 'dashboardWIP');
     }
 }

@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { RouterLink } from "@angular/router";
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-sign-in',
-  imports: [RouterLink],
+  imports: [RouterLink, NgClass],
   templateUrl: './sign-in.html',
-  styleUrl: './sign-in.css'
+  styleUrl: './sign-in.scss'
 })
 export class SignIn {
+    xl = input(false);
 
 }

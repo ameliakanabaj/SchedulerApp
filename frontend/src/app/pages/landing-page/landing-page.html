@@ -7,8 +7,42 @@
         <h2> Scheduler </h2>
         <span> You tell us when, we tell you how </span>
         <div class="auth-buttons">
-            <app-sign-in/>
-            <app-sign-up/>
+            <app-sign-in [xl]="true"/>
+            <app-sign-up [xl]="true"/>
+        </div>
+    </div>
+    <div class="middle-panel">
+        <div class="cards">
+            <div class="card-1">
+                <img class="card-image-1" src="landing_page/card1_1.png" alt="easy_to_use_image">
+                <div class="card-title-1">Designing your <b>duty roster</b> couldn't get <b>easier</b>. </div>
+                <div class="text-block">
+                  <span> No more paper. </span>
+                  <span> No more math. </span>
+                 <span> Your perfect <b>timetable</b> generated in seconds. </span>
+                </div>
+                <img class="card-image-2" src="landing_page/card1_2.png" alt="easy_to_use_image">
+            </div>
+            <div class="card-2">
+                <i class="fa-regular fa-clock"></i>
+                <span>is ticking.</span>
+                <a routerLink="/register"><button class="join-button"> join now. </button></a>
+            </div>
+        </div>
+    </div>
+    <li class="divider"></li>
+    <div class="bottom-panel">
+        <div class="card-3">
+            <div class="top-bar">
+                <span class="main-text"> Taking <b>responsibilities</b> of your shoulders. </span>
+                <span class="small-text"> Introducing <b> Scheduler</b> 1.0 </span>
+            </div>
+            <ul class="list">
+                <li><i class="fa-regular fa-circle-check"></i> Collect your employees ?? available time. </li>
+                <li><i class="fa-regular fa-circle-check"></i> Automatically generating multiple timetables to choose from. </li>
+                <li><i class="fa-regular fa-circle-check"></i> Optimalisation of work assignment. </li>
+                <li><i class="fa-regular fa-circle-check"></i> Taking your employees needs into consideration. </li>
+            </ul>
         </div>
     </div>
 </div>
