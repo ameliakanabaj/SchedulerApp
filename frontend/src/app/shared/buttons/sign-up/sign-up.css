@@ -1,0 +1,25 @@
+button {
+    font-size: 18px;
+    background: none;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+        background-color: var(--secondary-white);
+        transform: scale(1.05);
+        transition: all 0.3s ease-in-out;
+    }
+}
+
+.sign-up-button {
+    background-color: var(--primary-white);
+}
+
+.sign-in-button {
+    margin-right: 10px;
+    background-color: var(--primary-dark);
+    color: var(--primary-white);
+}
