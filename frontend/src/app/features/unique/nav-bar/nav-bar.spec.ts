@@ -22,6 +22,7 @@ describe('NavBar', () => {
     describe('ngOnInit', () => {
         it('should properly set route and other signals', () => {
             sp.component.ngOnInit();
+
             expect(sp.component.route()).toBe('dashboard');
         });
     });

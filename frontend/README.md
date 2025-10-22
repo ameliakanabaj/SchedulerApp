@@ -41,8 +41,9 @@ This will compile your project and store the build artifacts in the `dist/` dire
 To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
 
 ```bash
-ng test
+npm run test
 ```
+uzywamy Jest'a zamiast Karmy, dlatego komenda ``` ng test ``` nie dziala.
 
 ## Running end-to-end tests
 
