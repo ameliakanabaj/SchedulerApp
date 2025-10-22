@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
     selector: 'app-login',
     imports: [RouterLink, FormsModule],
     templateUrl: './login.html',
-    styleUrl: './login.css',
+    styleUrl: './login.scss',
 })
 export class Login {
     email = '';
