@@ -4,11 +4,13 @@
     padding: 0 20px;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--primary-blue);
+    background-color: var(--primary-color);
+    // color: var(--primary-text);
+    color: var(--primary-text);
 
     a {
         text-decoration: none;
-        color: inherit;
+        color: var(--primary-text);
     }
 
     button {

@@ -15,6 +15,11 @@
         </div>
         <!-- login/register/logout -->
         <div>
+            @if (isDarkMode()) {
+                <button class="dark-mode-button" (click)="toggleDarkMode()"><i class="fa-regular fa-moon"></i></button>
+            } @else {
+                <button class="dark-mode-button" (click)="toggleDarkMode()"><i class="fa-regular fa-sun"></i></button>
+            }
             <button class="create-button">CREATE</button>
             <button class="logout-button">Logout</button>
         </div>

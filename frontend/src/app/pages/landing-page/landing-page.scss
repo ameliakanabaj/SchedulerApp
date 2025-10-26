@@ -2,6 +2,7 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+    background-color: var(--primary-white);
 
     .top-panel {
         display: flex;
@@ -12,10 +13,11 @@
             margin-top: 20px;
             font-size: 72px;
             margin-bottom: 15px;
+            color: var(--primary-dark);
         }
 
         span {
-            color: #333;
+            color: var(--secondary-text);
             font-size: 24px;
         }
 
@@ -38,6 +40,7 @@
         justify-content: center;
         flex-direction: row;
         padding-bottom: 50px;
+        color: var(--primary-dark);
         
         .cards {
             display: flex;
@@ -94,7 +97,7 @@
                         padding: 10px 20px;
                         font-size: 40px;
                         border-radius: 20px;
-                        background-color: var(--primary-blue);
+                        background-color: var(--primary-color);
                         color: var(--primary-white);
                         border: none;
                         box-shadow: 5px 5px 8px 2px rgb(94, 93, 93);
@@ -118,6 +121,7 @@
         display: flex;
         justify-content: center;
         padding-bottom: 50px;
+        color: var(--primary-dark);
 
         .card-3 {
             background-color: var(--primary-white);
