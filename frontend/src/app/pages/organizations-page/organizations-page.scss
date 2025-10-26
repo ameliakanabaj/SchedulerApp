@@ -53,12 +53,16 @@
         }
 
         .organization-card {
+            &:first-of-type {
+                margin-top: 15px;
+            }
+
             border: 1px solid #ccc;
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
             background-color: #f9f9f9;
-
+            box-shadow: 4px 4px 12px var(--primary-shadow);
             h3 {
                 font-weight: bold;
                 margin-bottom: 10px;

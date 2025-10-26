@@ -23,5 +23,6 @@ export class App implements OnInit {
         } else if (this.userAuthenticated()) {
             this.router.navigate(['dashboard']);
         }
+
     }
 }

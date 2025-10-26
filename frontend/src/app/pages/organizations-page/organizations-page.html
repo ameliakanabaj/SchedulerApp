@@ -28,8 +28,8 @@
                     </div>
                     <p> {{ org.description }} </p>
                     <div class="organization-buttons">
-                        <button class="view-organization-button"> View Organization </button>
-                        <button class="leave-organization-button"> Leave Organization </button>
+                        <a [routerLink]="['/organizations/:id', org.id]"><button class="view-organization-button"> View Organization </button></a>
+                        <button class="leave-organization-button" (click)="leaveOrganization(org.id)"> Leave Organization </button>
                     </div>
                 </div>
             }

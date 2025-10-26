@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-organizations-page',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './organizations-page.html',
   styleUrl: './organizations-page.scss'
 })
@@ -14,4 +15,7 @@ export class OrganizationsPage {
     ]}
     // user = input<User>();
 
+    leaveOrganization(orgId: number) {
+        // this.organizationsService.leaveOrganization(orgId).subscribe({}); // TO DO - implement serice; add toastr
+    }
 }

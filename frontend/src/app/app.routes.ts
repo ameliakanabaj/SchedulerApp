@@ -17,5 +17,9 @@ export const routes: Routes = [
     {
         path: 'organizations',
         component: OrganizationsPage,
-    }
+    },
+    // {
+    //     path: 'organizations/:id',
+    //     component: OrganizationDetailsPage,
+    // }
 ];
