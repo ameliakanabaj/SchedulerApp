@@ -6,6 +6,12 @@ services:
       - "8083:8083"
     env_file:
       - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=200
     depends_on:
       - db
     networks:
