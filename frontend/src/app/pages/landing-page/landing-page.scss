@@ -1,4 +1,5 @@
 .landing-page-container {
+    margin-top: 20px;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -35,6 +36,7 @@
 
     .middle-panel {
         margin-top: 150px;
+        width: 100vw;
         background-color: var(--secondary-background);
         display: flex;
         justify-content: center;
@@ -63,7 +65,7 @@
                 .text-block {
                     font-size: 25px;
                     width: 100%;
-                    color: #555;
+                    color: var(--secondary-text);
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -98,15 +100,15 @@
                         font-size: 40px;
                         border-radius: 20px;
                         background-color: var(--primary-color);
-                        color: var(--primary-white);
+                        color: var(--primary-text);
                         border: none;
-                        box-shadow: 5px 5px 8px 2px rgb(94, 93, 93);
+                        box-shadow: 5px 5px 8px 2px var(--primary-shadow);
                         transition: all 0.3s ease-in-out;
 
 
                         &:hover {
                             transition: all 0.3s ease-in-out;
-                            background-color: #435d8b;
+                            background-color: var(--primary-hover-bg);
                             cursor: pointer;
                         }
                     }
@@ -142,7 +144,7 @@
 
                 .small-text {
                     font-size: 25px;
-                    color: #555;
+                    color: var(--secondary-text);
                     text-align: center;
                 }
             }
@@ -152,7 +154,7 @@
                 list-style-type: none;
                 padding-left: 20px;
                 font-size: 22px;
-                color: #333;
+                color: var(--secondary-text);
                 display: flex;
                 flex-direction: column;
                 gap: 30px;

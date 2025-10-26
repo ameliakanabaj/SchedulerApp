@@ -3,6 +3,7 @@
     --secondary-text: #333;
 
     --primary-color: #A11F4A;
+    --secondary-color: #861639;
 
     --primary-dark: #1e1e1e;
 
@@ -17,20 +18,22 @@
 
     --primary-green: #5ec585;
 
+    --primary-hover-bg: #861639;
+
     .dark {
-        --primary-text: #f3f0f0;
+        --primary-text: #ffffff;
         --secondary-text: #dddddd;
 
         --primary-color: #5e132c;
 
-        --primary-dark: #121212;
+        --primary-dark: #ffffff;
 
-        --primary-white: #acacac;
+        --primary-white: #494949;
         --secondary-white: #4d4d4d;
 
         --secondary-background: #2c2c2c;
 
-        --primary-shadow: rgb(0, 0, 0);
+        --primary-shadow: rgb(54, 26, 26);
 
         --primary-red: rgb(255, 91, 91);
 

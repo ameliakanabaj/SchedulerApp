@@ -1,15 +1,17 @@
 .register-container {
-    height: 85vh;
+    min-height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--primary-white);
+    background-color: var(--primary-white);
+    color: var(--primary-text);
+    margin-top: 50px;
 
     .register-inside-container {
         background-color: var(--primary-color);
         padding: 20px;
         border-radius: 10px;
-        box-shadow: 4px 4px 10px 2px var(--primary-dark);
+        box-shadow: 4px 4px 10px 2px var(--primary-shadow);
 
         h2 {
             text-align: center;
@@ -63,7 +65,7 @@
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 25px;
-            background-color: var(--primary-white);
+            background-color: var(--primary-text);
             color: var(--primary-color);
             border: none;
             border-radius: 5px;
