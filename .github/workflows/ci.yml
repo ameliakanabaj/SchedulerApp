@@ -2,7 +2,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [main, dev] # dev będzie gałęzią deweloperską (dla nas do zmian) a dopiero potem beda szly zmiany na main (dla uzytkownikow)
+    branches: [main, dev]
   pull_request:
     branches: [main, dev]
 
@@ -33,6 +33,12 @@ jobs:
         working-directory: ./backend
         run: npm ci
 
+      # - name: Run backend unit tests
+      #   working-directory: ./backend
+      #   run: |
+      #     echo "Running backend unit tests..."
+      #     npm test
+
       - name: Run backend basic smoke test (start + health check)
         working-directory: ./backend
         run: |
@@ -51,7 +57,13 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: npm ci
+        run: npm install
+
+      - name: Run frontend unit tests
+        working-directory: ./frontend
+        run: |
+          echo "Running frontend unit tests..."
+          npm test -- --watch=false --browsers=ChromeHeadless || npm run test:ci
 
       - name: Build frontend (production)
         working-directory: ./frontend
