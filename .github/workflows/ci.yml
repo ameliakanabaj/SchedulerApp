@@ -36,7 +36,7 @@ jobs:
       - name: Run backend basic smoke test (start + health check)
         working-directory: ./backend
         run: |
-          docker build -t ci-scheduler-backend ./backend
+          docker build -t ci-scheduler-backend .
           docker run -d --name ci-backend -p 8083:8083 ci-scheduler-backend
           for i in {1..15}; do
             if curl -sSf http://localhost:8083/health; then
