@@ -1,31 +1,35 @@
 const express = require("express");
-const { Pool } = require("pg");
-require("dotenv").config();
+const dotenv = require("dotenv");
+const path = require("path");
+
+dotenv.config({ path: path.resolve(__dirname, ".env") });
+
+const dbService = require("./src/services/db.service");
+
+const healthRoutes = require("./src/routes/health.routes");
+const authRoutes = require("./src/routes/auth.routes");
+const userRoutes = require("./src/routes/user.routes");
 
 const app = express();
 const PORT = process.env.PORT || 8083;
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+app.use(express.json());
+
+app.use("/api", healthRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+
+app.get("/", (req, res) => {
+  res.status(200).send("Scheduler API is running.");
 });
 
-app.get("/health", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT NOW()");
-    res.json({ status: "ok", time: result.rows[0].now });
-  } catch (err) {
-    console.error("Error connecting with database:", err.message);
-    res.status(500).json({ status: "error", message: err.message });
-  }
+app.use((req, res) => {
+  res.status(404).json({ message: "Endpoint Not Found", path: req.originalUrl });
 });
 
-app.get('/', (req, res) => {
-  console.log('hello', req.method);
-  res.sendStatus(200);
+app.use((err, req, res, next) => {
+  console.error("[GLOBAL ERROR HANDLER]:", err.message);
+  res.status(500).json({ message: "Internal Server Error" });
 });
 
-app.listen(PORT, () => console.log(`Server has started on: ${PORT}`));
+app.listen(PORT, () => console.log(`[API] Server has started on: ${PORT}`));
