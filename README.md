@@ -1,17 +1,24 @@
 # (dla nas)
 
+## mergowanie
 mergujemy pr'y od 1 approve
 mergujemy za pomoca Squash and merge
+potem delete branch
 
-## frontend
+## frontend - Angular (./frontend)
  odpalenie lokalne:
- w folderze /frontend ''' ng serve '''
+ w folderze frontend/ ``` ng serve ```
 
  odpalenie unit test: 
- w foldedzs /frontend ''' npm run test '''
+ w folderze frontend/ ``` npm run test ```
 
-## backend
- todo
+## backend - Express.js (./backend)
+ odpalenie lokalne:
+  w folderze backend/ 
+  ``` npm run start ```
+
+ odpalenie unit test:
+ // TO DO - ogarnac unit testy
 
 <img width="196" height="257" alt="image" src="https://github.com/user-attachments/assets/5e5c67a2-0398-4449-8962-46babea8e687" />
 <img width="276" height="182" alt="image" src="https://github.com/user-attachments/assets/7217950d-182c-4d10-a5c5-955013788d50" />
