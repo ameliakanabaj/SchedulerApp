@@ -1,4 +1,4 @@
-# (dla nas)
+# Docsy
 
 ## mergowanie
 mergujemy pr'y od 1 approve
@@ -7,14 +7,23 @@ potem delete branch
 
 ## frontend - Angular (./frontend)
  odpalenie lokalne:
- w folderze frontend/ ``` ng serve ```
+ 
+ ``` cd frontend/ ```
+ 
+ ``` npm i ```
+ 
+ ``` ng serve ```
 
- odpalenie unit test: 
- w folderze frontend/ ``` npm run test ```
+ odpalenie unit test:
+ 
+ ``` npm run test ```
 
 ## backend - Express.js (./backend)
  odpalenie lokalne:
-  w folderze backend/ 
+  ``` cd backend/ ```
+
+  ``` npm i ```
+
   ``` npm run start ```
 
  odpalenie unit test:
