@@ -2,18 +2,17 @@
     <button class="logo"><i class="fa-regular fa-calendar"></i></button>
     @if (userAuthenticated()) {
         <div class="nav-bar-buttons">
-            <button [ngClass]="{ 'active-button': route() === 'dashboard' }">
-                <a routerLink="/dashboard"> Dashboard </a>
-            </button>
-            <button [ngClass]="{ 'active-button': route() === 'schedules' }">
-                <a routerLink="/schedules"> Schedules </a>
-            </button>
-            <button [ngClass]="{ 'active-button': route() === 'organizations' }">
-                <a routerLink="/organizations"> Organizations </a>
-            </button>
+            <a routerLink="/dashboard"><button [ngClass]="{ 'active-button': route() === 'dashboard' }">
+                Dashboard
+            </button></a>
+            <a routerLink="/schedules"><button [ngClass]="{ 'active-button': route() === 'schedules' }">
+                 Schedules
+            </button></a>
+            <a routerLink="/organizations"><button [ngClass]="{ 'active-button': route() === 'organizations' }">
+                Organizations
+            </button></a>
             <!-- <button> additional/wip </button> -->
         </div>
-        <!-- login/register/logout -->
         <div>
             <button class="dark-mode-button" (click)="toggleDarkMode()">
                 @if (isDarkMode()) {
@@ -26,8 +25,8 @@
         </div>
     } @else {
         <div>
-            <button class="sign-in-button">Sign in!</button>
-            <button class="sign-up-button">Sign up!</button>
+            <a routerLink="/register"><button class="sign-in-button">Sign in!</button></a>
+            <a routerLink="/login"><button class="sign-up-button">Sign up!</button></a>
         </div>
     }
 </div>
