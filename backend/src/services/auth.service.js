@@ -5,7 +5,7 @@ const userModel = require("../models/user.model");
 require("dotenv").config();
 
 const JWT_SECRET = process.env.JWT_SECRET || "SUPER_SECRET";
-const JWT_EXPIRES = "8h";
+const JWT_EXPIRES = "30d";
 
 async function register(data) {
   const existing = await userModel.getUserByEmail(data.email);
