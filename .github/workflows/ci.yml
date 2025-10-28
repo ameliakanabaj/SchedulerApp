@@ -46,6 +46,11 @@ jobs:
             -e POSTGRES_PASSWORD=postgres \
             -e POSTGRES_DB=scheduler \
             -p 5432:5432 postgres:16
+          for i in {1..10}; do
+            docker exec ci-db pg_isready -U postgres && break
+            echo "Waiting for DB..."
+            sleep 2
+          done
 
       - name: Run backend and wait for health # hasla i login do zmiany kiedy zostana dodane do secretow
         working-directory: ./backend
@@ -55,7 +60,7 @@ jobs:
             -e DB_USER=postgres \
             -e DB_PASSWORD=postgres \
             -e DB_NAME=scheduler \
-            -e DB_HOST=ci-db \
+            -e DB_HOST=db \
             --link ci-db:db \
             ci-scheduler-backend
           for i in {1..30}; do
