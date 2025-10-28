@@ -10,6 +10,20 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: scheduler
+        options: >-
+          --health-cmd "pg_isready -U postgres
+          --health-interval 5s 
+          --health-timeout 5s 
+          --health-retries 5
 
     steps:
       - name: Checkout repo
@@ -47,29 +61,31 @@ jobs:
             -e POSTGRES_DB=scheduler \
             -p 5432:5432 postgres:16
 
-      - name: Run backend and wait for health # hasla i login do zmiany kiedy zostana dodane do secretow
-        working-directory: ./backend
-        run: |
-          docker build -t ci-scheduler-backend .
-          docker run -d --name ci-backend -p 8083:8083 \
-            -e DB_USER=postgres \
-            -e DB_PASSWORD=postgres \
-            -e DB_NAME=scheduler \
-            --link ci-db:db \
-            ci-scheduler-backend
-          for i in {1..30}; do
-            if curl -sSf http://localhost:8083/health; then
-              echo "backend healthy"
-              break
-            fi
-            echo "waiting for backend..."
-            sleep 2
-          done
-          docker logs ci-backend
-          docker stop ci-backend || true
-          docker rm ci-backend || true
-          docker stop ci-db || true
-          docker rm ci-db || true
+            name: Build and run backend
+            run: |
+              docker build -t ci-scheduler-backend ./backend
+
+              docker run -d --name ci-backend -p 8083:8083 \
+                -e DB_HOST=host.docker.internal \
+                -e DB_PORT=5432 \
+                -e DB_USER=postgres \
+                -e DB_PASSWORD=postgres \
+                -e DB_NAME=scheduler \
+                ci-scheduler-backend
+
+              for i in {1..30}; do
+                if curl -sSf http://localhost:8083/health; then
+                  echo "backend healthy"
+                  break
+                fi
+                echo "waiting for backend..."
+                sleep 2
+              done
+
+              docker logs ci-backend
+
+              docker stop ci-backend || true
+              docker rm ci-backend || true
 
       - name: Install frontend dependencies
         working-directory: ./frontend
