@@ -39,23 +39,23 @@ jobs:
       #     echo "Running backend unit tests..."
       #     npm test
 
-      - name: Start PostgreSQL for backend # hasla i login do zmiany kiedy zostana dodane do secretow
+      - name: Start PostgreSQL for backend
         run: |
           docker network create ci-network || true
           docker run -d \
             --name ci-db\
             --network ci-network \
-            -e POSTGRES_USER=postgres \
-            -e POSTGRES_PASSWORD=postgres \
-            -e POSTGRES_DB=scheduler \
+            -e POSTGRES_USER=${{ secrets.DB_USER }} \
+            -e POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}\
+            -e POSTGRES_DB=${{ secrets.DB_NAME }} \
             postgres:16
           for i in {1..10}; do
-            docker exec ci-db pg_isready -U postgres && break
+            docker exec ci-db pg_isready -U ${{ secrets.DB_USER }} && break
             echo "Waiting for DB..."
             sleep 2
           done
 
-      - name: Run backend and wait for health # hasla i login do zmiany kiedy zostana dodane do secretow
+      - name: Run backend and wait for health
         working-directory: ./backend
         run: |
           docker build -t ci-scheduler-backend .
@@ -63,12 +63,12 @@ jobs:
             --name ci-backend \
             --network ci-network \
             -p 8083:8083 \
-            -e DB_USER=postgres \
-            -e DB_PASSWORD=postgres \
-            -e DB_NAME=scheduler \
-            -e DB_HOST=ci-db \
-            -e DB_PORT=5432 \
-            -e PORT=8083 \
+            -e DB_USER=${{ secrets.DB_USER }} \
+            -e DB_PASSWORD=${{ secrets.DB_PASSWORD}} \
+            -e DB_NAME=${{ secrets.DB_NAME}} \
+            -e DB_HOST=${{ secrets.DB_HOST }} \
+            -e DB_PORT=${{ secrets.DB_PORT }}\
+            -e PORT=${{ secrets.PORT }} \
             ci-scheduler-backend
           for i in {1..30}; do
             if curl -sSf http://localhost:8083/health; then
