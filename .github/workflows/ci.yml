@@ -47,12 +47,14 @@ jobs:
             -e POSTGRES_DB=scheduler \
             -p 5432:5432 postgres:16
 
-      - name: Run backend and wait for health
+      - name: Run backend and wait for health # hasla i login do zmiany kiedy zostana dodane do secretow
         working-directory: ./backend
         run: |
           docker build -t ci-scheduler-backend .
           docker run -d --name ci-backend -p 8083:8083 \
-            --env-file .env \
+            -e DB_USER=postgres \
+            -e DB_PASSWORD=postgres \
+            -e DB_NAME=scheduler \
             --link ci-db:db \
             ci-scheduler-backend
           for i in {1..30}; do
