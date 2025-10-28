@@ -61,7 +61,7 @@ jobs:
             -e DB_USER=postgres \
             -e DB_PASSWORD=postgres \
             -e DB_NAME=scheduler \
-            -e DB_HOST=db \
+            -e DB_HOST=ci-db \
             ci-scheduler-backend
           for i in {1..30}; do
             if curl -sSf http://localhost:8083/health; then
