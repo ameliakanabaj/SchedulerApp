@@ -27,7 +27,6 @@ describe('OrganizationsPage', () => {
         expect(component).toBeTruthy();
     });
 
-  // Jeśli chcesz przetestować metody komponentu:
   // describe('leaveOrganization', () => {
   //   it('should call leaveOrganization method', () => {
   //     const orgId = 1;

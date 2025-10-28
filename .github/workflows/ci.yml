@@ -39,12 +39,22 @@ jobs:
       #     echo "Running backend unit tests..."
       #     npm test
 
-      - name: Run backend basic smoke test (start + health check)
-        working-directory: ./backend
+      - name: Start PostgreSQL for backend # hasla i login do zmiany kiedy zostana dodane do secretow
+        run: |
+          docker run -d --name ci-db \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=postgres \
+            -e POSTGRES_DB=scheduler \
+            -p 5432:5432 postgres:16
+
+      - name: Run backend and wait for health
         run: |
           docker build -t ci-scheduler-backend .
-          docker run -d --name ci-backend -p 8083:8083 ci-scheduler-backend
-          for i in {1..15}; do
+          docker run -d --name ci-backend -p 8083:8083 \
+            --env-file .env \
+            --link ci-db:db \
+            ci-scheduler-backend
+          for i in {1..30}; do
             if curl -sSf http://localhost:8083/health; then
               echo "backend healthy"
               break
@@ -52,8 +62,11 @@ jobs:
             echo "waiting for backend..."
             sleep 2
           done
+          docker logs ci-backend
           docker stop ci-backend || true
           docker rm ci-backend || true
+          docker stop ci-db || true
+          docker rm ci-db || true
 
       - name: Install frontend dependencies
         working-directory: ./frontend
