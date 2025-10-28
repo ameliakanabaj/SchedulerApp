@@ -67,7 +67,7 @@ jobs:
             -e DB_PASSWORD=postgres \
             -e DB_NAME=scheduler \
             -e DB_HOST=ci-db \
-            -e DB_PORT=5432
+            -e DB_PORT=5432 \
             -e PORT=8083 \
             ci-scheduler-backend
           for i in {1..30}; do
