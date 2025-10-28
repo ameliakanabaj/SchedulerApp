@@ -1,12 +1,6 @@
 const express = require("express");
 const { Pool } = require("pg");
-const fs = require("fs");
-const path = require("path");
-
-const envPath = path.resolve(__dirname, ".env");
-if (fs.existsSync(envPath)) {
-  require("dotenv").config({ path: envPath });
-}
+require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 8083;
@@ -29,8 +23,8 @@ app.get("/health", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  console.log("hello", req.method);
+app.get('/', (req, res) => {
+  console.log('hello', req.method);
   res.sendStatus(200);
 });
 
