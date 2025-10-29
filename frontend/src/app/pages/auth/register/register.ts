@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+
+import { Toastr } from '@app/shared/services';
 
 @Component({
     selector: 'app-register',
@@ -9,6 +11,8 @@ import { RouterLink } from '@angular/router';
     styleUrl: './register.scss',
 })
 export class Register {
+    private readonly toastr = inject(Toastr);
+
     email = '';
     firstName = '';
     lastName = '';
@@ -19,7 +23,7 @@ export class Register {
         console.log(`${this.email}, ${this.password}`);
 
         if (this.password !== this.confirmPassword) {
-            console.error('Passwords do not match');
+            this.toastr.error('Passwords do not match', 'Registration Error');
             return;
         }
 
