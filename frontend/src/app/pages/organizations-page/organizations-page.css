@@ -1,0 +1,77 @@
+.organizations-page-container {
+  padding: 20px;
+}
+.organizations-page-container button {
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 4px 4px 8px var(--primary-shadow);
+  transition: all 0.3s ease-in-out;
+}
+.organizations-page-container button:hover {
+  transform: scale(1.1);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+.organizations-page-container .create-organization-button {
+  margin-right: 20px;
+  font-size: 18px;
+  background-color: var(--primary-blue);
+  color: var(--primary-white);
+}
+.organizations-page-container .join-organization-button {
+  background-color: var(--primary-green);
+  color: var(--primary-white);
+  font-size: 18px;
+}
+.organizations-page-container .organizations-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.organizations-page-container .organizations-list .organization-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.organizations-page-container .organizations-list .organization-header .notification {
+  border: 2px solid var(--primary-red);
+  border-radius: 10px;
+  padding: 5px;
+  color: var(--primary-red);
+  font-size: 20px;
+}
+.organizations-page-container .organizations-list .organization-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #f9f9f9;
+  box-shadow: 4px 4px 12px var(--primary-shadow);
+}
+.organizations-page-container .organizations-list .organization-card:first-of-type {
+  margin-top: 15px;
+}
+.organizations-page-container .organizations-list .organization-card h3 {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.organizations-page-container .organizations-list .organization-card .organization-description {
+  color: #666;
+}
+.organizations-page-container .organizations-list .organization-card .organization-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+.organizations-page-container .organizations-list .organization-card .organization-buttons .view-organization-button, .organizations-page-container .organizations-list .organization-card .organization-buttons .leave-organization-button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.organizations-page-container .organizations-list .organization-card .organization-buttons .leave-organization-button {
+  background-color: var(--primary-red);
+}/*# sourceMappingURL=organizations-page.css.map */

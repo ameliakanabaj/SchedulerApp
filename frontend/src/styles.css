@@ -1,0 +1,45 @@
+:root {
+  --primary-text: #ffffff;
+  --secondary-text: #333;
+  --primary-color: #A11F4A;
+  --secondary-color: #861639;
+  --primary-dark: #1e1e1e;
+  --primary-white: #ffffff;
+  --secondary-white: #d9d9d9;
+  --secondary-background: #D9D9D9;
+  --primary-shadow: rgb(75, 75, 75);
+  --primary-red: rgb(255, 61, 61);
+  --primary-green: #5ec585;
+  --primary-hover-bg: #861639;
+}
+:root .dark {
+  --primary-text: #ffffff;
+  --secondary-text: #dddddd;
+  --primary-color: #5e132c;
+  --primary-dark: #ffffff;
+  --primary-white: #494949;
+  --secondary-white: #4d4d4d;
+  --secondary-background: #2c2c2c;
+  --primary-shadow: rgb(54, 26, 26);
+  --primary-red: rgb(255, 91, 91);
+  --primary-green: #3da66a;
+}
+
+@font-face {
+  font-family: Inter;
+  src: url("/fonts/Inter/Inter-VariableFont_opsz,wght.ttf") format("truetype");
+}
+body {
+  margin: 0;
+  padding: 0;
+  background-color: --var(--primary-white);
+  font-family: "Inter", sans-serif;
+  color: var(--primary-text);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--secondary-white);
+  margin: 10px 0;
+  list-style-type: none;
+}/*# sourceMappingURL=styles.css.map */
