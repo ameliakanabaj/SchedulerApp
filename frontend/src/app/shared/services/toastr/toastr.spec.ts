@@ -1,16 +1,47 @@
-import { TestBed } from '@angular/core/testing';
-
+import { createServiceFactory, SpectatorService } from '@ngneat/spectator';
 import { Toastr } from './toastr';
+import { ToastrService as NgxToastr } from 'ngx-toastr';
 
 describe('Toastr', () => {
-  let service: Toastr;
+    let sp: SpectatorService<Toastr>;
+    let ngxToastr: NgxToastr;
+    const createService = createServiceFactory({
+        service: Toastr,
+        providers: [
+            {
+                provide: NgxToastr,
+                useValue: {
+                    success: jest.fn(),
+                    error: jest.fn(),
+                    info: jest.fn(),
+                    warning: jest.fn(),
+                },
+            }
+        ]
+    })
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Toastr);
-  });
+    beforeEach(() => {
+        sp = createService();
+        sp.inject(NgxToastr);
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    describe('functions', () => {
+        it('should call success', () => {
+            sp.service.success('Test message', 'Test title');
+
+            expect(sp.inject(NgxToastr).success).toHaveBeenCalledWith('Test message', 'Test title');
+        });
+        it('should call error', () => {
+            sp.service.error('Test message', 'Test title');
+            expect(sp.inject(NgxToastr).error).toHaveBeenCalledWith('Test message', 'Test title');
+        });
+        it('should call info', () => {
+            sp.service.info('Test message', 'Test title');
+            expect(sp.inject(NgxToastr).info).toHaveBeenCalledWith('Test message', 'Test title');
+        });
+        it('should call warning', () => {
+            sp.service.warning('Test message', 'Test title');
+            expect(sp.inject(NgxToastr).warning).toHaveBeenCalledWith('Test message', 'Test title');
+        });
+    });
 });

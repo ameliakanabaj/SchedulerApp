@@ -5,7 +5,7 @@ import { ToastrService as NgxToastr } from 'ngx-toastr';
   providedIn: 'root'
 })
 export class Toastr {
-    private readonly toastr = inject(NgxToastr);
+    private readonly toastr: NgxToastr = inject(NgxToastr);
 
     success(message: string, title?: string) {
         this.toastr.success(message, title);

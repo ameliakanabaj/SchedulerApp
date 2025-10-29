@@ -27,6 +27,7 @@ export class Register {
             return;
         }
 
+        this.toastr.success('Registration successful', 'Welcome!');
         // implementacja gdy bedzie backend i serwis do autoryzacji
     }
 }
