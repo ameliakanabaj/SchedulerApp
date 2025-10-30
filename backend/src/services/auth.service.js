@@ -7,6 +7,18 @@ require("dotenv").config();
 const JWT_SECRET = process.env.JWT_SECRET || "SUPER_SECRET";
 const JWT_EXPIRES = "30d";
 
+function generateToken(user) {
+  return jwt.sign(
+    {
+      user_id: user.user_id,
+      role: user.role,
+      organization_id: user.organization_id,
+    },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES }
+  );
+}
+
 async function register(data) {
   const existing = await userModel.getUserByEmail(data.email);
   if (existing) throw new Error("Email already exists");
@@ -17,7 +29,9 @@ async function register(data) {
     password_hash,
   });
 
-  return user;
+  const token = generateToken(user);
+
+  return { user, token };
 }
 
 async function login({ email, password }) {
@@ -27,11 +41,7 @@ async function login({ email, password }) {
   const match = await bcrypt.compare(password, user.password);
   if (!match) throw new Error("Invalid credentials");
 
-  const token = jwt.sign(
-    { user_id: user.user_id, role: user.role, organization_id: user.organization_id },
-    JWT_SECRET,
-    { expiresIn: JWT_EXPIRES }
-  );
+  const token = generateToken(user);
 
   return { token, user };
 }

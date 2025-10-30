@@ -5,7 +5,14 @@ const JWT_SECRET = process.env.JWT_SECRET;
 function auth(requiredRoles = []) {
   return (req, res, next) => {
     const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ message: "Missing token" });
+
+    if (!authHeader) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Missing token",
+        statusCode: 401,
+      });
+    }
 
     const token = authHeader.split(" ")[1];
 
@@ -14,12 +21,20 @@ function auth(requiredRoles = []) {
       req.user = decoded;
 
       if (requiredRoles.length && !requiredRoles.includes(decoded.role)) {
-        return res.status(403).json({ message: "Forbidden" });
+        return next({
+          type: "BUSINESS_LOGIC",
+          message: "Forbidden: Insufficient role",
+          statusCode: 403,
+        });
       }
 
       next();
     } catch (err) {
-      return res.status(401).json({ message: "Invalid token" });
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Unauthorized: Invalid or expired token",
+        statusCode: 401,
+      });
     }
   };
 }

@@ -25,8 +25,26 @@ async function getUserById(user_id) {
   return result.rows[0] || null;
 }
 
+async function getAllUsers() {
+  const result = await db.query(
+    `SELECT user_id, first_name, last_name, email, role, position FROM "User"`
+  );
+  return result.rows;
+}
+
+async function getUsersByOrganization(organization_id) {
+  const result = await db.query(
+    `SELECT user_id, organization_id, first_name, last_name, email, role, position
+     FROM "User" WHERE organization_id = $1`,
+    [organization_id]
+  );
+  return result.rows;
+}
+
 module.exports = {
   createUser,
   getUserByEmail,
-  getUserById
+  getUserById,
+  getAllUsers,
+  getUsersByOrganization,
 };
