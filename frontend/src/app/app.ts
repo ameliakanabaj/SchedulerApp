@@ -24,4 +24,16 @@ export class App implements OnInit {
             this.router.navigate(['dashboard']);
         }
     }
+
+    toggleDarkMode(isDarkMode: boolean): void {
+        console.log('dziala', isDarkMode);
+        
+        if (!isDarkMode) {
+            document.body.classList.add('dark');
+            localStorage.setItem('darkMode', 'true');
+        } else {
+            document.body.classList.remove('dark');
+            localStorage.setItem('darkMode', 'false');
+        }
+    }
 }

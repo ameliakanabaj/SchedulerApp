@@ -14,7 +14,13 @@
             <!-- <button> additional/wip </button> -->
         </div>
         <div>
-            <button class="create-button">CREATE</button>
+            <button class="dark-mode-button" (click)="toggleDarkMode()">
+                @if (isDarkMode()) {
+                    <i class="fa-regular fa-moon"></i>
+                } @else {
+                    <i class="fa-regular fa-sun"></i>
+                }
+            </button>
             <button class="logout-button">Logout</button>
         </div>
     } @else {

@@ -15,6 +15,10 @@ const config: Config = {
   },
   moduleFileExtensions: ['ts', 'js', 'html', 'json', 'mjs'],
   testMatch: ['**/+(*.)+(spec|test).+(ts|js)?(x)'],
+  globals: {}, 
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1', 
+  },
 };
 
 export default config;

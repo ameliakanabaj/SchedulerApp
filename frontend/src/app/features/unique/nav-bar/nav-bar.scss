@@ -4,11 +4,12 @@
     padding: 0 20px;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--primary-blue);
+    background-color: var(--primary-color);
+    color: var(--primary-text);
 
     a {
         text-decoration: none;
-        color: inherit;
+        color: var(--primary-text);
     }
 
     button {
@@ -19,9 +20,9 @@
         border-radius: 10px;
         cursor: pointer;
         transition: all 0.3s ease-in-out;
+        color: var(--primary-text);
 
         &:hover {
-            background-color: var(--secondary-white);
             transform: scale(1.05);
             transition: all 0.3s ease-in-out;
         }
@@ -51,11 +52,6 @@
         }
     }
 
-    .create-button {
-        background-color: var(--primary-white);
-        color: var(--primary-dark);
-    }
-
     .logo {
         display: flex;
         width: 250px;
@@ -67,7 +63,7 @@
             cursor: auto;
         }
         .fa-calendar {
-            color: var(--primary-white);
+            color: var(--primary-text);
             cursor: pointer;
             transition: all 0.3s ease-in-out;
 
@@ -79,5 +75,5 @@
         }
     }
 
-    box-shadow: 0px 3px 10px 3px var(--primary-dark);
+    box-shadow: 0px 3px 10px 3px var(--primary-shadow);
 }

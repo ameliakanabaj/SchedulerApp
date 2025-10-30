@@ -1,27 +1,32 @@
-import { Register } from './register';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { createComponentFactory, Spectator } from '@ngneat/spectator';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Register } from './register';
 
 describe('Register', () => {
-    let sp: Spectator<Register>;
-    const createComponent = createComponentFactory({
-        component: Register,
+    let component: Register;
+    let fixture: ComponentFixture<Register>;
+
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+        imports: [Register, RouterTestingModule],
         providers: [
             {
-                provide: ActivatedRoute,
-                useValue: { snapshot: { queryParams: {} } }
+            provide: ActivatedRoute,
+            useValue: { snapshot: { queryParams: {} } }
             }
         ]
-    })
+        }).compileComponents();
 
-    beforeEach(() => {
-        sp = createComponent();
+        fixture = TestBed.createComponent(Register);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
-    
+
     describe('onRegister', () => {
         it('should properly send register data', () => {  // TO-DO
-            sp.component.email = '';
-            sp.component.password = '';
+        component.email = '';
+        component.password = '';
         });
     });
 });

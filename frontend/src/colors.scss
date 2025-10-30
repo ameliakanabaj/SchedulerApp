@@ -1,5 +1,9 @@
 :root {
-    --primary-blue: #576ca8;
+    --primary-text: #ffffff;
+    --secondary-text: #333;
+
+    --primary-color: #A11F4A;
+    --secondary-color: #861639;
 
     --primary-dark: #1e1e1e;
 
@@ -13,4 +17,26 @@
     --primary-red: rgb(255, 61, 61);
 
     --primary-green: #5ec585;
+
+    --primary-hover-bg: #861639;
+
+    .dark {
+        --primary-text: #ffffff;
+        --secondary-text: #dddddd;
+
+        --primary-color: #5e132c;
+
+        --primary-dark: #ffffff;
+
+        --primary-white: #494949;
+        --secondary-white: #4d4d4d;
+
+        --secondary-background: #2c2c2c;
+
+        --primary-shadow: rgb(54, 26, 26);
+
+        --primary-red: rgb(255, 91, 91);
+
+        --primary-green: #3da66a;
+    }
 }
