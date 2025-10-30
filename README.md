@@ -10,7 +10,7 @@ potem delete branch
  
  ``` cd frontend/ ```
  
- ``` npm i ```
+ ``` npm i --legacy-peer-deps```
  
  ``` ng serve ```
 
