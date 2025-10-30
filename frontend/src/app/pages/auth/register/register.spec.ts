@@ -2,6 +2,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Register } from './register';
 import { Toastr as ToastrService } from '../../../shared/services/toastr/toastr';
 import { createComponentFactory, Spectator } from '@ngneat/spectator';
+import { HttpClient } from '@angular/common/http';
 
 describe('Register', () => {
     let sp: Spectator<Register>;
@@ -20,6 +21,10 @@ describe('Register', () => {
             {
                 provide: ActivatedRoute,
                 useValue: { snapshot: { queryParams: {} } }
+            },
+            {
+                provide: HttpClient,
+                useValue: {}
             }
         ]
     })

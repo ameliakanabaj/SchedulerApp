@@ -23,7 +23,8 @@ const config: Config = {
     '^@services/(.*)$': '<rootDir>/src/app/shared/services/$1',
     '^@features/(.*)$': '<rootDir>/src/app/features/$1',
     '^@pages/(.*)$': '<rootDir>/src/app/pages/$1',
-    '^src/(.*)$': '<rootDir>/src/$1'
+    '^src/(.*)$': '<rootDir>/src/$1',
+    '^environments/(.*)$': '<rootDir>/src/environments/$1',
   },
 };
 
