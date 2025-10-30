@@ -43,7 +43,7 @@ jobs:
         run: |
           docker network create ci-network || true
           docker run -d \
-            --name ci-db\
+            --name db\
             --network ci-network \
             -e POSTGRES_USER=${{ secrets.DB_USER }} \
             -e POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}\
@@ -71,13 +71,21 @@ jobs:
             -e PORT=${{ secrets.PORT }} \
             ci-scheduler-backend
           for i in {1..30}; do
-            if curl -sSf http://localhost:8083/health; then
+            if curl -sSf http://localhost:8083/api/health; then
               echo "backend healthy"
               break
             fi
             echo "waiting for backend..."
             sleep 2
           done
+          if ! curl -sSf http://localhost:8083/api/health; then
+            echo "ERROR: Backend did not become healthy after 30 attempts"
+            docker logs ci-backend
+            docker stop ci-backend || true
+            docker rm ci-backend || true
+            docker stop ci-db || true
+            exit 1
+          fi
           docker logs ci-backend
           docker stop ci-backend || true
           docker rm ci-backend || true
