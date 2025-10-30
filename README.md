@@ -11,18 +11,17 @@ potem delete branch
 FRONTEND POWINIEN BYĆ DOSTĘPNY POD ADRESEM: https://scheduler-app-iota.vercel.app/register
 
 ## frontend - Angular (./frontend)
+ odpalenie lokalne:
+ 
+ ``` cd frontend/ ```
+ 
+ ``` npm i --legacy-peer-deps```
+ 
+ ``` ng serve ```
 
-odpalenie lokalne:
-
-`cd frontend/`
-
-`npm i`
-
-`ng serve`
-
-odpalenie unit test:
-
-`npm run test`
+ odpalenie unit test:
+ 
+ ``` npm run test ```
 
 ## backend - Express.js (./backend)
 
