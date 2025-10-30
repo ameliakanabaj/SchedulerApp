@@ -21,6 +21,16 @@ export class Authentication {
         return this.http.post(`${this.authUrl}/register`, credentials);
     }
 
+    hasRole(role: string): boolean {
+        const token = this.getToken();
+        if (!token) {
+            return false;
+        }
+
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.roles.includes(role);
+    }
+
     logout(): void {
         localStorage.removeItem('authToken');
     }
