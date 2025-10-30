@@ -1,27 +1,32 @@
-import { Login } from './login';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { createComponentFactory, Spectator } from '@ngneat/spectator';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Login } from './login';
 
 describe('Login', () => {
-    let sp: Spectator<Login>;
-    const createComponent = createComponentFactory({
-        component: Login,
-        providers: [
-            {
-                provide: ActivatedRoute,
-                useValue: { snapshot: { queryParams: {} } }
-            }
-        ]
-    })
+    let component: Login;
+    let fixture: ComponentFixture<Login>;
 
-    beforeEach(() => {
-        sp = createComponent();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [Login, RouterTestingModule],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: { snapshot: { queryParams: {} } }
+                }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(Login);
+        component = fixture.componentInstance;
+        Login
     });
-    
+
     describe('onLogin', () => {
         it('should properly send login data', () => {  // TO-DO
-            sp.component.email = '';
-            sp.component.password = '';
+            component.email = '';
+            component.password = '';
         });
     });
 });
