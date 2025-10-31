@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { Authentication } from '@app/core';
+import { Toastr } from '@app/shared/services';
 
 @Component({
     selector: 'app-login',
@@ -12,9 +14,22 @@ export class Login {
     email = '';
     password = '';
 
-    onLogin() {
-        console.log(`${this.email}, ${this.password}`);
+    constructor(
+        private toastr: Toastr,
+        private router: Router,
+        private authService: Authentication,
+    ) {}
 
-        // implementacja gdy bedzie backend i serwis do autoryzacji
+    onLogin() {
+        this.authService.login({ email: this.email, password: this.password }).subscribe({
+            next: (res) => {
+                this.router.navigate(['/dashboard']);
+                this.toastr.success('Login succesful!')
+            },
+            error: (err) => {
+                this.password = '';
+                this.toastr.error('Login failed. Please check your credentials and try again.');
+            }
+        });
     }
 }

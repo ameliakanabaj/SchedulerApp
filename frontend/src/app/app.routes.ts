@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login, Register, LandingPage, OrganizationsPage } from './pages';
+import { AuthGuard } from './core';
 
 export const routes: Routes = [
     {
@@ -17,6 +18,7 @@ export const routes: Routes = [
     {
         path: 'organizations',
         component: OrganizationsPage,
+        canActivate: [AuthGuard],
     },
     // {
     //     path: 'organizations/:id',
