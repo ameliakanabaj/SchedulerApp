@@ -22,7 +22,6 @@ export class Register {
     constructor(
         private router: Router,
         private authService: Authentication,
-        // private toastr: Toastr ADD LATER ONCE ADDED
     ) {}
 
     onRegister() {
