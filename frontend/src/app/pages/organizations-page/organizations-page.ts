@@ -1,17 +1,20 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { Modal, Toastr } from '@app/shared/services';
+import { UserCard } from '@app/shared/components/user-card/user-card';
 import { OrganizationCreationModal } from '@app/shared/components/organization-creation-modal/organization-creation-modal';
 
 @Component({
   selector: 'app-organizations-page',
-  imports: [],
+  imports: [UserCard],
   templateUrl: './organizations-page.html',
   styleUrl: './organizations-page.scss'
 })
 export class OrganizationsPage implements OnInit {
-    user = { organizations: null }; // TEMP HARDCODE
-    userOrganization = signal(null);
+    userOrganization = signal(true);
+    organization = {
+        name: 'Test org',
+    }
 
     private readonly modalService = inject(Modal);
     private readonly toastr = inject(Toastr);
@@ -23,7 +26,7 @@ export class OrganizationsPage implements OnInit {
     }
 
 
-    openCreateOrganizationModal() {
+    openCreateOrganizationModal(): void {
         const modalRef = this.modalService.openModal(OrganizationCreationModal);
 
         modalRef.afterClosed().subscribe((res: any) => {
@@ -32,5 +35,9 @@ export class OrganizationsPage implements OnInit {
                 // this.userOrganization.set(res); CZEKAM NA BACKEND
             }
         })
+    }
+
+    openAddNewMemberModal(): void {
+        
     }
 }

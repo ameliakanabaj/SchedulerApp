@@ -8,18 +8,38 @@
     align-items: center;
     flex-direction: column;
 
-    button {
-        padding: 15px;
-        border: none;
-        border-radius: 10px;
-        box-shadow: 4px 4px 8px var(--primary-shadow);
-        transition: all 0.3s ease-in-out;
+    .organization-card {
+        min-width: 500px;
+        max-width: 100%;
+        background-color: var(--primary-color);
+        padding: 5px 20px 20px 20px;
+        border-radius: 20px;
 
-        &:hover {
-            transform: scale(1.1);
-            transition: all 0.3s ease-in-out; 
-            cursor: pointer;
-        };
+        .organization-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--secondary-white);
+            color: var(--primary-white);
+            margin-bottom: 20px;
+            padding: 0 15px;
+            border-radius: 20px;
+
+            button {
+                height: 50px;
+                border-radius: 10px;
+                border: none;
+                background-color: var(--primary-green);
+                color: var(--primary-text);
+                cursor: pointer;
+            }
+        }
+
+        .organization-card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
     }
 
     .create-organization-button {
