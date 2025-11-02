@@ -2,37 +2,12 @@
 
     @if (!user.organizations) {
             <h2> You are not a member of any organization yet. </h2>
-            <p> To get started, you can create a new organization or join an existing one. </p>
-            <div class="organizations-page-buttons">
-                <button class="create-organization-button">Create Organization</button>
-                <button class="join-organization-button">Join Organization</button>
-            </div>
+            <p> To get started, you can create a new organization. </p>
+            <button class="create-organization-button" (click)="openCreateOrganizationModal();">Create Organization</button>
     } @else {
-        <div class="organizations-header">
-            <h2> Your Organizations </h2>
-            <div class="organizations-page-buttons">
-                <button class="create-organization-button">Create Organization</button>
-                <button class="join-organization-button">Join Organization</button>
-            </div>
-        </div>
-        <div class="organizations-list">
-            @for (org of user.organizations; track org.id) {
-                <div class="organization-card">
-                    <div class="organization-header">
-                        <h3> {{ org.name }} </h3>
-                        @if (org.notification) {
-                            <span class="notification" title="You have unread notifications.">
-                               <i class="fa-regular fa-envelope"></i>
-                            </span>
-                        }
-                    </div>
-                    <p> {{ org.description }} </p>
-                    <div class="organization-buttons">
-                        <a [routerLink]="['/organizations/:id', org.id]"><button class="view-organization-button"> View Organization </button></a>
-                        <button class="leave-organization-button" (click)="leaveOrganization(org.id)"> Leave Organization </button>
-                    </div>
-                </div>
-            }
+        <div class="organization-card">
+            <!-- <h2> {{ organization.name }} </h2> -->
+
         </div>
     }
 </div>
