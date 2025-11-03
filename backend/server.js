@@ -23,6 +23,11 @@ app.get("/", (req, res) => {
   res.status(200).send("Scheduler API is running.");
 });
 
+app.get("/test", (req, res) => { // just for test if vps is working (the endpoind will be deleted later (when the vps is configured and tested))
+  res.status(200).send("Test successfully passed. Changes from main are applied automatically!");
+});
+
+
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint Not Found", path: req.originalUrl });
 });
