@@ -9,7 +9,8 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - scheduler-net
 
@@ -25,6 +26,11 @@ services:
       - "5433:5432"
     networks:
       - scheduler-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   frontend:
     build: ./frontend
