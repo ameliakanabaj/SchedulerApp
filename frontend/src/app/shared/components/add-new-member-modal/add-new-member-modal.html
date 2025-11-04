@@ -1,0 +1,40 @@
+<app-modal-header title="Add new member"/>
+
+<div class="modal-container">
+    <form (ngSubmit)="addUser()">
+        <div class="names">
+            <label for="firstName">Insert first name:</label>
+            <input 
+                id="firstName"
+                name="firstName"
+                [(ngModel)]="firstName" />
+            
+            <label for="lastName">Insert last name:</label>
+            <input 
+                id="lastName"
+                name="lastName"
+                [(ngModel)]="lastName" />
+        </div>
+        
+        <div class="email">
+            <label for="email">Email:</label>
+            <input 
+                type="email"
+                id="email" 
+                name="email"
+                [(ngModel)]="email">
+        </div>
+        
+        <div class="password">
+            <label for="password">Create <b>one time password:</b></label>
+            <input 
+                type="text"
+                id="password"
+                name="password"
+                [(ngModel)]="password">
+        </div>
+
+        <button type="submit">Submit</button>
+        <button type="button" (click)="close()">Cancel</button>
+    </form>
+</div>

@@ -1,6 +1,7 @@
-import { Component, OnInit, Output, EventEmitter, signal } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, signal, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
+import { Authentication } from '@app/core';
 
 @Component({
     selector: 'app-nav-bar',
@@ -17,12 +18,13 @@ export class NavBar implements OnInit {
 
     @Output() darkMode = new EventEmitter<boolean>();
 
-    constructor(private activatedRoute: ActivatedRoute) {}
+    private readonly activatedRoute = inject(ActivatedRoute);
+    private readonly authService = inject(Authentication);
 
     ngOnInit(): void {
         const saved = localStorage.getItem('darkMode');
-        this.isDarkMode.set(saved === 'true'); // initialize as boolean
-        this.route.set(this.activatedRoute.snapshot.routeConfig?.path || 'dashboardWIP');
+        this.isDarkMode.set(true);
+        this.userAuthenticated.set(this.authService.isAuthenticated());
     }
 
     toggleDarkMode(): void {

@@ -8,7 +8,7 @@
         <div class="organization-card">
             <div class="organization-card-header">
                 <h2> {{ organization.name }}'s members </h2>
-                <button class="add-new-button"> Add new member </button>
+                <button class="add-new-button" (click)="openAddNewMemberModal()"> Add new member </button>
             </div>
             <div class="organization-card-body">
                 <app-user-card [user]="{firstName: 'abc', lastName: 'abcName', email: 'abc@abc.pl'}" />

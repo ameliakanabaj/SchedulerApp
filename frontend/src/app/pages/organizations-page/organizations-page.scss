@@ -19,8 +19,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: var(--secondary-white);
             color: var(--primary-white);
+            border-bottom: 2px solid var(--primary-white);
+            box-shadow: 2px 2px 2px var(--primary-shadow);
             margin-bottom: 20px;
             padding: 0 15px;
             border-radius: 20px;

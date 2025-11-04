@@ -1,8 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { Modal, Toastr } from '@app/shared/services';
-import { UserCard } from '@app/shared/components/user-card/user-card';
-import { OrganizationCreationModal } from '@app/shared/components/organization-creation-modal/organization-creation-modal';
+import { AddNewMemberModal, OrganizationCreationModal, UserCard } from '@app/shared/components';
 
 @Component({
   selector: 'app-organizations-page',
@@ -29,7 +28,7 @@ export class OrganizationsPage implements OnInit {
     openCreateOrganizationModal(): void {
         const modalRef = this.modalService.openModal(OrganizationCreationModal);
 
-        modalRef.afterClosed().subscribe((res: any) => {
+        modalRef.afterClosed$.subscribe((res: any) => {
             if (res) {
                 this.toastr.success('Organization created successfully!');
                 // this.userOrganization.set(res); CZEKAM NA BACKEND
@@ -38,6 +37,9 @@ export class OrganizationsPage implements OnInit {
     }
 
     openAddNewMemberModal(): void {
-        
+        // this.modalService.openModal(AddNewMemberModal, { data: {
+        //     // organizationId: this.organizationId
+        // }});
+        this.modalService.openModal(AddNewMemberModal, {  });
     }
 }

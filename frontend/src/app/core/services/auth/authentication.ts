@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'environments/environment.developement';
+import { environment } from 'environments/environment.developement'; // to-fix
 import { Observable, tap } from 'rxjs';
 
 @Injectable({

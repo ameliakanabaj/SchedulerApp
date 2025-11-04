@@ -1,6 +1,7 @@
 ngneat-dialog {
     .ngneat-dialog-backdrop {
         .ngneat-dialog-content {
+            color: var(--primary-dark);
             border-radius: 20px;
             background-color: var(--primary-white);
             .ngneat-close-dialog {
