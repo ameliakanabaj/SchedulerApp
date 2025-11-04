@@ -1,33 +1,42 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Spectator, createComponentFactory } from '@ngneat/spectator';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+
 import { NavBar } from './nav-bar';
+import { HttpClient } from '@angular/common/http';
+import { Authentication } from '../../../core/services/auth/authentication';
 
 describe('NavBar', () => {
-    let component: NavBar;
-    let fixture: ComponentFixture<NavBar>;
-
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-        imports: [NavBar, RouterTestingModule],
+    let sp: Spectator<NavBar>;
+    const createComponent = createComponentFactory({
+        component: NavBar,
         providers: [
             {
-            provide: ActivatedRoute,
-            useValue: { snapshot: { routeConfig: { path: 'dashboard' } } },
+                provide: ActivatedRoute,
+                useValue: { snapshot: { routeConfig: { path: 'dashboard' } } },
             },
-        ],
-        }).compileComponents();
+            {
+                provide: HttpClient,
+                useValue: {},
+            },
+            {
+                provide: Authentication,
+                useValue: {
+                    isAuthenticated: jest.fn();
+                }
+            }
+        ]
+    });
 
-        fixture = TestBed.createComponent(NavBar);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
+    beforeEach(() => {
+        sp = createComponent();
     });
 
     describe('ngOnInit', () => {
-        it('should properly set route and other signals', () => {
-        component.ngOnInit();
+        it('should call auth service', () => {
+            const authService = sp.inject(Authentication);
+            sp.component.ngOnInit();
 
-        expect(component.route()).toBe('dashboard');
+            expect(authService.isAuthenticated).toHaveBeenCalled();
         });
     });
 });

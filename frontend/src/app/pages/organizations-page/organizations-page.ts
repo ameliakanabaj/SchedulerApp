@@ -28,12 +28,12 @@ export class OrganizationsPage implements OnInit {
     openCreateOrganizationModal(): void {
         const modalRef = this.modalService.openModal(OrganizationCreationModal);
 
-        modalRef.afterClosed$.subscribe((res: any) => {
-            if (res) {
-                this.toastr.success('Organization created successfully!');
+        // modalRef.afterClosed$.subscribe((res: any) => {
+            // if (res) {
+                // this.toastr.success('Organization created successfully!');
                 // this.userOrganization.set(res); CZEKAM NA BACKEND
-            }
-        })
+            // }
+        // });
     }
 
     openAddNewMemberModal(): void {
