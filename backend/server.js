@@ -5,7 +5,7 @@ const errorHandler = require("./src/middlewares/errorHandler.middleware");
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
-const dbService = require("./src/services/db.service");
+const prisma = require("./src/services/prisma");
 
 const healthRoutes = require("./src/routes/health.routes");
 const authRoutes = require("./src/routes/auth.routes");
