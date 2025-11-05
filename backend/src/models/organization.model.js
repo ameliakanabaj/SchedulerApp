@@ -1,33 +1,45 @@
-const db = require("../services/db.service");
+const { PrismaClient } = require("../generated/prisma");
+const prisma = new PrismaClient();
 
 async function createOrganization({ name }) {
-  const result = await db.query(
-    `INSERT INTO "Organization" (name) VALUES ($1) RETURNING organization_id, name`,
-    [name]
-  );
-  return result.rows[0];
+  return await prisma.organization.create({
+    data: { name },
+  });
 }
 
 async function getAllOrganizations() {
-  const result = await db.query(`SELECT organization_id, name FROM "Organization" ORDER BY name ASC`);
-  return result.rows;
+  return await prisma.organization.findMany({
+    include: { userOrganizations: { include: { user: true } } },
+    orderBy: { name: "asc" },
+  });
 }
 
 async function getOrganizationById(id) {
-  const result = await db.query(`SELECT organization_id, name FROM "Organization" WHERE organization_id = $1`, [id]);
-  return result.rows[0] || null;
+  return await prisma.organization.findUnique({
+    where: { organization_id: Number(id) },
+    include: { userOrganizations: { include: { user: true } } },
+  });
 }
 
+// async function getOrganizationsByIds(ids = []) {
+//   return await prisma.organization.findMany({
+//     where: { organization_id: { in: ids.map(Number) } },
+//     include: { userOrganizations: { include: { user: true } } },
+//     orderBy: { name: "asc" },
+//   });
+// }
+
 async function updateOrganization(id, { name }) {
-  const result = await db.query(
-    `UPDATE "Organization" SET name = $1 WHERE organization_id = $2 RETURNING organization_id, name`,
-    [name, id]
-  );
-  return result.rows[0] || null;
+  return await prisma.organization.update({
+    where: { organization_id: Number(id) },
+    data: { name },
+  });
 }
 
 async function deleteOrganization(id) {
-  await db.query(`DELETE FROM "Organization" WHERE organization_id = $1`, [id]);
+  await prisma.organization.delete({
+    where: { organization_id: Number(id) },
+  });
   return true;
 }
 
@@ -35,6 +47,7 @@ module.exports = {
   createOrganization,
   getAllOrganizations,
   getOrganizationById,
+  // getOrganizationsByIds,
   updateOrganization,
-  deleteOrganization
+  deleteOrganization,
 };
