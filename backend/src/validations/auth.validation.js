@@ -46,11 +46,10 @@ const createUserValidation = [
   body("first_name").notEmpty().withMessage("First name is required"),
   body("last_name").notEmpty().withMessage("Last name is required"),
   body("email").isEmail().withMessage("Valid email is required"),
-  body("organization_id").notEmpty().withMessage("Organization ID is required"),
-  body("role")
-    .optional()
-    .isIn(["ORG_ADMIN", "EMPLOYEE"])
-    .withMessage("Role must be ORG_ADMIN or EMPLOYEE"),
+  body("role").notEmpty().withMessage("Role is required"),
+  body("organization_ids")
+    .isArray({ min: 1 })
+    .withMessage("At least one organization_id is required"),
   validate,
 ];
 
