@@ -1,53 +1,47 @@
-const db = require("../services/db.service");
+const { PrismaClient } = require("../generated/prisma");
+const prisma = new PrismaClient();
 
 async function createAvailability({ user_id, date, start_time, end_time, comments, status }) {
-  const result = await db.query(
-    `INSERT INTO "Availability" (user_id, date, start_time, end_time, comments, status)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING *`,
-    [user_id, date, start_time, end_time, comments, status]
-  );
-  return result.rows[0];
+  return await prisma.availability.create({
+    data: {
+      user: { connect: { user_id: Number(user_id) } },
+      date: date ? new Date(date) : null,
+      start_time: start_time ? new Date(start_time) : null,
+      end_time: end_time ? new Date(end_time) : null,
+      comments,
+      status,
+    },
+  });
 }
 
 async function getAvailabilityByUser(user_id) {
-  const result = await db.query(`SELECT * FROM "Availability" WHERE user_id = $1`, [user_id]);
-  return result.rows;
+  return await prisma.availability.findMany({
+    where: { user_id: Number(user_id) },
+  });
 }
 
 async function getAvailabilityById(availability_id) {
-  const result = await db.query(`SELECT * FROM "Availability" WHERE availability_id = $1`, [availability_id]);
-  return result.rows[0] || null;
+  return await prisma.availability.findUnique({
+    where: { availability_id: Number(availability_id) },
+  });
 }
 
 async function updateAvailability(id, data) {
-  const fields = [];
-  const values = [];
-  let i = 1;
-
-  for (const [key, value] of Object.entries(data)) {
-    fields.push(`"${key}" = $${i}`);
-    values.push(value);
-    i++;
-  }
-
-  if (fields.length === 0) return null;
-
-  const query = `
-    UPDATE "Availability"
-    SET ${fields.join(", ")}
-    WHERE availability_id = $${i}
-    RETURNING *;
-  `;
-
-  values.push(id);
-
-  const result = await db.query(query, values);
-  return result.rows[0] || null;
+  const payload = { ...data };
+  if (data.date) payload.date = new Date(data.date);
+  if (data.start_time) payload.start_time = new Date(data.start_time);
+  if (data.end_time) payload.end_time = new Date(data.end_time);
+  return await prisma.availability.update({
+    where: { availability_id: Number(id) },
+    data: payload,
+  });
 }
 
 async function deleteAvailability(id) {
-  await db.query(`DELETE FROM "Availability" WHERE availability_id = $1`, [id]);
+  await prisma.availability.delete({
+    where: { availability_id: Number(id) },
+  });
+  return true;
 }
 
 module.exports = {

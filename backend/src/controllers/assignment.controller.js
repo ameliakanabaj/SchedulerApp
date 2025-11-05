@@ -1,55 +1,77 @@
 const assignmentModel = require("../models/assignment.model");
-const db = require("../services/db.service");
+const shiftModel = require("../models/shift.model");
+const userModel = require("../models/user.model");
+const { extractOrgIdsFromUser } = require("../services/auth.service");
 
 async function createAssignment(req, res, next) {
   try {
     const { shift_id, user_id, role_on_shift } = req.body;
 
-    const shiftOrg = await db.query(`SELECT organization_id FROM "Shift" WHERE shift_id = $1`, [shift_id]);
-    const userOrg = await db.query(`SELECT organization_id FROM "User" WHERE user_id = $1`, [user_id]);
+    const shift = await shiftModel.getShiftById(shift_id);
+    const targetUser = await userModel.getUserById(user_id);
 
-    if (shiftOrg.rowCount === 0 || userOrg.rowCount === 0) {
-      return next({ type: "BUSINESS_LOGIC", message: "Shift or user not found", statusCode: 404 });
+    if (!shift || !targetUser) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Shift or user not found",
+        statusCode: 404,
+      });
     }
 
-    const shiftOrgId = shiftOrg.rows[0].organization_id;
-    const userOrgId = userOrg.rows[0].organization_id;
+    const shiftOrgId = Number(shift.organization_id);
+    const userOrgIds = extractOrgIdsFromUser(targetUser);
 
-    if (req.user.role === "ORG_ADMIN" && req.user.organization_id !== shiftOrgId) {
-      return next({ type: "BUSINESS_LOGIC", message: "You can only manage assignments in your own organization", statusCode: 403 });
+    if (
+      req.user.role === "ORG_ADMIN" &&
+      !((req.user.organization_ids || []).map(Number).includes(shiftOrgId))
+    ) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "You can only manage assignments in your own organization(s)",
+        statusCode: 403,
+      });
     }
 
-    if (shiftOrgId !== userOrgId) {
-      return next({ type: "BUSINESS_LOGIC", message: "User and shift must belong to the same organization", statusCode: 400 });
+    if (!userOrgIds.includes(shiftOrgId)) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "User and shift must belong to the same organization",
+        statusCode: 400,
+      });
     }
 
-    const assignment = await assignmentModel.createAssignment({ shift_id, user_id, role_on_shift });
+    const assignment = await assignmentModel.createAssignment({
+      shift_id,
+      user_id,
+      role_on_shift,
+    });
     res.status(201).json(assignment);
   } catch (err) {
     next(err);
   }
 }
 
+// dodam sprawdzenie - czy zmiana o shift_id należy do jednej z jego organizacji
 async function getAssignmentsByShift(req, res, next) {
   try {
-    const { shift_id } = req.params;
-    const assignments = await assignmentModel.getAssignmentsByShift(shift_id);
+    const assignments = await assignmentModel.getAssignmentsByShift(req.params.shift_id);
     res.json(assignments);
   } catch (err) {
     next(err);
   }
 }
 
+// dodam sprawdzenie - czy user o user_id należy do jednej z jego organizacji
 async function getAssignmentsByUser(req, res, next) {
   try {
-    const { user_id } = req.params;
-    const assignments = await assignmentModel.getAssignmentsByUser(user_id);
+    const assignments = await assignmentModel.getAssignmentsByUser(req.params.user_id);
     res.json(assignments);
   } catch (err) {
     next(err);
   }
 }
 
+// dodam - czy przydzial dotyczy zmiany lub usera z jednej z jego organizacji
 async function deleteAssignment(req, res, next) {
   try {
     await assignmentModel.deleteAssignment(req.params.id);
@@ -59,9 +81,11 @@ async function deleteAssignment(req, res, next) {
   }
 }
 
+// dodam tez update
+
 module.exports = { 
   createAssignment, 
   getAssignmentsByShift, 
   getAssignmentsByUser, 
-  deleteAssignment 
+  deleteAssignment,
 };
