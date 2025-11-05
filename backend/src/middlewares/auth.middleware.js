@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-
-const JWT_SECRET = process.env.JWT_SECRET;
+require("dotenv").config();
+const JWT_SECRET = process.env.JWT_SECRET || "SUPER_SECRET";
 
 function auth(requiredRoles = []) {
   return (req, res, next) => {

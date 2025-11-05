@@ -7,14 +7,7 @@ async function register(req, res, next) {
     res.status(201).json({
       message: "User registered successfully",
       token,
-      user: {
-        user_id: user.user_id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        role: user.role,
-        organization_id: user.organization_id,
-      },
+      user,
     });
   } catch (err) {
     if (err.message === "Email already exists") {
@@ -31,18 +24,10 @@ async function register(req, res, next) {
 async function login(req, res, next) {
   try {
     const { token, user } = await authService.login(req.body);
-
     res.json({
       message: "Login successful",
       token,
-      user: {
-        user_id: user.user_id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        role: user.role,
-        organization_id: user.organization_id,
-      },
+      user,
     });
   } catch (err) {
     next({
