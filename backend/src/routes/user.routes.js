@@ -9,5 +9,7 @@ router.get("/me", auth(), userController.getMe);
 router.get("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), userController.getUserById);
 router.get("/", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), userController.getAllUsers);
 router.post("/", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), createUserValidation, userController.createUser);
+router.delete("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), userController.deleteUser);
+router.put("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), userController.updateUser);
 
 module.exports = router;
