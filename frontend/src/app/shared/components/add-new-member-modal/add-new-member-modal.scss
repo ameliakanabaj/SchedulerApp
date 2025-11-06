@@ -1,0 +1,117 @@
+.modal-container {
+    padding: 1.5rem;
+    background-color: var(--primary-white);
+    border-radius: 0 0 8px 8px;
+    color: var(--secondary-text);
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+
+        .names, .email, .password {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            label {
+                font-size: 0.9rem;
+                color: var(--secondary-text);
+                font-weight: 500;
+
+                b {
+                    color: var(--primary-color);
+                }
+            }
+
+            input {
+                padding: 0.8rem;
+                border: 2px solid var(--secondary-white);
+                border-radius: 6px;
+                font-size: 1rem;
+                background-color: var(--primary-white);
+                color: var(--secondary-text);
+                transition: all 0.2s ease;
+
+                &:focus {
+                    outline: none;
+                    border-color: var(--primary-color);
+                    box-shadow: 0 0 0 3px rgba(161, 31, 74, 0.1);
+                }
+            }
+        }
+
+        .names {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+
+            label {
+                grid-column: span 1;
+            }
+
+            input {
+                grid-column: span 1;
+            }
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
+
+            &[type="submit"] {
+                background-color: var(--primary-color);
+                color: var(--primary-text);
+
+                &:hover {
+                    background-color: var(--primary-hover-bg);
+                }
+            }
+
+            &[type="button"] {
+                background-color: var(--secondary-background);
+                color: var(--secondary-text);
+                margin-top: 0.5rem;
+
+                &:hover {
+                    background-color: var(--secondary-white);
+                }
+            }
+        }
+    }
+}
+
+::ng-deep .dark {
+    .modal-container {
+        background-color: var(--primary-white);
+        color: var(--secondary-white) !important;
+        
+        label {
+            color: var(--primary-text) !important;
+        }
+
+        input {
+            background-color: var(--secondary-background);
+            border-color: var(--secondary-white);
+            color: var(--primary-text) !important;
+            &:focus {
+                border-color: var(--primary-color);
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-container {
+        form {
+            .names {
+                grid-template-columns: 1fr;
+            }
+        }
+    }
+}

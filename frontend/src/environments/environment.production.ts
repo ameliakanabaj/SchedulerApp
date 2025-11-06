@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    // apiUrl: '???' tutaj do podmianki bo dunno jakie api bedzie na prodzie -> devops <3
+    apiUrl: 'http://57.128.222.106:8083'
 };

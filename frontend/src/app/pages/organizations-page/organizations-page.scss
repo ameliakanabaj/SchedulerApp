@@ -1,20 +1,46 @@
 .organizations-page-container {
+    margin-top: 80px;
     padding: 20px;
     color: var(--secondary-text);
     min-width: 900px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 
-    button {
-        padding: 15px;
-        border: none;
-        border-radius: 10px;
-        box-shadow: 4px 4px 8px var(--primary-shadow);
-        transition: all 0.3s ease-in-out;
+    .organization-card {
+        min-width: 500px;
+        max-width: 100%;
+        background-color: var(--primary-color);
+        padding: 5px 20px 20px 20px;
+        border-radius: 20px;
 
-        &:hover {
-            transform: scale(1.1);
-            transition: all 0.3s ease-in-out; 
-            cursor: pointer;
-        };
+        .organization-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--primary-white);
+            border-bottom: 2px solid var(--primary-white);
+            box-shadow: 2px 2px 2px var(--primary-shadow);
+            margin-bottom: 20px;
+            padding: 0 15px;
+            border-radius: 20px;
+
+            button {
+                height: 50px;
+                border-radius: 10px;
+                border: none;
+                background-color: var(--primary-green);
+                color: var(--primary-text);
+                cursor: pointer;
+            }
+        }
+
+        .organization-card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
     }
 
     .create-organization-button {
@@ -22,13 +48,7 @@
         font-size: 18px;
         background-color: var(--primary-color);
         color: var(--primary-text);
-
-    }
-
-    .join-organization-button {
-        background-color: var(--primary-green);
-        color: var(--primary-text);
-        font-size: 18px;
+        margin-top: 20px;
     }
 
     .organizations-header {
@@ -37,60 +57,12 @@
         align-items: center;
         color: var(--primary-text);
     }
+}
 
-    .organizations-list {
-        .organization-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            .notification {
-                border: 2px solid var(--primary-red);
-                border-radius: 10px;
-                padding: 5px;
-                color: var(--primary-red);
-                font-size: 20px;
-            }
-        }
-
-        .organization-card {
-            &:first-of-type {
-                margin-top: 15px;
-            }
-
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: var(--secondary-white);
-            box-shadow: 4px 4px 12px var(--primary-shadow);
-            h3 {
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-
-            .organization-description {
-                color: #666;
-            }
-
-            .organization-buttons {
-                display: flex;
-                justify-content: space-between;
-                
-                .view-organization-button, .leave-organization-button {
-                    margin-top: 10px;
-                    padding: 8px 12px;
-                    background-color: #007bff;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-
-                .leave-organization-button {
-                    background-color: var(--primary-red);
-                }
-            }
+::ng-deep {
+    .dark {
+        .organizations-page-container {
+            color: var(--primary-text);
         }
     }
 }
