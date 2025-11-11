@@ -55,6 +55,24 @@ export class Calendar {
         return days;
     }
 
+    previousMonth(): void {
+        if (this.month == 0) {
+            this.year -= 1;
+            this.month = 11;
+            return
+        }
+        this.month -= 1;
+    }
+
+    nextMonth(): void {
+        if (this.month == 11) {
+            this.year += 1;
+            this.month = 0;
+            return;
+        }
+        this.month += 1;
+    }
+
     isDayClosed(date: Date): boolean {
         return false;
     }
@@ -111,5 +129,9 @@ export class Calendar {
     toggleOpen(day: Date) {
         const sched = this.getSchedule(day);
         if (sched) sched.open = !sched.open;
+    }
+
+    sendAvailability(): void {
+        // this.availabilityService.sendAvailability(this.availabilities);
     }
 }

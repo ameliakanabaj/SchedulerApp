@@ -1,6 +1,8 @@
 <div class="calendar">
     <div class="calendar-header">
+        <i class="fa-solid fa-backward" (click)="previousMonth()"></i>
         <h3>{{ year }} / {{ month + 1 }}</h3>
+        <i class="fa-solid fa-forward" (click)="nextMonth()"></i>
     </div>
 
     <div class="calendar-grid">
@@ -10,12 +12,11 @@
 
                 @if (isDayClosed(day)) {
                     <div class="closed-day">
-
                         <span> closed </span>
                     </div>
                 } @else {
                     <div class="open-day">
-                        <span class="hours"> Open hours: 7-20 </span>
+                        <!-- <span class="hours"> Open hours: 7-20 </span> -->
                         <ng-container *ngTemplateOutlet="calendarMode, context: {
                             mode,
                             day,
@@ -27,7 +28,7 @@
     </div>
 
     @if (mode === 'availability') {
-        <button class="availability-send"> Send your availability </button>
+        <button class="availability-send" (click)="sendAvailability()"> Send your availability </button>
     } @else if (mode === 'admin') {
         <div class="admin-buttons">
             <button class="cancel-button"> Cancel changes </button>
@@ -39,9 +40,9 @@
 <ng-template #calendarMode let-mode="mode" let-day="day">
     @if (mode === 'availability') {
         <div class="availability-buttons">
-            <button (click)="setAvailability(day, 'all-day')"> Whole day </button>
-            <button (click)="openCustomHoursModal(day, '7', '20' )"> Custom hours </button>
-            <button> Cannot work </button>
+            <button class="whole" [ngClass]="getAvailability(day)?.type === 'all-day' ? 'active' : 'inactive'" (click)="setAvailability(day, 'all-day')"> Whole day </button>
+            <button class="custom" [ngClass]="getAvailability(day)?.type === 'custom' ? 'active' : 'inactive'" (click)="openCustomHoursModal(day, '7', '20')"> Custom hours </button>
+            <button class="cannot" [ngClass]="getAvailability(day)?.type === 'cannot' ? 'active' : 'inactive'" (click)="setAvailability(day, 'cannot')"> Cannot work </button>
         </div>
     } @else if (mode === 'admin') {
         <div class="admin-buttons">

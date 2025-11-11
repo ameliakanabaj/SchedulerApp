@@ -10,6 +10,10 @@
         border-radius: 20px 20px 0 0;
         text-align: center;
         font-size: 30px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .calendar-grid {
@@ -63,7 +67,7 @@
         padding: 10px;
         color: var(--primary-text);
         border: none;
-        border-radius: 10px;
+        border-radius: 0 0 10px 10px;
         margin-top: 10px;
         font-size: 30px;
 
@@ -80,6 +84,7 @@
 
 .availability-buttons {
     display: flex;
+    flex-direction: column;
 
     button {
         border: 1px solid #ccc;
@@ -87,7 +92,8 @@
         background: #f4f4f4;
         cursor: pointer;
         transition: all 0.15s ease;
-        font-size: 0.8rem;
+        color: var(--secondary-text);
+
     }
 
     button:hover {
@@ -95,9 +101,25 @@
     }
 
     button.active {
-        background: #4caf50;
         color: white;
-        border-color: #43a047;
         font-weight: bold;
+        opacity: 100%;
     }
+
+    button.inactive {
+        opacity: 70%;
+    }
+
+    .whole {
+        background-color: var(--primary-green);
+    }
+
+    .custom {
+        background-color: var(--primary-blue);
+    }
+
+    .cannot {
+        background-color: var(--primary-red);
+    }
+
 }
