@@ -1,0 +1,53 @@
+<div class="calendar">
+    <div class="calendar-header">
+        <h3>{{ year }} / {{ month + 1 }}</h3>
+    </div>
+
+    <div class="calendar-grid">
+        @for (day of daysInMonth; track $index) {
+            <div class="day" [ngClass]="{ 'closed' : isDayClosed(day) }">
+                <span class="date">{{ day.toISOString() | date:'fullDate' }} </span>
+
+                @if (isDayClosed(day)) {
+                    <div class="closed-day">
+
+                        <span> closed </span>
+                    </div>
+                } @else {
+                    <div class="open-day">
+                        <span class="hours"> Open hours: 7-20 </span>
+                        <ng-container *ngTemplateOutlet="calendarMode, context: {
+                            mode,
+                            day,
+                        }"/>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    @if (mode === 'availability') {
+        <button class="availability-send"> Send your availability </button>
+    } @else if (mode === 'admin') {
+        <div class="admin-buttons">
+            <button class="cancel-button"> Cancel changes </button>
+            <button class="save-button"> Save changes </button>
+        </div>
+    }
+</div>
+
+<ng-template #calendarMode let-mode="mode" let-day="day">
+    @if (mode === 'availability') {
+        <div class="availability-buttons">
+            <button (click)="setAvailability(day, 'all-day')"> Whole day </button>
+            <button (click)="openCustomHoursModal(day, '7', '20' )"> Custom hours </button>
+            <button> Cannot work </button>
+        </div>
+    } @else if (mode === 'admin') {
+        <div class="admin-buttons">
+            <button> Change status </button>
+        </div>
+    } @else {
+
+    }
+</ng-template>

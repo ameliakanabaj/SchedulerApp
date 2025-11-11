@@ -1,0 +1,103 @@
+.calendar {
+    color: var(--primary-dark);
+    display: flex;
+    flex-direction: column;
+
+    .calendar-header {
+        background-color: var(--primary-color);
+        color: var(--primary-text);
+        padding: 1px 40px;
+        border-radius: 20px 20px 0 0;
+        text-align: center;
+        font-size: 30px;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+
+        .day {
+            background-color: var(--secondary-white);
+            height: 130px;
+            width: 200px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+
+            .date {
+                font-size: 20px;
+                border-bottom: 1px solid var(--primary-color);
+                padding: 2px;
+            }
+        }
+
+        .closed {
+            background-color: var(--primary-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: not-allowed;
+
+            span {
+                font-weight: 800;
+            }
+        }
+
+        .open-day {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            .hours {
+                font-weight: 800;
+            }
+        }
+    }
+
+    .availability-send {
+        background-color: var(--primary-color);
+        padding: 10px;
+        color: var(--primary-text);
+        border: none;
+        border-radius: 10px;
+        margin-top: 10px;
+        font-size: 30px;
+
+        &:hover {
+            cursor: pointer;
+            background-color: var(--primary-hover-bg);
+        }
+    }
+
+    .admin-buttons {
+        display: flex;
+    }
+}
+
+.availability-buttons {
+    display: flex;
+
+    button {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: #f4f4f4;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-size: 0.8rem;
+    }
+
+    button:hover {
+        background: #eaeaea;
+    }
+
+    button.active {
+        background: #4caf50;
+        color: white;
+        border-color: #43a047;
+        font-weight: bold;
+    }
+}
