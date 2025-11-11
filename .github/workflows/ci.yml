@@ -75,6 +75,8 @@ jobs:
             -e DB_HOST=${{ secrets.DB_HOST }} \
             -e DB_PORT=${{ secrets.DB_PORT }}\
             -e PORT=${{ secrets.PORT }} \
+            -e SSL_KEY="${{ secrets.KEY }}" \
+            -e SSL_CERT="${{ secrets.CERT }}" \
             ci-scheduler-backend
           for i in {1..30}; do
             if curl -sSf https://localhost:8083/api/health; then
