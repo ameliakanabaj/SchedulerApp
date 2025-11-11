@@ -34,11 +34,20 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-const options = {
-  key: fs.readFileSync('ssl/key.pem'),
-  cert: fs.readFileSync('ssl/cert.pem')
-};
+let key;
+let cert;
 
-https.createServer(options, app).listen(PORT, () => {
-  console.log(`Server running on https://57.128.222.106:${PORT}`);
+if (fs.existsSync('ssl/key.pem') && fs.existsSync('ssl/cert.pem')) {
+  key = fs.readFileSync('ssl/key.pem');
+  cert = fs.readFileSync('ssl/cert.pem');
+} else if (process.env.SSL_KEY && process.env.SSL_CERT) {
+  key = process.env.SSL_KEY.replace(/\\n/g, '\n');
+  cert = process.env.SSL_CERT.replace(/\\n/g, '\n');
+} else {
+  throw new Error("No SSL key/cert found");
+}
+
+const https = require('https');
+https.createServer({ key, cert }, app).listen(PORT, () => {
+  console.log(`HTTPS running on ${PORT}`);
 });
