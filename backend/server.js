@@ -47,7 +47,6 @@ if (fs.existsSync('ssl/key.pem') && fs.existsSync('ssl/cert.pem')) {
   throw new Error("No SSL key/cert found");
 }
 
-const https = require('https');
 https.createServer({ key, cert }, app).listen(PORT, () => {
   console.log(`HTTPS running on ${PORT}`);
 });
