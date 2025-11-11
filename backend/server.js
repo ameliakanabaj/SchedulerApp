@@ -1,4 +1,6 @@
 const express = require("express");
+const fs = require('fs');
+const https = require('https');
 const dotenv = require("dotenv");
 const path = require("path");
 
@@ -32,4 +34,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-app.listen(PORT, () => console.log(`[API] Server has started on: ${PORT}`));
+const options = {
+  key: fs.readFileSync('ssl/key.pem'),
+  cert: fs.readFileSync('ssl/cert.pem')
+};
+
+https.createServer(options, app).listen(PORT, () => {
+  console.log(`Server running on https://57.128.222.106:${PORT}`);
+});
