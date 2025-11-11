@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
+const cors = require("cors"); 
 const errorHandler = require("./src/middlewares/errorHandler.middleware");
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
@@ -18,6 +19,11 @@ const assignmentRoutes = require("./src/routes/assignment.routes");
 const app = express();
 const PORT = process.env.PORT || 8083;
 
+app.use(cors({
+  origin: "http://localhost:4200",
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 
 app.use("/api", healthRoutes);
