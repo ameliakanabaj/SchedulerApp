@@ -1,5 +1,5 @@
 <div class="nav-bar-container">
-    <button class="logo"><i class="fa-regular fa-calendar"></i></button>
+    <a routerLink="{{ userAuthenticated() ? 'dashboard' : 'landing'}}"><button class="logo"><i class="fa-regular fa-calendar"></i></button></a>
     @if (userAuthenticated()) {
         <div class="nav-bar-buttons">
             <a routerLink="/dashboard"><button [ngClass]="{ 'active-button': route() === 'dashboard' }">
@@ -14,13 +14,14 @@
             <!-- <button> additional/wip </button> -->
         </div>
         <div>
-            <button class="dark-mode-button" (click)="toggleDarkMode()">
+            <!-- TEMP OFF -->
+            <!-- <button class="dark-mode-button" (click)="toggleDarkMode()">
                 @if (isDarkMode()) {
                     <i class="fa-regular fa-moon"></i>
                 } @else {
                     <i class="fa-regular fa-sun"></i>
                 }
-            </button>
+            </button> -->
             <button class="logout-button">Logout</button>
         </div>
     } @else {

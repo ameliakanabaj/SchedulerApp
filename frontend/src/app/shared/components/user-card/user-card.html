@@ -1,0 +1,15 @@
+<div class="user-card-container">
+    <div class="user-details">
+        <h3 class="name">
+            {{ user().firstName }}
+            <span class="last-name">{{ user().lastName }}</span>
+        </h3>
+        <div class="email">{{ user().email }}</div>
+        </div>
+
+        <div class="user-actions">
+        <button type="button" class="btn remove-btn" aria-label="Remove user">
+            Remove
+        </button>
+    </div>
+</div>

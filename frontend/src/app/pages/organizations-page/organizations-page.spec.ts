@@ -1,38 +1,49 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OrganizationsPage } from './organizations-page';
-import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { createComponentFactory, Spectator } from '@ngneat/spectator';
+import { DialogService } from '@ngneat/dialog';
+import { Toastr } from '../../shared/services/toastr/toastr';
+import { Modal } from '../../shared/services/modal/modal';
 
 describe('OrganizationsPage', () => {
-    let component: OrganizationsPage;
-    let fixture: ComponentFixture<OrganizationsPage>;
-
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-        imports: [OrganizationsPage, RouterTestingModule], 
+    let sp: Spectator<OrganizationsPage>;
+    const createComponent = createComponentFactory({
+        component: OrganizationsPage,
         providers: [
             {
-            provide: ActivatedRoute,
-            useValue: { snapshot: { params: { id: 1 } } }
+                provide: Toastr,
+                useValue: {
+                    success: jest.fn(),
+                    error: jest.fn(),
+                }
+            },
+            {
+                provide: Modal,
+                useValue: { openModal: jest.fn() }
             }
         ]
-        }).compileComponents();
-
-        fixture = TestBed.createComponent(OrganizationsPage);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    beforeEach(() => {
+        sp = createComponent();
     });
 
-  // describe('leaveOrganization', () => {
-  //   it('should call leaveOrganization method', () => {
-  //     const orgId = 1;
-  //     spyOn(component, 'leaveOrganization');
-  //     component.leaveOrganization(orgId);
-  //     expect(component.leaveOrganization).toHaveBeenCalledWith(orgId);
-  //   });
-  // });
+    describe('openCreateOrganizationModal', () => {
+        it('should call openCreateOrganizationModal', () => {
+            const modal = sp.inject(Modal);
+
+            sp.component.openCreateOrganizationModal();
+
+            expect(modal.openModal).toHaveBeenCalled();
+        });
+    })
+
+    describe('openAddNewMemberModal', () => {
+        it('should call openAddNewMemberModal', () => {
+            const modal = sp.inject(Modal);
+
+            sp.component.openAddNewMemberModal();
+
+            expect(modal.openModal).toHaveBeenCalled();
+        });
+    });
 });

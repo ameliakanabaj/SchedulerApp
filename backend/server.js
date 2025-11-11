@@ -1,4 +1,6 @@
 const express = require("express");
+const fs = require('fs');
+const https = require('https');
 const dotenv = require("dotenv");
 const path = require("path");
 const cors = require("cors"); 
@@ -47,4 +49,19 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`[API] Server has started on: ${PORT}`));
+let key;
+let cert;
+
+if (fs.existsSync('ssl/key.pem') && fs.existsSync('ssl/cert.pem')) {
+  key = fs.readFileSync('ssl/key.pem');
+  cert = fs.readFileSync('ssl/cert.pem');
+} else if (process.env.SSL_KEY && process.env.SSL_CERT) {
+  key = process.env.SSL_KEY.replace(/\\n/g, '\n');
+  cert = process.env.SSL_CERT.replace(/\\n/g, '\n');
+} else {
+  throw new Error("No SSL key/cert found");
+}
+
+https.createServer({ key, cert }, app).listen(PORT, () => {
+  console.log(`HTTPS running on ${PORT}`);
+});
