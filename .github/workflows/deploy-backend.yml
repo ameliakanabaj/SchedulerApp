@@ -21,6 +21,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ~/SchedulerApp
+            export SSL_KEY="${{ secrets.SSL_KEY }}"
+            export SSL_CERT="${{ secrets.SSL_CERT }}"
             git pull origin main
             sudo docker compose down
             sudo docker compose up -d --build

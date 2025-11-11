@@ -32,8 +32,8 @@ jobs:
       - name: Write SSL files
         run: |
           mkdir -p ~/SchedulerApp/ssl
-          echo "${{ secrets.KEY }}" > ~/SchedulerApp/ssl/key.pem
-          echo "${{ secrets.CERT }}" > ~/SchedulerApp/ssl/cert.pem
+          echo "${{ secrets.KEY }}" | sed 's/\\n/\n/g' > ~/SchedulerApp/ssl/key.pem
+          echo "${{ secrets.CERT }}" | sed 's/\\n/\n/g' > ~/SchedulerApp/ssl/cert.pem
 
       - name: Install backend dependencies
         working-directory: ./backend
