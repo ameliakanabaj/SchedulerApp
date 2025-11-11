@@ -9,27 +9,19 @@ potem delete branch
 ## deployment
 
 FRONTEND POWINIEN BYĆ DOSTĘPNY POD ADRESEM: https://scheduler-app-iota.vercel.app/register
-BACKEND POWINIEN BYĆ DOSTĘPNY POD ADRESEM: http://57.128.222.106:8083
-
-## docker
-
-Uruchamiamy frontend, backend oraz bazę danych jednym poleceniem:
-
-`docker-compose up --build`
 
 ## frontend - Angular (./frontend)
+ odpalenie lokalne:
+ 
+ ``` cd frontend/ ```
+ 
+ ``` npm i --legacy-peer-deps```
+ 
+ ``` ng serve ```
 
-odpalenie lokalne:
-
-`cd frontend/`
-
-` npm i --legacy-peer-deps`
-
-`ng serve`
-
-odpalenie unit test:
-
-`npm run test`
+ odpalenie unit test:
+ 
+ ``` npm run test ```
 
 ## backend - Express.js (./backend)
 
