@@ -13,6 +13,8 @@ services:
         condition: service_healthy
     networks:
       - scheduler-net
+    volumes:
+      - ./ssl:/app/ssl
 
   db:
     image: postgres:16
