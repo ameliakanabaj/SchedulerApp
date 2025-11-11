@@ -7,7 +7,7 @@ const { createShiftValidation, updateShiftValidation } = require("../validations
 router.post("/", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), createShiftValidation, controller.createShift);
 router.get("/", auth(["ORG_ADMIN", "GLOBAL_ADMIN", "EMPLOYEE"]), controller.getAllShifts);
 router.get("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN", "EMPLOYEE"]), controller.getShiftById);
-router.put("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), updateShiftValidation, controller.updateShift);
+router.patch("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), updateShiftValidation, controller.updateShift);
 router.delete("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), controller.deleteShift);
 
 module.exports = router;

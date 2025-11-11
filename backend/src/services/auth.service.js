@@ -7,18 +7,13 @@ require("dotenv").config();
 const JWT_SECRET = process.env.JWT_SECRET || "SUPER_SECRET";
 const JWT_EXPIRES = "30d";
 
-function extractOrgIdsFromUser(user) {
-  if (!user || !user.userOrganizations) return [];
-  return user.userOrganizations.map(uo => Number(uo.organization_id));
-}
-
 function generateToken(user) {
-  const organization_ids = extractOrgIdsFromUser(user);
+  const organization_id = user.organization_id ? Number(user.organization_id) : (user.organization ? Number(user.organization.organization_id) : null);
   return jwt.sign(
     {
       user_id: user.user_id,
       role: user.role,
-      organization_ids,
+      organization_id,
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES }
@@ -30,9 +25,15 @@ async function register(data) {
   if (existing) throw new Error("Email already exists");
 
   const hashed = await bcrypt.hash(data.password, 10);
+
   const user = await userModel.createUser({
-    ...data,
-    password: hashed,
+    organization_id: null,
+    first_name: data.first_name,
+    last_name: data.last_name,
+    email: data.email,
+    password_hash: hashed,
+    role: "ORG_ADMIN",
+    position: data.position || null,
   });
 
   const token = generateToken(user);
@@ -54,4 +55,4 @@ async function login({ email, password }) {
   return { token, user };
 }
 
-module.exports = { register, login };
+module.exports = { register, login, generateToken };

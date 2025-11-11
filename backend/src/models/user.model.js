@@ -1,11 +1,12 @@
 const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
+const bcrypt = require("bcrypt")
 
 async function getUserById(user_id) {
   return await prisma.user.findUnique({
     where: { user_id: Number(user_id) },
     include: {
-      userOrganizations: { include: { organization: true } },
+      organization: true,
     },
   });
 }
@@ -14,7 +15,7 @@ async function getUserByEmail(email) {
   return await prisma.user.findUnique({
     where: { email },
     include: {
-      userOrganizations: { include: { organization: true } },
+      organization: true,
     },
   });
 }
@@ -22,31 +23,25 @@ async function getUserByEmail(email) {
 async function getAllUsers() {
   return await prisma.user.findMany({
     include: {
-      userOrganizations: { include: { organization: true } },
+      organization: true,
     },
   });
 }
 
-// async function getUsersByOrganizations(organization_ids) {
-//   return await prisma.user.findMany({
-//     where: {
-//       userOrganizations: {
-//         some: { organization_id: { in: organization_ids.map(Number) } },
-//       },
-//     },
-//     include: {
-//       userOrganizations: { include: { organization: true } },
-//     },
-//   });
-// }
+async function getUsersByOrganization(organization_id) {
+  return await prisma.user.findMany({
+    where: { organization_id: Number(organization_id) },
+    include: { organization: true },
+  });
+}
 
 async function createUser({
-  organization_ids = [],
+  organization_id = null,
   first_name,
   last_name,
   email,
   password_hash,
-  role,
+  role = "EMPLOYEE",
   position,
 }) {
   return await prisma.user.create({
@@ -57,14 +52,10 @@ async function createUser({
       password: password_hash,
       role,
       position,
-      userOrganizations: {
-        create: organization_ids.map((id) => ({
-          organization: { connect: { organization_id: Number(id) } },
-        })),
-      },
+      organization_id: organization_id ? Number(organization_id) : null,
     },
     include: {
-      userOrganizations: { include: { organization: true } },
+      organization: true,
     },
   });
 }
@@ -76,24 +67,15 @@ async function deleteUser(user_id) {
 }
 
 async function updateUser(user_id, data) {
-  const { organization_ids, password, ...rest } = data;
-
-  let orgOps = {};
-  if (organization_ids) {
-    orgOps = {
-      userOrganizations: {
-        deleteMany: {},
-        create: organization_ids.map((id) => ({
-          organization: { connect: { organization_id: Number(id) } },
-        })),
-      },
-    };
-  }
+  const { organization_id, password, ...rest } = data;
 
   let updateData = {
     ...rest,
-    ...orgOps,
   };
+
+  if (organization_id !== undefined) {
+    updateData.organization = organization_id ? { connect: { organization_id: Number(organization_id) } } : { disconnect: true };
+  }
 
   if (password) {
     updateData.password = await bcrypt.hash(password, 10);
@@ -103,7 +85,7 @@ async function updateUser(user_id, data) {
     where: { user_id: Number(user_id) },
     data: updateData,
     include: {
-      userOrganizations: { include: { organization: true } },
+      organization: true,
     },
   });
 }
@@ -113,7 +95,7 @@ module.exports = {
   getUserByEmail,
   getUserById,
   getAllUsers,
-  // getUsersByOrganizations,
+  getUsersByOrganization,
   deleteUser,
   updateUser,
 };

@@ -1,7 +1,6 @@
 const assignmentModel = require("../models/assignment.model");
 const shiftModel = require("../models/shift.model");
 const userModel = require("../models/user.model");
-const { extractOrgIdsFromUser } = require("../services/auth.service");
 
 async function createAssignment(req, res, next) {
   try {
@@ -19,20 +18,20 @@ async function createAssignment(req, res, next) {
     }
 
     const shiftOrgId = Number(shift.organization_id);
-    const userOrgIds = extractOrgIdsFromUser(targetUser);
+    const userOrgId = Number(targetUser.organization_id);
 
     if (
       req.user.role === "ORG_ADMIN" &&
-      !((req.user.organization_ids || []).map(Number).includes(shiftOrgId))
+      Number(req.user.organization_id) !== shiftOrgId
     ) {
       return next({
         type: "BUSINESS_LOGIC",
-        message: "You can only manage assignments in your own organization(s)",
+        message: "You can only manage assignments in your own organization",
         statusCode: 403,
       });
     }
 
-    if (!userOrgIds.includes(shiftOrgId)) {
+    if (userOrgId !== shiftOrgId) {
       return next({
         type: "BUSINESS_LOGIC",
         message: "User and shift must belong to the same organization",
@@ -51,9 +50,62 @@ async function createAssignment(req, res, next) {
   }
 }
 
-// dodam sprawdzenie - czy zmiana o shift_id należy do jednej z jego organizacji
+async function getAssignmentById(req, res, next) {
+  try {
+    const assignment = await assignmentModel.getAssignmentById(req.params.id);
+    if (!assignment) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Assignment not found",
+        statusCode: 404,
+      });
+    }
+
+    const shift = assignment.shift;
+
+    if (
+      req.user.role === "ORG_ADMIN" &&
+      Number(req.user.organization_id) !== Number(shift.organization_id)
+    ) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
+
+    if (
+      req.user.role === "EMPLOYEE" &&
+      Number(req.user.user_id) !== Number(assignment.user_id)
+    ) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
+
+    res.json(assignment);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function getAssignmentsByShift(req, res, next) {
   try {
+    const shift = await shiftModel.getShiftById(req.params.shift_id);
+    if (!shift) {
+      return next({ type: "BUSINESS_LOGIC", message: "Shift not found", statusCode: 404 });
+    }
+
+    if (req.user.role === "ORG_ADMIN" && Number(req.user.organization_id) !== Number(shift.organization_id)) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
+
     const assignments = await assignmentModel.getAssignmentsByShift(req.params.shift_id);
     res.json(assignments);
   } catch (err) {
@@ -61,9 +113,25 @@ async function getAssignmentsByShift(req, res, next) {
   }
 }
 
-// dodam sprawdzenie - czy user o user_id należy do jednej z jego organizacji
 async function getAssignmentsByUser(req, res, next) {
   try {
+    const user = await userModel.getUserById(req.params.user_id);
+    if (!user) {
+      return next({ type: "BUSINESS_LOGIC", message: "User not found", statusCode: 404 });
+    }
+
+    if (req.user.role === "EMPLOYEE" && Number(req.user.user_id) !== Number(req.params.user_id)) {
+      return next({ type: "BUSINESS_LOGIC", message: "Forbidden", statusCode: 403 });
+    }
+
+    if (req.user.role === "ORG_ADMIN" && Number(req.user.organization_id) !== Number(user.organization_id)) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Forbidden",
+        statusCode: 403,
+      });
+    }
+
     const assignments = await assignmentModel.getAssignmentsByUser(req.params.user_id);
     res.json(assignments);
   } catch (err) {
@@ -71,9 +139,19 @@ async function getAssignmentsByUser(req, res, next) {
   }
 }
 
-// dodam - czy przydzial dotyczy zmiany lub usera z jednej z jego organizacji
 async function deleteAssignment(req, res, next) {
   try {
+    const assignmentId = req.params.id;
+    const assignment = await assignmentModel.getAssignmentById(assignmentId);
+    if (!assignment) {
+      return next({ type: "BUSINESS_LOGIC", message: "Assignment not found", statusCode: 404 });
+    }
+
+    const shift = await shiftModel.getShiftById(assignment.shift_id);
+    if (req.user.role === "ORG_ADMIN" && Number(req.user.organization_id) !== Number(shift.organization_id)) {
+      return next({ type: "BUSINESS_LOGIC", message: "Forbidden", statusCode: 403 });
+    }
+
     await assignmentModel.deleteAssignment(req.params.id);
     res.json({ message: "Assignment deleted" });
   } catch (err) {
@@ -81,11 +159,34 @@ async function deleteAssignment(req, res, next) {
   }
 }
 
-// dodam tez update
+async function updateAssignment(req, res, next) {
+  try {
+    const assignment = await assignmentModel.getAssignmentById(req.params.id);
+    if (!assignment) {
+      return next({ type: "BUSINESS_LOGIC", message: "Assignment not found", statusCode: 404 });
+    }
+
+    const shift = assignment.shift;
+
+    if (
+      req.user.role === "ORG_ADMIN" &&
+      Number(req.user.organization_id) !== Number(shift.organization_id)
+    ) {
+      return next({ type: "BUSINESS_LOGIC", message: "Forbidden", statusCode: 403 });
+    }
+
+    const updated = await assignmentModel.updateAssignment(req.params.id, req.body);
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+}
 
 module.exports = { 
   createAssignment, 
+  getAssignmentById,
   getAssignmentsByShift, 
   getAssignmentsByUser, 
   deleteAssignment,
+  updateAssignment,
 };

@@ -9,25 +9,37 @@ async function createOrganization({ name }) {
 
 async function getAllOrganizations() {
   return await prisma.organization.findMany({
-    include: { userOrganizations: { include: { user: true } } },
-    orderBy: { name: "asc" },
+  include: {
+    users: {
+      select: {
+        user_id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        role: true,
+        position: true,
+        organization_id: true
+      }
+    }
+  },
+  orderBy: { name: "asc" }
   });
 }
 
 async function getOrganizationById(id) {
   return await prisma.organization.findUnique({
     where: { organization_id: Number(id) },
-    include: { userOrganizations: { include: { user: true } } },
+    include: { users: true },
   });
 }
 
-// async function getOrganizationsByIds(ids = []) {
-//   return await prisma.organization.findMany({
-//     where: { organization_id: { in: ids.map(Number) } },
-//     include: { userOrganizations: { include: { user: true } } },
-//     orderBy: { name: "asc" },
-//   });
-// }
+async function getOrganizationsByIds(ids = []) {
+  return await prisma.organization.findMany({
+    where: { organization_id: { in: ids.map(Number) } },
+    include: { users: true },
+    orderBy: { name: "asc" },
+  });
+}
 
 async function updateOrganization(id, { name }) {
   return await prisma.organization.update({
@@ -47,7 +59,7 @@ module.exports = {
   createOrganization,
   getAllOrganizations,
   getOrganizationById,
-  // getOrganizationsByIds,
+  getOrganizationsByIds,
   updateOrganization,
   deleteOrganization,
 };

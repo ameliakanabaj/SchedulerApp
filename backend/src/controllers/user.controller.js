@@ -1,6 +1,6 @@
 const userModel = require("../models/user.model");
 const bcrypt = require("bcrypt");
-const { generateToken, extractOrgIdsFromUser } = require("../services/auth.service");
+const { generateToken } = require("../services/auth.service");
 require("dotenv").config();
 
 async function getMe(req, res, next) {
@@ -8,8 +8,8 @@ async function getMe(req, res, next) {
     const user = await userModel.getUserById(req.user.user_id);
     if (!user)
       return next({ type: "BUSINESS_LOGIC", message: "User not found", statusCode: 404 });
-    if (user.password) delete user.password;
-    res.json(user);
+    const { password, ...safeUser } = user;
+    res.json(safeUser);
   } catch (err) {
     next(err);
   }
@@ -22,19 +22,17 @@ async function getUserById(req, res, next) {
       return next({ type: "BUSINESS_LOGIC", message: "User not found", statusCode: 404 });
 
     if (req.user.role === "ORG_ADMIN") {
-      const userOrgIds = extractOrgIdsFromUser(user);
-      const allowed = (req.user.organization_ids || []).map(Number).some(id => userOrgIds.includes(Number(id)));
-      if (!allowed) {
+      if (!req.user.organization_id || Number(req.user.organization_id) !== Number(user.organization_id)) {
         return next({
           type: "BUSINESS_LOGIC",
-          message: "Forbidden: You can only view users from your organization(s)",
+          message: "Forbidden: You can only view users from your organization",
           statusCode: 403,
         });
       }
     }
 
-    if (user.password) delete user.password;
-    res.json(user);
+    const { password, ...safeUser } = user;
+    res.json(safeUser);
   } catch (err) {
     next(err);
   }
@@ -48,7 +46,7 @@ async function getAllUsers(req, res, next) {
     if (requester.role === "GLOBAL_ADMIN") {
       users = await userModel.getAllUsers();
     } else if (requester.role === "ORG_ADMIN") {
-      users = await userModel.getUsersByOrganizations(requester.organization_ids || []);
+      users = await userModel.getUsersByOrganization(requester.organization_id);
     } else {
       return next({ type: "BUSINESS_LOGIC", message: "Forbidden", statusCode: 403 });
     }
@@ -63,14 +61,13 @@ async function getAllUsers(req, res, next) {
 
 async function createUser(req, res, next) {
   try {
-    const { organization_ids = [], first_name, last_name, email, password, role, position } = req.body;
+    const { organization_id = null, first_name, last_name, email, password, role, position } = req.body;
 
     if (req.user.role === "ORG_ADMIN") {
-      const invalid = organization_ids.some(id => !(req.user.organization_ids || []).map(Number).includes(Number(id)));
-      if (invalid) {
+      if (!organization_id || Number(organization_id) !== Number(req.user.organization_id)) {
         return next({
           type: "BUSINESS_LOGIC",
-          message: "You can only create users in your organization(s)",
+          message: "You can only create users in your organization",
           statusCode: 403,
         });
       }
@@ -88,7 +85,7 @@ async function createUser(req, res, next) {
     const password_hash = await bcrypt.hash(password, 10);
 
     const newUser = await userModel.createUser({
-      organization_ids,
+      organization_id,
       first_name,
       last_name,
       email,
@@ -111,6 +108,29 @@ async function createUser(req, res, next) {
   }
 }
 
+async function getUsersByOrganization(req, res, next) {
+  try {
+    const { organization_id } = req.params;
+
+    if (req.user.role === "ORG_ADMIN" &&
+        Number(req.user.organization_id) !== Number(organization_id)) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "You can only view users from your organization",
+        statusCode: 403,
+      });
+    }
+
+    const users = await userModel.getUsersByOrganization(organization_id);
+    users.forEach(u => delete u.password);
+
+    res.json(users);
+
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function deleteUser(req, res, next) {
   try {
     const targetUser = await userModel.getUserById(req.params.id);
@@ -118,11 +138,7 @@ async function deleteUser(req, res, next) {
       return next({ type: "BUSINESS_LOGIC", message: "User not found", statusCode: 404 });
 
     if (req.user.role === "ORG_ADMIN") {
-      const targetOrgs = extractOrgIdsFromUser(targetUser);
-      const allowed = (req.user.organization_ids || []).some(id =>
-        targetOrgs.includes(Number(id))
-      );
-      if (!allowed) {
+      if (!req.user.organization_id || Number(req.user.organization_id) !== Number(targetUser.organization_id)) {
         return next({
           type: "BUSINESS_LOGIC",
           message: "You can only delete users from your organization",
@@ -147,11 +163,7 @@ async function updateUser(req, res, next) {
       return next({ type: "BUSINESS_LOGIC", message: "User not found", statusCode: 404 });
 
     if (req.user.role === "ORG_ADMIN") {
-      const targetOrgs = extractOrgIdsFromUser(targetUser);
-      const allowed = (req.user.organization_ids || []).some(id =>
-        targetOrgs.includes(Number(id))
-      );
-      if (!allowed) {
+      if (!req.user.organization_id || Number(req.user.organization_id) !== Number(targetUser.organization_id)) {
         return next({
           type: "BUSINESS_LOGIC",
           message: "You can only update users from your organization",
@@ -174,6 +186,7 @@ module.exports = {
     getUserById, 
     getAllUsers, 
     createUser,
+    getUsersByOrganization,
     deleteUser,
     updateUser,
 };

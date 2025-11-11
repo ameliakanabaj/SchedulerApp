@@ -13,4 +13,9 @@ const createAssignmentValidation = [
   validate,
 ];
 
-module.exports = { createAssignmentValidation };
+const updateAssignmentValidation = [
+  body("role_on_shift").optional().isString().withMessage("role_on_shift must be a string"),
+  validate,
+];
+
+module.exports = { createAssignmentValidation, updateAssignmentValidation };

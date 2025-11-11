@@ -9,60 +9,48 @@ datasource db {
 }
 
 model Organization {
-  organization_id   Int                 @id @default(autoincrement())
-  name              String              @db.VarChar(255)
-  shifts            Shift[]
-  userOrganizations UserOrganization[]
+  organization_id Int     @id @default(autoincrement())
+  name            String  @db.VarChar(255)
+  shifts          Shift[]
+  users           User[]
 }
 
 model User {
-  user_id           Int                 @id @default(autoincrement())
-  first_name        String              @db.VarChar(255)
-  last_name         String              @db.VarChar(255)
-  email             String              @unique @db.VarChar(255)
-  password          String              @db.VarChar(255)
-  role              user_role           @default(EMPLOYEE)
-  position          String?             @db.VarChar(255)
-  assignments       Assignment[]
-  availabilities    Availability[]
-  userOrganizations UserOrganization[]
+  user_id         Int        @id @default(autoincrement())
+  organization_id Int?
+  first_name      String     @db.VarChar(255)
+  last_name       String     @db.VarChar(255)
+  email           String     @unique @db.VarChar(255)
+  password        String     @db.VarChar(255)
+  role            user_role  @default(EMPLOYEE)
+  position        String?    @db.VarChar(255)
+  assignments     Assignment[]
+  availabilities  Availability[]
+
+  organization Organization? @relation(fields: [organization_id], references: [organization_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([email], map: "idx_user_email")
 }
 
-model UserOrganization {
-  user_organization_id Int @id @default(autoincrement())
-  user_id              Int
-  organization_id      Int
-
-  user         User         @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
-  organization Organization @relation(fields: [organization_id], references: [organization_id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([user_id, organization_id], map: "uq_user_org")
-  @@index([user_id], map: "idx_uo_user_id")
-  @@index([organization_id], map: "idx_uo_organization_id")
-}
-
 model Shift {
-  shift_id        Int           @id @default(autoincrement())
+  shift_id        Int          @id @default(autoincrement())
   organization_id Int
-  date            DateTime
   start_time      DateTime
   end_time        DateTime
-  place           String?       @db.VarChar(255)
+  required_people Int?
+  place           String?      @db.VarChar(255)
   assignments     Assignment[]
-  organization    Organization  @relation(fields: [organization_id], references: [organization_id], onDelete: Cascade, onUpdate: NoAction)
+  organization    Organization @relation(fields: [organization_id], references: [organization_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Availability {
-  availability_id Int      @id @default(autoincrement())
+  availability_id Int       @id @default(autoincrement())
   user_id         Int
-  date            DateTime @db.Date
-  start_time      DateTime @db.Time(6)
-  end_time        DateTime @db.Time(6)
-  comments        String?  @db.VarChar(500)
-  status          String?  @db.VarChar(50)
-  user            User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  start_time      DateTime
+  end_time        DateTime
+  comments        String?   @db.VarChar(500)
+  status          String?   @db.VarChar(50)
+  user            User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([user_id], map: "idx_availability_user_id")
 }
@@ -75,6 +63,7 @@ model Assignment {
   shift         Shift   @relation(fields: [shift_id], references: [shift_id], onDelete: Cascade, onUpdate: NoAction)
   user          User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@unique([shift_id, user_id], map: "uq_shift_user")
   @@index([shift_id], map: "idx_assignment_shift_id")
   @@index([user_id], map: "idx_assignment_user_id")
 }

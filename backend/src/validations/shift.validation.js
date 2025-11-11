@@ -8,16 +8,28 @@ const validate = (req, res, next) => {
 
 const createShiftValidation = [
   body("organization_id").isInt().withMessage("organization_id must be an integer"),
-  body("date").isISO8601().withMessage("Invalid date format (YYYY-MM-DD)"),
-  body("start_time").matches(/^\d{2}:\d{2}$/).withMessage("Invalid start time format (HH:mm)"),
-  body("end_time").matches(/^\d{2}:\d{2}$/).withMessage("Invalid end time format (HH:mm)"),
+  body("start_time").isISO8601().withMessage("start_time must be ISO8601 datetime"),
+  body("end_time").isISO8601().withMessage("end_time must be ISO8601 datetime"),
+  body("end_time").custom((value, { req }) => {
+    if (new Date(value) <= new Date(req.body.start_time)) {
+      throw new Error("end_time must be after start_time");
+    }
+    return true;
+  }),
+  body("place").optional().isString(),
   validate,
 ];
 
 const updateShiftValidation = [
-  body("date").optional().isISO8601().withMessage("Invalid date format"),
-  body("start_time").optional().matches(/^\d{2}:\d{2}$/).withMessage("Invalid start time format"),
-  body("end_time").optional().matches(/^\d{2}:\d{2}$/).withMessage("Invalid end time format"),
+  body("start_time").optional().isISO8601().withMessage("start_time must be ISO8601 datetime"),
+  body("end_time").optional().isISO8601().withMessage("end_time must be ISO8601 datetime"),
+  body("end_time").optional().custom((value, { req }) => {
+    const start = req.body.start_time ? new Date(req.body.start_time) : null;
+    if (start && new Date(value) <= start) {
+      throw new Error("end_time must be after start_time");
+    }
+    return true;
+  }),
   body("place").optional().isString(),
   validate,
 ];

@@ -1,16 +1,18 @@
 const organizationModel = require("../models/organization.model");
+const userModel = require("../models/user.model");
 
 async function createOrganization(req, res, next) {
   try {
-    if (req.user.role !== "GLOBAL_ADMIN") {
-      return next({
-        type: "BUSINESS_LOGIC",
-        message: "Only GLOBAL_ADMIN can create organizations",
-        statusCode: 403,
+    const { name } = req.body;
+
+    const org = await organizationModel.createOrganization({ name });
+
+    if (req.user.role === "ORG_ADMIN") {
+      await userModel.updateUser(req.user.user_id, {
+        organization_id: org.organization_id,
       });
     }
 
-    const org = await organizationModel.createOrganization(req.body);
     res.status(201).json(org);
   } catch (err) {
     next(err);
@@ -24,8 +26,12 @@ async function getAllOrganizations(req, res, next) {
       return res.json(orgs);
     }
 
-    const orgs = await organizationModel.getOrganizationsByIds(req.user.organization_ids || []);
-    res.json(orgs);
+    if (!req.user.organization_id) {
+      return res.json([]);
+    }
+
+    const org = await organizationModel.getOrganizationById(req.user.organization_id);
+    res.json(org ? [org] : []);
   } catch (err) {
     next(err);
   }
@@ -39,7 +45,7 @@ async function getOrganizationById(req, res, next) {
 
     if (
       req.user.role !== "GLOBAL_ADMIN" &&
-      !((req.user.organization_ids || []).map(Number).includes(Number(org.organization_id)))
+      Number(req.user.organization_id) !== Number(org.organization_id)
     ) {
       return next({
         type: "BUSINESS_LOGIC",
@@ -56,18 +62,20 @@ async function getOrganizationById(req, res, next) {
 
 async function updateOrganization(req, res, next) {
   try {
-    if (req.user.role !== "GLOBAL_ADMIN") {
+    const existing = await organizationModel.getOrganizationById(req.params.id);
+    if (!existing) {
+      return next({ type: "BUSINESS_LOGIC", message: "Organization not found", statusCode: 404 });
+    }
+    
+    if (req.user.role !== "GLOBAL_ADMIN" && Number(req.user.organization_id) !== Number(req.params.id)) {
       return next({
         type: "BUSINESS_LOGIC",
-        message: "Only GLOBAL_ADMIN can update organizations",
+        message: "Only GLOBAL_ADMIN or org's admin can update organization",
         statusCode: 403,
       });
     }
 
     const org = await organizationModel.updateOrganization(req.params.id, req.body);
-    if (!org)
-      return next({ type: "BUSINESS_LOGIC", message: "Organization not found", statusCode: 404 });
-
     res.json(org);
   } catch (err) {
     next(err);

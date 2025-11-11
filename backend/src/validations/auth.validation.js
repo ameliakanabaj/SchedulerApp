@@ -47,9 +47,8 @@ const createUserValidation = [
   body("last_name").notEmpty().withMessage("Last name is required"),
   body("email").isEmail().withMessage("Valid email is required"),
   body("role").notEmpty().withMessage("Role is required"),
-  body("organization_ids")
-    .isArray({ min: 1 })
-    .withMessage("At least one organization_id is required"),
+  body("organization_id")
+    .isInt().withMessage("organization_id must be an integer"),
   validate,
 ];
 

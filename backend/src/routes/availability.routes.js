@@ -6,7 +6,7 @@ const { createAvailabilityValidation, updateAvailabilityValidation } = require("
 
 router.post("/", auth(["EMPLOYEE", "ORG_ADMIN", "GLOBAL_ADMIN"]), createAvailabilityValidation, controller.createAvailability);
 router.get("/user/:user_id", auth(["EMPLOYEE", "ORG_ADMIN", "GLOBAL_ADMIN"]), controller.getAvailabilityByUser);
-router.put("/:id", auth(["EMPLOYEE", "ORG_ADMIN", "GLOBAL_ADMIN"]), updateAvailabilityValidation, controller.updateAvailability);
+router.patch("/:id", auth(["EMPLOYEE", "ORG_ADMIN", "GLOBAL_ADMIN"]), updateAvailabilityValidation, controller.updateAvailability);
 router.delete("/:id", auth(["EMPLOYEE", "ORG_ADMIN", "GLOBAL_ADMIN"]), controller.deleteAvailability);
 
 module.exports = router;
