@@ -1,4 +1,6 @@
 const express = require("express");
+const fs = require('fs');
+const https = require('https');
 const dotenv = require("dotenv");
 const path = require("path");
 
@@ -23,11 +25,6 @@ app.get("/", (req, res) => {
   res.status(200).send("Scheduler API is running.");
 });
 
-app.get("/test", (req, res) => { // just for test if vps is working (the endpoind will be deleted later (when the vps is configured and tested))
-  res.status(200).send("Test successfully passed. Changes from main are applied automatically!");
-});
-
-
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint Not Found", path: req.originalUrl });
 });
@@ -37,4 +34,19 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-app.listen(PORT, () => console.log(`[API] Server has started on: ${PORT}`));
+let key;
+let cert;
+
+if (fs.existsSync('ssl/key.pem') && fs.existsSync('ssl/cert.pem')) {
+  key = fs.readFileSync('ssl/key.pem');
+  cert = fs.readFileSync('ssl/cert.pem');
+} else if (process.env.SSL_KEY && process.env.SSL_CERT) {
+  key = process.env.SSL_KEY.replace(/\\n/g, '\n');
+  cert = process.env.SSL_CERT.replace(/\\n/g, '\n');
+} else {
+  throw new Error("No SSL key/cert found");
+}
+
+https.createServer({ key, cert }, app).listen(PORT, () => {
+  console.log(`HTTPS running on ${PORT}`);
+});
