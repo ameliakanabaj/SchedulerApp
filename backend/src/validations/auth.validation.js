@@ -52,8 +52,31 @@ const createUserValidation = [
   validate,
 ];
 
+const changePasswordValidation = [
+  body("current_password")
+    .exists().withMessage("Current password is required")
+    .isLength({ min: 8 }).withMessage("Password must be at least 8 characters"),
+  body("new_password")
+    .exists().withMessage("New password is required")
+    .isLength({ min: 8 }).withMessage("Password must be at least 8 characters")
+    .matches(/\d/).withMessage("Password must contain a number")
+    .matches(/[A-Z]/).withMessage("Password must contain an uppercase letter"),
+  validate,
+];
+
+const resetPasswordValidation = [
+  body("new_password")
+    .exists().withMessage("New password is required")
+    .isLength({ min: 8 }).withMessage("Password must be at least 8 characters")
+    .matches(/\d/).withMessage("Password must contain a number")
+    .matches(/[A-Z]/).withMessage("Password must contain an uppercase letter"),
+  validate,
+];
+
 module.exports = {
   registerValidation,
   loginValidation,
   createUserValidation,
+  changePasswordValidation,
+  resetPasswordValidation,
 };

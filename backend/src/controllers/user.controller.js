@@ -181,6 +181,69 @@ async function updateUser(req, res, next) {
   }
 }
 
+async function changePassword(req, res, next) {
+  try {
+    const user_id = req.user.user_id;
+    const { current_password, new_password } = req.body;
+
+    const user = await userModel.getUserById(user_id);
+    if (!user)
+      return next({ type: "BUSINESS_LOGIC", message: "User not found", statusCode: 404 });
+
+    const isMatch = await bcrypt.compare(current_password, user.password);
+    if (!isMatch)
+      return next({ type: "BUSINESS_LOGIC", message: "Current password is incorrect", statusCode: 400 });
+
+    if (current_password === new_password)
+      return next({ type: "BUSINESS_LOGIC", message: "New password must be different", statusCode: 400 });
+
+    const hashed = await bcrypt.hash(new_password, 10);
+
+    await userModel.updateUser(user_id, { password: hashed });
+
+    res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function resetPassword(req, res, next) {
+  try {
+    const targetUserId = req.params.id;
+    const { new_password } = req.body;
+
+    if (!["GLOBAL_ADMIN", "ORG_ADMIN"].includes(req.user.role)) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Forbidden: insufficient privileges",
+        statusCode: 403,
+      });
+    }
+
+    const targetUser = await userModel.getUserById(targetUserId);
+    if (!targetUser)
+      return next({ type: "BUSINESS_LOGIC", message: "User not found", statusCode: 404 });
+
+    if (
+      req.user.role === "ORG_ADMIN" &&
+      Number(req.user.organization_id) !== Number(targetUser.organization_id)
+    ) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "You can only reset passwords for users in your organization",
+        statusCode: 403,
+      });
+    }
+
+    const hashed = await bcrypt.hash(new_password, 10);
+    await userModel.updateUser(targetUserId, { password: hashed });
+
+    res.json({ message: `Password reset successfully for user ${targetUser.email}` });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = { 
     getMe, 
     getUserById, 
@@ -189,4 +252,6 @@ module.exports = {
     getUsersByOrganization,
     deleteUser,
     updateUser,
+    changePassword,
+    resetPassword,
 };

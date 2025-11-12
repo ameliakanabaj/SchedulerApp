@@ -1,6 +1,5 @@
 const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
-const bcrypt = require("bcrypt")
 
 async function getUserById(user_id) {
   return await prisma.user.findUnique({
@@ -78,7 +77,7 @@ async function updateUser(user_id, data) {
   }
 
   if (password) {
-    updateData.password = await bcrypt.hash(password, 10);
+    updateData.password = password;
   }
 
   return await prisma.user.update({
