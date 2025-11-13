@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { App } from './app';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClient } from '@angular/common/http';
 
 describe('App', () => {
     let component: App;
@@ -15,6 +16,10 @@ describe('App', () => {
             provide: ActivatedRoute,
             useValue: { snapshot: { routeConfig: { path: 'dashboard' } } },
             },
+            {
+                provide: HttpClient,
+                useValue: {}
+            }
         ],
         }).compileComponents();
 

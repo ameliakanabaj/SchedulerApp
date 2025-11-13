@@ -8,8 +8,10 @@
             "@app/*": ["app/*"],
             "@core/*": ["app/core/*"],
             "@shared/*": ["app/shared/*"],
+            "@services/*": ["app/shared/services/*"],
             "@features/*": ["app/features/*"],
-            "@pages/*": ["app/pages/*"]
+            "@pages/*": ["app/pages/*"],
+            "@components/*": ["app/shared/components/*"],
         },
         "outDir": "./out-tsc/app",
         "types": []

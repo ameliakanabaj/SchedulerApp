@@ -1,0 +1,14 @@
+<app-modal-header title="Create New Organization"/>
+
+<div class="organization-creation-modal-container">
+    <form (ngSubmit)="createOrganization()" #organizationForm="ngForm">
+        <div class="form-group">
+            <label for="organizationName">Organization Name:</label>
+            <input type="text" id="organizationName" name="organizationName" [(ngModel)]="organizationName" required />
+        </div>
+        <div class="form-actions">
+            <button type="submit" [disabled]="!organizationForm.form.valid">Create</button>
+            <button type="button" (click)="close()">Cancel</button>
+        </div>
+    </form>
+</div>

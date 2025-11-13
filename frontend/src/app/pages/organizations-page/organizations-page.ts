@@ -1,21 +1,45 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from "@angular/router";
+import { Modal, Toastr } from '@app/shared/services';
+import { AddNewMemberModal, OrganizationCreationModal, UserCard } from '@app/shared/components';
 
 @Component({
   selector: 'app-organizations-page',
-  imports: [RouterLink],
+  imports: [UserCard],
   templateUrl: './organizations-page.html',
   styleUrl: './organizations-page.scss'
 })
-export class OrganizationsPage {
-    // user = { organizations: null }; // TEMP HARDCODE
-    user = { organizations: [
-        { id: 1, name: 'Org 1', description: 'bla bla bla org 1' },
-        { id: 2, name: 'Org 2', description: 'bla bla bla org 2', notification: 1},
-    ]}
-    // user = input<User>();
+export class OrganizationsPage implements OnInit {
+    userOrganization = signal(true);
+    organization = {
+        name: 'Test org',
+    }
 
-    leaveOrganization(orgId: number) {
-        // this.organizationsService.leaveOrganization(orgId).subscribe({}); // TO DO - implement serice; add toastr
+    private readonly modalService = inject(Modal);
+    private readonly toastr = inject(Toastr);
+
+    ngOnInit(): void {
+        // this.organizationService.getUserOrganization().then(org => {  CZEKAM NA BACKEND
+        //     this.userOrganization.set(org);
+        // })
+    }
+
+
+    openCreateOrganizationModal(): void {
+        const modalRef = this.modalService.openModal(OrganizationCreationModal);
+
+        // modalRef.afterClosed$.subscribe((res: any) => {
+            // if (res) {
+                // this.toastr.success('Organization created successfully!');
+                // this.userOrganization.set(res); CZEKAM NA BACKEND
+            // }
+        // });
+    }
+
+    openAddNewMemberModal(): void {
+        // this.modalService.openModal(AddNewMemberModal, { data: {
+        //     // organizationId: this.organizationId
+        // }});
+        this.modalService.openModal(AddNewMemberModal, {  });
     }
 }
