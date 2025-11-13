@@ -35,7 +35,7 @@ jobs:
         run: |
           docker network create ci-network || true
           docker run -d \
-            --name db\
+            --name db \
             --network ci-network \
             -e POSTGRES_USER=${{ secrets.DB_USER }} \
             -e POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}\
