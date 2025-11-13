@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI Pipeline for backend
 
 on:
   push:
@@ -7,22 +7,23 @@ on:
     branches: [main, dev]
 
 jobs:
-  build-and-test:
+  build-and-test-backend:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Write SSL files
-        run: |
-          mkdir -p ~/SchedulerApp/ssl
-          echo "${{ secrets.KEY }}" | sed 's/\\n/\n/g' > ~/SchedulerApp/ssl/key.pem
-          echo "${{ secrets.CERT }}" | sed 's/\\n/\n/g' > ~/SchedulerApp/ssl/cert.pem
+      - name: Set up Node for backend
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install backend dependencies
-        working-directory: ./backend
+        working-directory: backend
         run: npm ci
 
       # - name: Run backend unit tests
@@ -55,7 +56,6 @@ jobs:
             --name ci-backend \
             --network ci-network \
             -p 8083:8083 \
-            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD}} \
             -e DB_NAME=${{ secrets.DB_NAME}} \
@@ -86,20 +86,3 @@ jobs:
           docker rm ci-backend || true
           docker stop db || true
           docker rm db || true
-
-      - name: Install frontend dependencies
-        working-directory: ./frontend
-        run: npm install --legacy-peer-deps
-
-      - name: Run frontend unit tests
-        working-directory: ./frontend
-        run: |
-          echo "Running frontend unit tests..."
-          npm test -- --watch=false --browsers=ChromeHeadless || npm run test:ci
-
-      - name: Build frontend (production)
-        working-directory: ./frontend
-        run: npm run build -- --configuration production
-
-      - name: Docker Compose build (sanity)
-        run: docker compose build --no-cache
