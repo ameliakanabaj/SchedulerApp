@@ -43,8 +43,9 @@ if (fs.existsSync('ssl/privkey.pem') && fs.existsSync('ssl/fullchain.pem')) {
 } else if (process.env.SSL_KEY && process.env.SSL_CERT) {
   key = process.env.SSL_KEY.replace(/\\n/g, '\n');
   cert = process.env.SSL_CERT.replace(/\\n/g, '\n');
-
-} 
+} else {
+  throw new Error("No SSL key/cert found");
+}
 
 https.createServer({ key, cert }, app).listen(PORT, () => {
   console.log(`HTTPS running on ${PORT}`);
