@@ -14,7 +14,7 @@ services:
     networks:
       - scheduler-net
     volumes:
-      - /etc/letsencrypt/live/scheduler.pl:/app/ssl
+      - /etc/letsencrypt/live/scheduler.pl:/ssl
 
   db:
     image: postgres:16
