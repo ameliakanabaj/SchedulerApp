@@ -55,7 +55,7 @@ jobs:
           docker run -d \
             --name ci-backend \
             --network ci-network \
-            -p 443:443 \
+            -p 8083:8083 \
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD}} \
             -e DB_NAME=${{ secrets.DB_NAME}} \

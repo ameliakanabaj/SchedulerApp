@@ -13,7 +13,7 @@ const authRoutes = require("./src/routes/auth.routes");
 const userRoutes = require("./src/routes/user.routes");
 
 const app = express();
-const PORT = process.env.PORT || 443;
+const PORT = process.env.PORT || 8083;
 
 app.use(express.json());
 
