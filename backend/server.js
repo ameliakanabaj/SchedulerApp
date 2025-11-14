@@ -40,22 +40,12 @@ let cert;
 if (fs.existsSync('ssl/privkey.pem') && fs.existsSync('ssl/fullchain.pem')) {
   key = fs.readFileSync('ssl/privkey.pem');
   cert = fs.readFileSync('ssl/fullchain.pem');
-
-  https.createServer({ key, cert }, app).listen(PORT, () => {
-    console.log(`HTTPS running on ${PORT}`);
-  });
-
 } else if (process.env.SSL_KEY && process.env.SSL_CERT) {
   key = process.env.SSL_KEY.replace(/\\n/g, '\n');
   cert = process.env.SSL_CERT.replace(/\\n/g, '\n');
 
-  https.createServer({ key, cert }, app).listen(PORT, () => {
-    console.log(`HTTPS running on ${PORT}`);
-  });
+} 
 
-} else {
-  console.log("⚠️ SSL NOT FOUND — STARTING IN HTTP MODE");
-  app.listen(8080, () => {
-    console.log("HTTP running on 8080");
-  });
-}
+https.createServer({ key, cert }, app).listen(PORT, () => {
+  console.log(`HTTPS running on ${PORT}`);
+});
