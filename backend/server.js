@@ -37,9 +37,9 @@ app.use((err, req, res, next) => {
 let key;
 let cert;
 
-if (fs.existsSync('ssl/privkey.pem') && fs.existsSync('ssl/fullchain.pem')) {
-  key = fs.readFileSync('ssl/privkey.pem');
-  cert = fs.readFileSync('ssl/fullchain.pem');
+if (fs.existsSync('/ssl/privkey.pem') && fs.existsSync('/ssl/fullchain.pem')) {
+  key = fs.readFileSync('/ssl/privkey.pem');
+  cert = fs.readFileSync('/ssl/fullchain.pem');
 } else if (process.env.SSL_KEY && process.env.SSL_CERT) {
   key = process.env.SSL_KEY.replace(/\\n/g, '\n');
   cert = process.env.SSL_CERT.replace(/\\n/g, '\n');
