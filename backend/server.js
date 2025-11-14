@@ -13,7 +13,7 @@ const authRoutes = require("./src/routes/auth.routes");
 const userRoutes = require("./src/routes/user.routes");
 
 const app = express();
-const PORT = process.env.PORT || 8083;
+const PORT = process.env.PORT || 443;
 
 app.use(express.json());
 
@@ -37,7 +37,7 @@ app.use((err, req, res, next) => {
 let key;
 let cert;
 
-if (fs.existsSync('ssl/key.pem') && fs.existsSync('ssl/cert.pem')) {
+if (fs.existsSync('ssl/privkey.pem') && fs.existsSync('ssl/fullchain.pem')) {
   key = fs.readFileSync('ssl/privkey.pem');
   cert = fs.readFileSync('ssl/fullchain.pem');
 } else if (process.env.SSL_KEY && process.env.SSL_CERT) {
