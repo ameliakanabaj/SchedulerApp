@@ -66,14 +66,14 @@ jobs:
             -e SSL_CERT="${{ secrets.CERT }}" \
             ci-scheduler-backend
           for i in {1..30}; do
-            if curl -k -sSf https://localhost:443/api/health; then
+            if curl -k -sSf https://localhost:8083/api/health; then
               echo "backend healthy"
               break
             fi
             echo "waiting for backend..."
             sleep 2
           done
-          if ! curl -k -sSf https://localhost:443/api/health; then
+          if ! curl -k -sSf https://localhost:8083/api/health; then
             echo "ERROR: Backend did not become healthy after 30 attempts"
             docker logs ci-backend
             docker stop ci-backend || true
