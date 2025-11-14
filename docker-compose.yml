@@ -14,7 +14,7 @@ services:
     networks:
       - scheduler-net
     volumes:
-      - ~/SchedulerApp/ssl:/ssl
+      - ~/SchedulerApp/ssl:/ssl:ro
 
   db:
     image: postgres:16
