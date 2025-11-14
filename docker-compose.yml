@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: scheduler-backend
     ports:
-      - "8083:8083"
+      - "443:443"
     env_file:
       - ./backend/.env
     depends_on:
@@ -14,7 +14,7 @@ services:
     networks:
       - scheduler-net
     volumes:
-      - ./ssl:/app/ssl
+      - /etc/letsencrypt/live/scheduler.pl:/app/ssl
 
   db:
     image: postgres:16
