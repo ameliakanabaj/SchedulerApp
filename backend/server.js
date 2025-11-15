@@ -5,10 +5,6 @@ const cors = require('cors');
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
-app.use(cors({
-  origin: '*',
-}));
-
 const dbService = require("./src/services/db.service");
 
 const healthRoutes = require("./src/routes/health.routes");
@@ -17,6 +13,8 @@ const userRoutes = require("./src/routes/user.routes");
 
 const app = express();
 const PORT = process.env.PORT || 8083;
+
+app.use(cors());
 
 app.use(express.json());
 
