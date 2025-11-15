@@ -18,7 +18,7 @@ jobs:
       - name: Write SSL files
         run: |
           mkdir -p ~/SchedulerApp/ssl
-          echo "${{ secrets.KEY }}" | sed 's/\\n/\n/g' > ~/SchedulerApp/ssl/api/privatekey.pem
+          echo "${{ secrets.KEY }}" | sed 's/\\n/\n/g' > ~/SchedulerApp/ssl/api/privkey.pem
           echo "${{ secrets.CERT }}" | sed 's/\\n/\n/g' > ~/SchedulerApp/ssl/api/fullchain.pem
 
       - name: Docker Compose build (sanity)
