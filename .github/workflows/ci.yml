@@ -17,7 +17,7 @@ jobs:
 
       - name: Write SSL files
         run: |
-          mkdir -p ~/SchedulerApp/ssl
+          mkdir -p ~/SchedulerApp/ssl/api
           echo "${{ secrets.KEY }}" | sed 's/\\n/\n/g' > ~/SchedulerApp/ssl/api/privkey.pem
           echo "${{ secrets.CERT }}" | sed 's/\\n/\n/g' > ~/SchedulerApp/ssl/api/fullchain.pem
 
