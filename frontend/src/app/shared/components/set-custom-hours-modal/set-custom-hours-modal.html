@@ -1,0 +1,20 @@
+<app-modal-header title="Select custom hours"/>
+
+<div class="modal-body">
+    <div class="form">
+        <div>
+            <label for="startTime"> Start time </label>
+            <input type="time" name="startTime" [(ngModel)]="startTime">
+        </div>
+        -
+        <div>
+            <label for="endTime"> End time </label>
+            <input type="time" name="endTime" [(ngModel)]="endTime">
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button class="save-button" (click)="saveHours()" [disabled]="!endTime || !startTime"> Save </button>
+        <button class="cancel-button" (click)="closeModal()"> Cancel </button>
+    </div>
+</div>
