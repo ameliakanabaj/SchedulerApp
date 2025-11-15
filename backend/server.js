@@ -1,6 +1,4 @@
 const express = require("express");
-const fs = require('fs');
-const https = require('https');
 const dotenv = require("dotenv");
 const path = require("path");
 
@@ -33,20 +31,6 @@ app.use((err, req, res, next) => {
   console.error("[GLOBAL ERROR HANDLER]:", err.message);
   res.status(500).json({ message: "Internal Server Error" });
 });
-
-let key;
-let cert;
-
-if (fs.existsSync('/ssl/privkey.pem') && fs.existsSync('/ssl/fullchain.pem')) {
-  key = fs.readFileSync('/ssl/privkey.pem');
-  cert = fs.readFileSync('/ssl/fullchain.pem');
-} else if (process.env.SSL_KEY && process.env.SSL_CERT) {
-  key = process.env.SSL_KEY.replace(/\\n/g, '\n');
-  cert = process.env.SSL_CERT.replace(/\\n/g, '\n');
-} else {
-  throw new Error("No SSL key/cert found");
-}
-
-https.createServer({ key, cert }, app).listen(PORT, () => {
-  console.log(`HTTPS running on ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Backend HTTP running on ${PORT}`);
 });
