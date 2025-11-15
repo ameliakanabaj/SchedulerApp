@@ -26,8 +26,6 @@ export class SetCustomHoursModal implements OnInit {
     }
 
     saveHours(): void {
-        console.log(this.startTime);
-        
         this.modalRef.close({ startTime: this.startTime, endTime: this.endTime});
     }
 
