@@ -16,6 +16,23 @@
         align-items: center;
     }
 
+    .days-list {
+        width: 100%;
+        ul {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            padding: 0;
+            list-style-type: none;
+            li {
+                justify-self: center;
+                background-color: var(--primary-color);
+                padding: 10px 30px;
+                border-radius: 10px;
+                color: var(--primary-white);
+            }
+        }
+    }
+
     .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
@@ -31,10 +48,18 @@
             justify-content: space-between;
             flex-direction: column;
 
+            &-empty {
+                @extend .day;
+                opacity: 0.5;
+                background-color: var(--primary-shadow);
+            }
+
             .date {
                 font-size: 20px;
                 border-bottom: 1px solid var(--primary-color);
-                padding: 2px;
+                border-radius: 10px 10px 0 0;
+                padding: 5px;
+                background-color: var(--primary-light-blue);
             }
         }
 
@@ -87,6 +112,9 @@
     flex-direction: column;
 
     button {
+        width: 180px;
+        height: 100%;
+
         border: 1px solid #ccc;
         border-radius: 6px;
         background: #f4f4f4;
@@ -103,11 +131,11 @@
     button.active {
         color: white;
         font-weight: bold;
-        opacity: 100%;
+        background-color: var(--primary-color);
     }
 
     button.inactive {
-        opacity: 70%;
+        opacity: 80%;
     }
 
     .whole {

@@ -42,35 +42,52 @@ export class Calendar {
 
     customStart = '';
     customEnd = '';
-
+    daysInMonth = this.generateDays(this.year, this.month);
     private modalService = inject(Modal);
 
-    get daysInMonth(): Date[] {
-        const days = [];
-        const date = new Date(this.year, this.month, 1);
-        while (date.getMonth() === this.month) {
-            days.push(new Date(date));
-            date.setDate(date.getDate() + 1);
+    generateDays(year: number, month: number): Date[] {
+        const days: Date[] = [];
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+
+        const startDayIndex = (firstDay.getDay() + 6) % 7; 
+
+        for (let i = 0; i < startDayIndex; i++) {
+            days.push(null as any);
         }
+
+        for (let d = 1; d <= lastDay.getDate(); d++) {
+            days.push(new Date(year, month, d));
+        }
+
         return days;
+    }
+
+    refreshCalendar(): void {
+        this.daysInMonth = this.generateDays(this.year, this.month);
     }
 
     previousMonth(): void {
         if (this.month == 0) {
             this.year -= 1;
             this.month = 11;
+            this.refreshCalendar();
             return
         }
         this.month -= 1;
+        this.refreshCalendar();
     }
 
     nextMonth(): void {
         if (this.month == 11) {
             this.year += 1;
             this.month = 0;
+            this.refreshCalendar();
             return;
         }
         this.month += 1;
+        this.refreshCalendar();
     }
 
     isDayClosed(date: Date): boolean {

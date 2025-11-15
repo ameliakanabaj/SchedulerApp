@@ -4,26 +4,40 @@
         <h3>{{ year }} / {{ month + 1 }}</h3>
         <i class="fa-solid fa-forward" (click)="nextMonth()"></i>
     </div>
-
+    <div class="days-list">
+        <ul>
+            <li> Monday </li>
+            <li> Tuesday </li>
+            <li> Wednesday </li>
+            <li> Thursday </li>
+            <li> Friday </li>
+            <li> Saturday </li>
+            <li> Sunday </li>
+        </ul>
+    </div>
     <div class="calendar-grid">
         @for (day of daysInMonth; track $index) {
-            <div class="day" [ngClass]="{ 'closed' : isDayClosed(day) }">
-                <span class="date">{{ day.toISOString() | date:'fullDate' }} </span>
+            @if (day) {
+                <div class="day" [ngClass]="{ 'closed' : isDayClosed(day) }">
+                    <!-- <span class="date">{{ day.toISOString() | date:'fullDate' }} </span> -->
+                    <span class="date"> {{ day.getDate() }}, {{ day | date:'MMMM'}} </span>
 
-                @if (isDayClosed(day)) {
-                    <div class="closed-day">
-                        <span> closed </span>
-                    </div>
-                } @else {
-                    <div class="open-day">
-                        <!-- <span class="hours"> Open hours: 7-20 </span> -->
-                        <ng-container *ngTemplateOutlet="calendarMode, context: {
-                            mode,
-                            day,
-                        }"/>
-                    </div>
-                }
-            </div>
+                    @if (isDayClosed(day)) {
+                        <div class="closed-day">
+                            <span> closed </span>
+                        </div>
+                    } @else {
+                        <div class="open-day">
+                            <ng-container *ngTemplateOutlet="calendarMode, context: {
+                                mode,
+                                day,
+                            }"/>
+                        </div>
+                    }
+                </div>
+            } @else {
+                <div class="day-empty"></div>
+            }
         }
     </div>
 
