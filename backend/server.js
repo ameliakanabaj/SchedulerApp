@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 8083;
 app.use(cors({
   origin: [
     "http://localhost:4200",
-    "https://scheduler-app-iota.vercel.app"
+    "https://www.scheduler.pl"
   ],
   methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
