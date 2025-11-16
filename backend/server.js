@@ -3,8 +3,6 @@ const dotenv = require("dotenv");
 const path = require("path");
 const cors = require("cors"); 
 const errorHandler = require("./src/middlewares/errorHandler.middleware");
-const fs = require("fs"); 
-const https = require("https");
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
@@ -49,19 +47,11 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
-let key;
-let cert;
+app.use((err, req, res, next) => {
+  console.error("[GLOBAL ERROR HANDLER]:", err.message);
+  res.status(500).json({ message: "Internal Server Error" });
+});
 
-if (fs.existsSync('ssl/key.pem') && fs.existsSync('ssl/cert.pem')) {
-  key = fs.readFileSync('ssl/key.pem');
-  cert = fs.readFileSync('ssl/cert.pem');
-} else if (process.env.SSL_KEY && process.env.SSL_CERT) {
-  key = process.env.SSL_KEY.replace(/\\n/g, '\n');
-  cert = process.env.SSL_CERT.replace(/\\n/g, '\n');
-} else {
-  throw new Error("No SSL key/cert found");
-}
-
-https.createServer({ key, cert }, app).listen(PORT, () => {
-  console.log(`HTTPS running on ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Backend HTTP running on ${PORT}`);
 });
