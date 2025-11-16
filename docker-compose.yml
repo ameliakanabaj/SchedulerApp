@@ -6,6 +6,7 @@ services:
     container_name: scheduler-backend
     ports:
       - "8083:8083"
+      - "5555:5555"  
     env_file:
       - ./backend/.env
     depends_on:

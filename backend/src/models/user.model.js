@@ -1,32 +1,100 @@
-const db = require("../services/db.service");
+const { PrismaClient } = require("../generated/prisma");
+const prisma = new PrismaClient();
 
-async function createUser({ organization_id, first_name, last_name, email, password_hash, role, position }) {
-  const query = `
-    INSERT INTO "User" (organization_id, first_name, last_name, email, password, role, position)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
-    RETURNING user_id, organization_id, first_name, last_name, email, role, position;
-  `;
-  const values = [organization_id, first_name, last_name, email, password_hash, role, position];
-  const result = await db.query(query, values);
-  return result.rows[0];
+async function getUserById(user_id) {
+  return await prisma.user.findUnique({
+    where: { user_id: Number(user_id) },
+    include: {
+      organization: true,
+    },
+  });
 }
 
 async function getUserByEmail(email) {
-  const result = await db.query(`SELECT * FROM "User" WHERE email = $1`, [email]);
-  return result.rows[0] || null;
+  return await prisma.user.findUnique({
+    where: { email },
+    include: {
+      organization: true,
+    },
+  });
 }
 
-async function getUserById(user_id) {
-  const result = await db.query(
-    `SELECT user_id, organization_id, first_name, last_name, email, role, position 
-     FROM "User" WHERE user_id = $1`,
-    [user_id]
-  );
-  return result.rows[0] || null;
+async function getAllUsers() {
+  return await prisma.user.findMany({
+    include: {
+      organization: true,
+    },
+  });
+}
+
+async function getUsersByOrganization(organization_id) {
+  return await prisma.user.findMany({
+    where: { organization_id: Number(organization_id) },
+    include: { organization: true },
+  });
+}
+
+async function createUser({
+  organization_id = null,
+  first_name,
+  last_name,
+  email,
+  password_hash,
+  role = "EMPLOYEE",
+  position,
+}) {
+  return await prisma.user.create({
+    data: {
+      first_name,
+      last_name,
+      email,
+      password: password_hash,
+      role,
+      position,
+      organization_id: organization_id ? Number(organization_id) : null,
+    },
+    include: {
+      organization: true,
+    },
+  });
+}
+
+async function deleteUser(user_id) {
+  return await prisma.user.delete({
+    where: { user_id: Number(user_id) },
+  });
+}
+
+async function updateUser(user_id, data) {
+  const { organization_id, password, ...rest } = data;
+
+  let updateData = {
+    ...rest,
+  };
+
+  if (organization_id !== undefined) {
+    updateData.organization = organization_id ? { connect: { organization_id: Number(organization_id) } } : { disconnect: true };
+  }
+
+  if (password) {
+    updateData.password = password;
+  }
+
+  return await prisma.user.update({
+    where: { user_id: Number(user_id) },
+    data: updateData,
+    include: {
+      organization: true,
+    },
+  });
 }
 
 module.exports = {
   createUser,
   getUserByEmail,
-  getUserById
+  getUserById,
+  getAllUsers,
+  getUsersByOrganization,
+  deleteUser,
+  updateUser,
 };
