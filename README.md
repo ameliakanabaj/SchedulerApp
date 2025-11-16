@@ -8,8 +8,9 @@ potem delete branch
 
 ## deployment
 
-FRONTEND POWINIEN BYĆ DOSTĘPNY POD ADRESEM: https://scheduler-app-iota.vercel.app/register
-BACKEND POWINIEN BYĆ DOSTĘPNY POD ADRESEM: https://57.128.222.106:8083
+FRONTEND POWINIEN BYĆ DOSTĘPNY POD ADRESEM: https://www.scheduler.pl/
+
+BACKEND POWINIEN BYĆ DOSTĘPNY POD ADRESEM: https://api.scheduler.pl/
 
 ## docker
 

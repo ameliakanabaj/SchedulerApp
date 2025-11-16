@@ -12,6 +12,7 @@
             "@features/*": ["app/features/*"],
             "@pages/*": ["app/pages/*"],
             "@components/*": ["app/shared/components/*"],
+            "@models/*": ["app/models/*"]
         },
         "outDir": "./out-tsc/app",
         "types": []
