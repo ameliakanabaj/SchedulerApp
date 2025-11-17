@@ -50,7 +50,6 @@ export class Authentication {
     }
 
     isAuthenticated(): boolean {
-        return true; //temp
         return this.getToken() !== null;
     }
 }
