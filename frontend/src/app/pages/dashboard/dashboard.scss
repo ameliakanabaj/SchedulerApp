@@ -35,14 +35,14 @@
 
         &:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 18px rgba(50, 50, 50, 0.15);
+            box-shadow: 0 6px 18px var(--primary-shadow);
         }
     }
 
     .calendar {
         grid-column: span 8;
         grid-row: span 2;
-
+        box-shadow: 0 6px 18px var(--primary-shadow);
         .calendar-header {
             display: flex;
             justify-content: space-between;
@@ -55,7 +55,7 @@
     .shifts {
         grid-column: span 4;
         grid-row: span 1;
-
+        box-shadow: 0 6px 18px var(--primary-shadow);
         max-height: 300px;
         overflow: hidden;
 
@@ -68,7 +68,7 @@
     .notifications {
         grid-column: span 4;
         grid-row: span 1;
-
+        box-shadow: 0 6px 18px var(--primary-shadow);
         max-height: 300px;
         overflow: hidden;
 
@@ -121,16 +121,16 @@
         transform 0.15s ease,
         box-shadow 0.2s ease;
 
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 18px var(--primary-shadow);
 
     &:hover {
         background-color: var(--primary-hover-bg);
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 6px 18px var(--primary-shadow);
     }
 
     &:active {
         transform: translateY(0px) scale(0.97);
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 18px var(--primary-shadow);
     }
 }
