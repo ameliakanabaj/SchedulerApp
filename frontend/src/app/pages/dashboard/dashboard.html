@@ -1,35 +1,49 @@
 <div class="dashboard-container">
     <div class="header">
-        <h2> Hello, Employee! </h2>
+        <h2>Hello, Employee!</h2>
         <div> Today's date: <b>{{ today | date:'fullDate' }}</b></div>
     </div>
+
     <div class="grid">
+
+        <!-- CALENDAR (ROW 1 + ROW 2) -->
         <div class="card calendar">
             <div class="calendar-header">
-                <h3> Schedule </h3>
-                <a routerLink="/availability"><button class="btn-availability"> Update availability </button></a>
+                <h3>Schedule</h3>
+                <a routerLink="/availability">
+                    <button class="btn-availability">Update availability</button>
+                </a>
             </div>
             <app-calendar mode="view"/>
         </div>
 
+        <!-- UPCOMING SHIFTS (ROW 1) -->
         <div class="card shifts">
-        <h3> Upcoming shifts </h3>
-        @for (shift of upcomingShifts; track $index) {
-
-            <div class="shift">
-                <strong>{{ shift.date | date:'EEEE, dd MMM' }}</strong>
-                <p>{{ shift.start }} - {{ shift.end }}</p>
+            <h3>Upcoming shifts</h3>
+            
+            <div class="shifts-list">
+                @for (shift of upcomingShifts; track $index) {
+                    <div class="shift">
+                        <strong>{{ shift.date | date:'EEEE, dd MMM' }}</strong>
+                        <p>{{ shift.start }} - {{ shift.end }}</p>
+                    </div>
+                }
             </div>
-        }
-
-        <div class="card notifications">
-            <h3> Notifications </h3>
-            @for (n of notifications; track $index) {
-                <div class="notif">
-                    {{ n.message }}
-                    <span class="date">{{ n.date | date:'shortDate' }}</span>
-                </div>
-            }
         </div>
+
+        <!-- NOTIFICATIONS (ROW 2) -->
+        <div class="card notifications">
+            <h3>Notifications</h3>
+
+            <div class="notifications-list">
+                @for (n of notifications; track $index) {
+                    <div class="notif">
+                        {{ n.message }}
+                        <span class="date">{{ n.date | date:'shortDate' }}</span>
+                    </div>
+                }
+            </div>
+        </div>
+
     </div>
 </div>

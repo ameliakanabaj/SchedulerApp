@@ -22,5 +22,5 @@ export class Dashboard {
     notifications = [
         { message: 'Zmieniono Twoją zmianę na 23.11', date: new Date() },
         { message: 'Nowy komunikat od managera', date: new Date() }
-    ];
+    ]; // temp
 }
