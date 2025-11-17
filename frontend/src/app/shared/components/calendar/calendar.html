@@ -1,4 +1,4 @@
-<div class="calendar">
+<div class="calendar" [ngClass]="{ 'calendar-xs' : xs() }">
     <div class="calendar-header">
         <i class="fa-solid fa-backward" (click)="previousMonth()"></i>
         <h3>{{ year }} / {{ month + 1 }}</h3>

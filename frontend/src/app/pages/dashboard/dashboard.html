@@ -1,0 +1,35 @@
+<div class="dashboard-container">
+    <div class="header">
+        <h2> Hello, Employee! </h2>
+        <div> Today's date: <b>{{ today | date:'fullDate' }}</b></div>
+    </div>
+    <div class="grid">
+        <div class="card calendar">
+            <div class="calendar-header">
+                <h3> Schedule </h3>
+                <a routerLink="/availability"><button class="btn-availability"> Update availability </button></a>
+            </div>
+            <app-calendar mode="view"/>
+        </div>
+
+        <div class="card shifts">
+        <h3> Upcoming shifts </h3>
+        @for (shift of upcomingShifts; track $index) {
+
+            <div class="shift">
+                <strong>{{ shift.date | date:'EEEE, dd MMM' }}</strong>
+                <p>{{ shift.start }} - {{ shift.end }}</p>
+            </div>
+        }
+
+        <div class="card notifications">
+            <h3> Notifications </h3>
+            @for (n of notifications; track $index) {
+                <div class="notif">
+                    {{ n.message }}
+                    <span class="date">{{ n.date | date:'shortDate' }}</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>

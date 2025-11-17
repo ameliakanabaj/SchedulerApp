@@ -14,6 +14,11 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        box-shadow: 2px 2px 5px var(--primary-shadow);
+
+        .fa-solid {
+            cursor: pointer;
+        }
     }
 
     .days-list {
@@ -23,12 +28,14 @@
             grid-template-columns: repeat(7, 1fr);
             padding: 0;
             list-style-type: none;
+            
             li {
                 justify-self: center;
                 background-color: var(--primary-color);
                 padding: 10px 30px;
                 border-radius: 10px;
                 color: var(--primary-white);
+                box-shadow: 2px 2px 5px var(--primary-shadow);
             }
         }
     }
@@ -47,6 +54,7 @@
             display: flex;
             justify-content: space-between;
             flex-direction: column;
+            box-shadow: 2px 2px 5px var(--primary-shadow);
 
             &-empty {
                 @extend .day;
@@ -150,4 +158,21 @@
         background-color: var(--primary-red);
     }
 
+}
+
+.calendar-xs {
+    max-width: 1000px;
+
+    .calendar-header {
+        font-size: 1.2rem;
+    }
+    
+    .calendar-grid * {
+        max-width: 120px;
+        max-height: 90px;
+    }
+
+    .date {
+        font-size: 1rem !important;
+    }
 }
