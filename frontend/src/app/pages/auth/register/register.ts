@@ -43,10 +43,9 @@ export class Register {
                 this.toastr.success('Registration successful! Please log in.');
             },
             error: (err) => {
-                console.error('Registration failed', err);
                 this.password = '';
                 this.confirmPassword = '';
-                this.toastr.error('Registration failed. Please try again.');
+                this.toastr.error(err.statusText, 'Registration Failed');
             },
         })
     }
