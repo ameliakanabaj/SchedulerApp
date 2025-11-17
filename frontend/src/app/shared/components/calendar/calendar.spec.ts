@@ -2,11 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Calendar } from './calendar';
 import { createComponentFactory, Spectator } from '@ngneat/spectator';
+import { Authentication } from '../../../core/services/auth/authentication';
+import { HttpClient } from '@angular/common/http';
 
 describe('Calendar', () => {
     let sp: Spectator<Calendar>;
     const createComponent = createComponentFactory({
         component: Calendar,
+        providers: [
+            { provide: Authentication, useValue: {}},
+            { provide: HttpClient, useValue: {}},
+        ]
     });
 
     beforeEach(() => {
