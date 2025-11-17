@@ -1,7 +1,9 @@
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { Modal } from '@app/shared/services';
+import { Availability as AvailabilityService, Modal, Toastr, User } from '@app/shared/services';
 import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-modal';
+import { Authentication } from '@app/core';
+import { AvailabilityModel } from '@app/models/availability.model';
 
 export interface Availability {
     date: string;
@@ -43,7 +45,10 @@ export class Calendar {
     customStart = '';
     customEnd = '';
     daysInMonth = this.generateDays(this.year, this.month);
-    private modalService = inject(Modal);
+    private readonly modalService = inject(Modal);
+    private readonly availabilityService = inject(AvailabilityService);
+    private readonly authService = inject(Authentication);
+    private readonly toastrService = inject(Toastr);
 
     generateDays(year: number, month: number): Date[] {
         const days: Date[] = [];
@@ -149,6 +154,17 @@ export class Calendar {
     }
 
     sendAvailability(): void {
-        // this.availabilityService.sendAvailability(this.availabilities);
+        const userId = this.authService.getUserId();
+        const filteredAvailabilites: AvailabilityModel[] = [];
+        if (userId) {
+            this.availabilityService.bulkCreateAvailability(userId, filteredAvailabilites).subscribe({
+                next: (res) => {
+                    this.toastrService.success('Availability has been sent.');
+                },
+                error: (err) => {
+                    this.toastrService.error(err.statusText, 'Something went wrong!');
+                }
+            });
+        }
     }
 }
