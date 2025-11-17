@@ -22,7 +22,7 @@ model User {
   last_name       String     @db.VarChar(255)
   email           String     @unique @db.VarChar(255)
   password        String     @db.VarChar(255)
-  role            user_role  @default(EMPLOYEE)
+  role            UserRole  @default(EMPLOYEE)
   position        String?    @db.VarChar(255)
   assignments     Assignment[]
   availabilities  Availability[]
@@ -68,7 +68,7 @@ model Assignment {
   @@index([user_id], map: "idx_assignment_user_id")
 }
 
-enum user_role {
+enum UserRole {
   GLOBAL_ADMIN
   ORG_ADMIN
   EMPLOYEE
