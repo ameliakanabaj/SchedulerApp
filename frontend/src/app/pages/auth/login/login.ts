@@ -24,6 +24,7 @@ export class Login {
         this.authService.login({ email: this.email, password: this.password }).subscribe({
             next: (res) => {
                 this.router.navigate(['/dashboard']);
+                location.reload();
                 this.toastr.success('Login succesful!')
             },
             error: (err) => {

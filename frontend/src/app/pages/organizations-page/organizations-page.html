@@ -1,26 +1,21 @@
 <div class="organizations-page-container">
 
-    @if (!userOrganization()) {
+    @if (!organization()) {
             <h2> You are not a member of any organization yet. </h2>
             <p> To get started, you can create a new organization. </p>
-            <button class="create-organization-button" (click)="openCreateOrganizationModal();">Create Organization</button>
+            <button class="create-organization-button" (click)="openCreateOrganizationModal();"> Create Organization </button>
     } @else {
         <div class="organization-card">
             <div class="organization-card-header">
-                <h2> {{ userOrganization()!.name }}'s members </h2>
+                <h2> {{ organization()!.name }}'s members </h2>
                 <button class="add-new-button" (click)="openAddNewMemberModal()"> Add new member </button>
             </div>
             <div class="organization-card-body">
-                <app-user-card [user]="{firstName: 'abc', lastName: 'abcName', email: 'abc@abc.pl'}" />
-                <app-user-card [user]="{firstName: 'abc', lastName: 'abcName', email: 'abc@abc.pl'}" />
-                <app-user-card [user]="{firstName: 'abc', lastName: 'abcName', email: 'abc@abc.pl'}" />
-                <app-user-card [user]="{firstName: 'abc', lastName: 'abcName', email: 'abc@abc.pl'}" />
-                <app-user-card [user]="{firstName: 'abc', lastName: 'abcName', email: 'abc@abc.pl'}" />
-                <app-user-card [user]="{firstName: 'abc', lastName: 'abcName', email: 'abc@abc.pl'}" />
-                <app-user-card [user]="{firstName: 'abc', lastName: 'abcName', email: 'abc@abc.pl'}" />
-                <!-- @for (user of organization.users) {
-                    <app-user-card [user]="user" />
-                } -->
+                @if (organization()) {
+                    @for (user of organization()!.users; track $index) {
+                        <app-user-card [user]="user" />
+                    }
+                }
             </div>
         </div>
     }

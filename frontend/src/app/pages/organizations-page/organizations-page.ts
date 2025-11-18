@@ -11,8 +11,7 @@ import { Organization as OrganizationModel } from '@app/models';
   styleUrl: './organizations-page.scss'
 })
 export class OrganizationsPage implements OnInit {
-    userOrganization = signal<OrganizationModel | null>(null);
-    userOrganizationMembers? = signal<string[]>([])
+    organization = signal<OrganizationModel | null>(null);
 
     private readonly modalService = inject(Modal);
     private readonly toastr = inject(Toastr);
@@ -21,11 +20,10 @@ export class OrganizationsPage implements OnInit {
     ngOnInit(): void {
         this.organizationService.getAll().subscribe((res) => {
             if (res.length > 0) {
-                this.userOrganization.set(res[0]);
+                this.organization.set(res[0]);
             }
         });
     }
-
 
     openCreateOrganizationModal(): void {
         const modalRef = this.modalService.openModal(OrganizationCreationModal);
@@ -33,16 +31,14 @@ export class OrganizationsPage implements OnInit {
         modalRef.afterClosed$.subscribe((res: any) => {
             if (res) {
                 this.toastr.success('Organization created successfully!');
-                this.userOrganization.set(res);
-                this.userOrganizationMembers?.set(res.users);
+                this.organization.set(res);
             }
         });
     }
 
     openAddNewMemberModal(): void {
-        // this.modalService.openModal(AddNewMemberModal, { data: {
-        //     organizationId: this.organizationId
-        // }});
-        this.modalService.openModal(AddNewMemberModal, {  });
+        this.modalService.openModal(AddNewMemberModal, { data: {
+            organizationId: this.organization()!.id,
+        }});
     }
 }

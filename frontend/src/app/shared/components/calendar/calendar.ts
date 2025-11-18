@@ -33,7 +33,7 @@ export interface Shift {
   styleUrl: './calendar.scss',
 })
 export class Calendar {
-    xs = input(true);
+    xs = input(false);
 
     @Input() mode = 'availability';
     @Input() month: number = new Date().getMonth();

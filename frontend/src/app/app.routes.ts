@@ -24,6 +24,7 @@ export const routes: Routes = [
     {
         path: 'dashboard',
         component: Dashboard,
+        canActivate: [AuthGuard],
     }
     // {
     //     path: 'organizations/:id',

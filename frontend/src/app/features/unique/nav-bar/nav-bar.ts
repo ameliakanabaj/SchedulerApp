@@ -11,7 +11,7 @@ import { Authentication } from '@app/core';
     styleUrls: ['./nav-bar.scss'],
 })
 export class NavBar implements OnInit {
-    userAuthenticated = signal(true);
+    userAuthenticated = signal(false);
     route = signal(''); // temp hardcode
 
     isDarkMode = signal(false);
@@ -30,5 +30,10 @@ export class NavBar implements OnInit {
         this.isDarkMode.set(next); 
         localStorage.setItem('darkMode', String(next));
         this.darkMode.emit(next);
+    }
+
+    logout(): void {
+        this.authService.logout();
+        location.reload();
     }
 }

@@ -13,7 +13,6 @@
             </button></a>
             <!-- <button> additional/wip </button> -->
         </div>
-        <div>
             <!-- TEMP OFF -->
             <!-- <button class="dark-mode-button" (click)="toggleDarkMode()">
                 @if (isDarkMode()) {
@@ -22,8 +21,7 @@
                     <i class="fa-regular fa-sun"></i>
                 }
             </button> -->
-            <button class="logout-button">Logout</button>
-        </div>
+        <button class="logout-button" (click)="logout()">Logout</button>
     } @else {
         <div>
             <a routerLink="/register"><button class="sign-in-button">Sign in!</button></a>
