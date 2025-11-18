@@ -3,6 +3,7 @@ import { createComponentFactory, Spectator } from '@ngneat/spectator';
 import { DialogRef } from '@ngneat/dialog';
 import { HttpClient } from '@angular/common/http';
 import { Toastr } from '../../services/toastr/toastr';
+import { of } from 'rxjs';
 
 describe('OrganizationCreationModal', () => {
     let sp: Spectator<OrganizationCreationModal>;
@@ -15,7 +16,7 @@ describe('OrganizationCreationModal', () => {
             },
             {
                 provide: HttpClient,
-                useValue: {},
+                useValue: { post: jest.fn(() => of([]))}
             },
             {
                 provide: Toastr,
@@ -26,10 +27,6 @@ describe('OrganizationCreationModal', () => {
 
     beforeEach(() => {
         sp = createComponent();
-    });
-
-    describe('createOrganization', () => {
-        // api req
     });
 
     describe('save', () => {

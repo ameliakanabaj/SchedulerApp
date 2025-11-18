@@ -19,8 +19,6 @@ export class OrganizationCreationModal {
     private readonly toastrService = inject(Toastr);
 
     createOrganization(): void {
-        console.log('wyslane');
-        
         this.organizationService.create(this.organizationName).subscribe((res) => ({
             next: (res: any) => {
                 this.toastrService.success('Succsessfully created new organization!')

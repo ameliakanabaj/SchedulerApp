@@ -1,8 +1,8 @@
-import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Modal, Toastr } from '@app/shared/services';
 import { AddNewMemberModal, OrganizationCreationModal, UserCard } from '@app/shared/components';
 import { Organization } from '@app/shared/services/organization/organization';
-import { Organization as OrganizationModel } from '@app/models';
+import { OrganizationModel } from '@app/models';
 
 @Component({
   selector: 'app-organizations-page',

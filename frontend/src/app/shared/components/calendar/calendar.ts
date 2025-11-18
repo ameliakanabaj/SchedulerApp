@@ -3,7 +3,7 @@ import { Component, EventEmitter, inject, input, Input, Output } from '@angular/
 import { Availability as AvailabilityService, Modal, Toastr, User } from '@app/shared/services';
 import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-modal';
 import { Authentication } from '@app/core';
-import { AvailabilityModel } from '@app/models/availability.model';
+import { AvailabilityModel } from '@app/models';
 
 export interface Availability {
     date: string;
