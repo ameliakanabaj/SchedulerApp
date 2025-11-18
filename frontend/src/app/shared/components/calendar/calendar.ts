@@ -1,6 +1,6 @@
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, inject, input, Input, Output } from '@angular/core';
-import { Modal } from '@app/shared/services';
+import { Availability as AvailabilityService, Modal, Toastr, User } from '@app/shared/services';
 import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-modal';
 import { Authentication } from '@app/core';
 import { AvailabilityModel } from '@app/models/availability.model';

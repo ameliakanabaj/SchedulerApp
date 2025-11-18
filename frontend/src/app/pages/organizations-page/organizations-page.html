@@ -7,7 +7,7 @@
     } @else {
         <div class="organization-card">
             <div class="organization-card-header">
-                <h2> {{ organization.name }}'s members </h2>
+                <h2> {{ userOrganization()!.name }}'s members </h2>
                 <button class="add-new-button" (click)="openAddNewMemberModal()"> Add new member </button>
             </div>
             <div class="organization-card-body">

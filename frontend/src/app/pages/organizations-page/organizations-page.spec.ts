@@ -1,8 +1,8 @@
 import { OrganizationsPage } from './organizations-page';
 import { createComponentFactory, Spectator } from '@ngneat/spectator';
-import { DialogService } from '@ngneat/dialog';
 import { Toastr } from '../../shared/services/toastr/toastr';
 import { Modal } from '../../shared/services/modal/modal';
+import { HttpClient } from '@angular/common/http';
 
 describe('OrganizationsPage', () => {
     let sp: Spectator<OrganizationsPage>;
@@ -19,6 +19,10 @@ describe('OrganizationsPage', () => {
             {
                 provide: Modal,
                 useValue: { openModal: jest.fn() }
+            },
+            {
+                provide: HttpClient,
+                useValue: { get: jest.fn() },
             }
         ]
     });

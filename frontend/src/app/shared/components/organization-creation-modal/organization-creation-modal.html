@@ -7,7 +7,7 @@
             <input type="text" id="organizationName" name="organizationName" [(ngModel)]="organizationName" required />
         </div>
         <div class="form-actions">
-            <button type="submit" [disabled]="!organizationForm.form.valid">Create</button>
+            <button type="submit" [disabled]="!organizationForm.form.valid" (click)="createOrganization(); save()">Create</button>
             <button type="button" (click)="close()">Cancel</button>
         </div>
     </form>
