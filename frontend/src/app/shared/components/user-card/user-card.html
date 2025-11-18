@@ -1,10 +1,10 @@
 <div class="user-card-container">
     <div class="user-details">
         <h3 class="name">
-            {{ user().firstName }}
-            <span class="last-name">{{ user().lastName }}</span>
+            {{ user()?.first_name }}
+            <span class="last-name">{{ user()?.last_name }}</span>
         </h3>
-        <div class="email">{{ user().email }}</div>
+        <div class="email">{{ user()?.email }}</div>
         </div>
 
         <div class="user-actions">
