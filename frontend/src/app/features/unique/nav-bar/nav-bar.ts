@@ -11,18 +11,16 @@ import { Authentication } from '@app/core';
     styleUrls: ['./nav-bar.scss'],
 })
 export class NavBar implements OnInit {
-    userAuthenticated = signal(true); // temp hardcode
+    userAuthenticated = signal(false);
     route = signal(''); // temp hardcode
 
     isDarkMode = signal(false);
 
     @Output() darkMode = new EventEmitter<boolean>();
 
-    private readonly activatedRoute = inject(ActivatedRoute);
     private readonly authService = inject(Authentication);
 
     ngOnInit(): void {
-        const saved = localStorage.getItem('darkMode');
         this.isDarkMode.set(true);
         this.userAuthenticated.set(this.authService.isAuthenticated());
     }
@@ -32,5 +30,10 @@ export class NavBar implements OnInit {
         this.isDarkMode.set(next); 
         localStorage.setItem('darkMode', String(next));
         this.darkMode.emit(next);
+    }
+
+    logout(): void {
+        this.authService.logout();
+        location.reload();
     }
 }

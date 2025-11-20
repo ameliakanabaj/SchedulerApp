@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from 'environments/environment.developement';
 import { catchError, Observable, throwError } from 'rxjs';
-import { Organization as OrganizationModel } from '@app/models';
+import { OrganizationModel } from '@app/models';
 import { Toastr } from '@app/shared/services';
 
 @Injectable({

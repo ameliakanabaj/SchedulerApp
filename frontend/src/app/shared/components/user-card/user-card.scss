@@ -17,6 +17,8 @@
   .user-details {
     flex: 1 1 auto;
     min-width: 400px;
+    display: flex;
+    align-items: center;
 
     .name {
       margin: 0;

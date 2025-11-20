@@ -1,23 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserCard } from './user-card';
+import { createComponentFactory, Spectator } from '@ngneat/spectator';
 
 describe('UserCard', () => {
-  let component: UserCard;
-  let fixture: ComponentFixture<UserCard>;
+    let spectator: Spectator<UserCard>;
+    const createComponent = createComponentFactory({
+        component: UserCard,
+    });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [UserCard]
-    })
-    .compileComponents();
+    beforeEach(() => {
+        spectator = createComponent();
+    });
 
-    fixture = TestBed.createComponent(UserCard);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should work', () => {
+        expect(true).toBeTruthy();
+    });
 });

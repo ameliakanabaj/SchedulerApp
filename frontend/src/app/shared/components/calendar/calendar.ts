@@ -1,9 +1,9 @@
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, input, Input, Output } from '@angular/core';
 import { Availability as AvailabilityService, Modal, Toastr, User } from '@app/shared/services';
 import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-modal';
 import { Authentication } from '@app/core';
-import { AvailabilityModel } from '@app/models/availability.model';
+import { AvailabilityModel } from '@app/models';
 
 export interface Availability {
     date: string;
@@ -33,6 +33,8 @@ export interface Shift {
   styleUrl: './calendar.scss',
 })
 export class Calendar {
+    xs = input(false);
+
     @Input() mode = 'availability';
     @Input() month: number = new Date().getMonth();
     @Input() year: number = new Date().getFullYear();

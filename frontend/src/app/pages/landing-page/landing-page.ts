@@ -1,5 +1,6 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, signal, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
+import { Authentication } from '@app/core';
 import { SignIn } from '@app/shared/buttons/sign-in/sign-in';
 import { SignUp } from '@app/shared/buttons/sign-up/sign-up';
 
@@ -10,12 +11,12 @@ import { SignUp } from '@app/shared/buttons/sign-up/sign-up';
   styleUrl: './landing-page.scss'
 })
 export class LandingPage implements OnInit {
-    userAuthenticated = signal(false);
 
-    constructor(private router: Router) {}
+    private readonly router = inject(Router);
+    private readonly authService = inject(Authentication);
 
     ngOnInit(): void {
-        if (this.userAuthenticated()) {
+        if (this.authService.isAuthenticated()) {
             this.router.navigate(['/dashboard']);
         }
     }
