@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const path = require("path");
 const cors = require("cors"); 
 const errorHandler = require("./src/middlewares/errorHandler.middleware");
+const { swaggerUi, swaggerSpec } = require("./swagger");
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
@@ -28,6 +29,10 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(express.json());
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+module.exports = app;
 
 app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
