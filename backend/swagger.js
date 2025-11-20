@@ -9,8 +9,17 @@ const options = {
       version: "1.0.0",
       description: "API Documentation for SchedulerApp",
     },
+    components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+          },
+        },
+    },
   },
-  apis: ["./routes/*.js"],
+  apis: ["./src/routes/*.js"],
 };
 
 const swaggerSpec = swaggerJsDoc(options);
