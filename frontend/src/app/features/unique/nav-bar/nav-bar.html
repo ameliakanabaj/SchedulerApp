@@ -5,15 +5,14 @@
             <a routerLink="/dashboard"><button [ngClass]="{ 'active-button': route() === 'dashboard' }">
                 Dashboard
             </button></a>
-            <a routerLink="/schedules"><button [ngClass]="{ 'active-button': route() === 'schedules' }">
-                 Schedules
+            <a routerLink="/availability"><button [ngClass]="{ 'active-button': route() === 'schedules' }">
+                Availability
             </button></a>
             <a routerLink="/organizations"><button [ngClass]="{ 'active-button': route() === 'organizations' }">
                 Organizations
             </button></a>
             <!-- <button> additional/wip </button> -->
         </div>
-        <div>
             <!-- TEMP OFF -->
             <!-- <button class="dark-mode-button" (click)="toggleDarkMode()">
                 @if (isDarkMode()) {
@@ -22,8 +21,7 @@
                     <i class="fa-regular fa-sun"></i>
                 }
             </button> -->
-            <button class="logout-button">Logout</button>
-        </div>
+        <button class="logout-button" (click)="logout()">Logout</button>
     } @else {
         <div>
             <a routerLink="/register"><button class="sign-in-button">Sign in!</button></a>

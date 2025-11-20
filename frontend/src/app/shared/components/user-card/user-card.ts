@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { UserModel } from '@app/models';
 
 @Component({
   selector: 'app-user-card',
@@ -7,9 +8,5 @@ import { Component, input } from '@angular/core';
   styleUrl: './user-card.scss',
 })
 export class UserCard {
-    user = input({
-        firstName: 'testName',
-        lastName: 'testLastName',
-        email: 'test@mail.com',
-    })
+    user = input<UserModel>();
 }

@@ -26,8 +26,6 @@ export class App implements OnInit {
     }
 
     toggleDarkMode(isDarkMode: boolean): void {
-        console.log('dziala', isDarkMode);
-        
         if (!isDarkMode) {
             document.body.classList.add('dark');
             localStorage.setItem('darkMode', 'true');
