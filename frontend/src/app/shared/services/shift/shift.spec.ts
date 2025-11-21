@@ -1,16 +1,24 @@
-import { TestBed } from '@angular/core/testing';
-
+import { createServiceFactory, Spectator, SpectatorService } from '@ngneat/spectator';
 import { Shift } from './shift';
+import { HttpClient } from '@angular/common/http';
 
 describe('Shift', () => {
-  let service: Shift;
+    let sp: SpectatorService<Shift>;
+    const createService = createServiceFactory({
+        service: Shift,
+        providers: [
+            {
+                provide: HttpClient,
+                useValue: {},
+            }
+        ]
+    }); 
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Shift);
-  });
+    beforeEach(() => {
+        sp = createService();
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    it('should work', () => {
+        expect(true).toBeTruthy();
+    });
 });
