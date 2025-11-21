@@ -49,6 +49,10 @@ export class User {
         );
     }
 
+    resetPassword(current_password: string, new_password: string): Observable<any> {
+        return this.http.post(`${this.userUrl}/change-password`, { current_password, new_password });
+    }
+
     private handleError(error: any) {
         this.toastrService.error('Error at fetching user', error);
         return throwError(() => error);

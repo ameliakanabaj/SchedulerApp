@@ -1,7 +1,9 @@
 import { DatePipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Calendar } from "@app/shared/components";
 import { RouterLink } from "@angular/router";
+import { Modal } from '@app/shared/services';
+import { PasswordReset } from '@app/features/password-reset/password-reset';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,8 +11,9 @@ import { RouterLink } from "@angular/router";
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
     today = new Date();
+    wasPasswordNotifDisplayed? = true;
 
     workdays = [];
 
@@ -24,5 +27,23 @@ export class Dashboard {
         { message: 'Nowy komunikat od managera', date: new Date() }
     ]; // temp
 
+    private readonly modalService = inject(Modal);
+
     // ng on init z pobraniem schedules i wtedy upcoming shifts dodanie
+    ngOnInit(): void {
+        const val = localStorage.getItem('wasPasswordNotifDisplayed');
+        this.wasPasswordNotifDisplayed = val === 'true';
+
+        if (!this.wasPasswordNotifDisplayed) {
+            this.openPasswordChangeModal();
+        }
+    }
+
+    openPasswordChangeModal(): void {
+        const modalRef = this.modalService.openModal(PasswordReset);
+
+        modalRef.afterClosed$.subscribe((res: any) => {
+            localStorage.setItem('wasPasswordNotifDisplayed', 'true');
+        });
+    }
 }
