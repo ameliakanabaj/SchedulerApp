@@ -18,11 +18,7 @@ export class OrganizationsPage implements OnInit {
     private readonly organizationService = inject(Organization)
 
     ngOnInit(): void {
-        this.organizationService.getAll().subscribe((res) => {
-            if (res.length > 0) {
-                this.organization.set(res[0]);
-            }
-        });
+        this.getOrganization();
     }
 
     openCreateOrganizationModal(): void {
@@ -37,8 +33,22 @@ export class OrganizationsPage implements OnInit {
     }
 
     openAddNewMemberModal(): void {
-        this.modalService.openModal(AddNewMemberModal, { data: {
-            organizationId: this.organization()!.id,
+        const modalRef = this.modalService.openModal(AddNewMemberModal, { data: {
+            organization: this.organization(),
         }});
+
+        modalRef.afterClosed$.subscribe((res: any) => {
+            if (res) {
+                this.getOrganization();
+            }
+        })
+    }
+
+    private getOrganization(): void {
+        this.organizationService.getAll().subscribe((res) => {
+            if (res.length > 0) {
+                this.organization.set(res[0]);
+            }
+        });
     }
 }
