@@ -115,3 +115,18 @@
         }
     }
 }
+
+.error {
+    color: #c0392b;
+    font-size: 0.8rem;
+    margin-top: -0.3rem;
+}
+
+.names {
+    position: relative;
+
+    .error {
+        grid-column: span 2;
+        margin-bottom: -0.5rem;
+    }
+}

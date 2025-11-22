@@ -1,40 +1,105 @@
 <app-modal-header title="Add new member"/>
 
 <div class="modal-container">
-    <form (ngSubmit)="addUser()">
+    <form #memberForm="ngForm" (ngSubmit)="addUser()" novalidate>
+
         <div class="names">
             <label for="firstName">Insert first name:</label>
-            <input 
+            <input
                 id="firstName"
                 name="firstName"
-                [(ngModel)]="firstName" />
-            
+                [(ngModel)]="firstName"
+                required
+                minlength="2"
+                #firstNameCtrl="ngModel"
+            />
+
+            @if (firstNameCtrl.invalid && firstNameCtrl.touched) {
+                <div class="error">
+                    @if (firstNameCtrl.errors?.['required']) {
+                        <small> First name is required. </small>
+                    }
+
+                    @if (firstNameCtrl.errors?.['minlength']) {
+                        <small> Minimum 2 characters. </small>
+                    }
+                </div>
+            }
+
             <label for="lastName">Insert last name:</label>
-            <input 
+            <input
                 id="lastName"
                 name="lastName"
-                [(ngModel)]="lastName" />
+                [(ngModel)]="lastName"
+                required
+                minlength="2"
+                #lastNameCtrl="ngModel"
+            />
+            @if (lastNameCtrl.invalid && lastNameCtrl.touched) {
+                <div class="error">
+                    @if (lastNameCtrl.errors?.['required']) {
+                        <small> Last name is required. </small>
+                    }
+
+                    @if (lastNameCtrl.errors?.['minlength']) {
+                        <small> Minimum 2 characters. </small>
+                    }
+                </div>
+            }
         </div>
-        
+
         <div class="email">
             <label for="email">Email:</label>
-            <input 
+            <input
                 type="email"
-                id="email" 
+                id="email"
                 name="email"
-                [(ngModel)]="email">
+                [(ngModel)]="email"
+                required
+                email
+                #emailCtrl="ngModel"
+            />
+            @if (emailCtrl.invalid && emailCtrl.touched) {
+                <div class="error">
+                    @if (emailCtrl.errors?.['required']) {
+                        <small> Email is required. </small>
+                    }
+
+                    @if (emailCtrl.errors?.['email']) {
+                        <small> Invalid email format. </small>
+                    }
+                </div>
+            }
         </div>
-        
+
         <div class="password">
             <label for="password">Create <b>one time password:</b></label>
-            <input 
+            <input
                 type="text"
                 id="password"
                 name="password"
-                [(ngModel)]="password">
+                [(ngModel)]="password"
+                required
+                minlength="6"
+                #passwordCtrl="ngModel"
+            />
+            @if (passwordCtrl.invalid && passwordCtrl.touched) {
+                <div class="error">
+                    @if (passwordCtrl.errors?.['required']) {
+                        <small> Password is required. </small>
+                    }
+
+                    @if (passwordCtrl.errors?.['minlength']) {
+                        <small> Minimum 6 characters. </small>
+                    }
+                </div>
+            }
         </div>
 
-        <button type="submit">Submit</button>
-        <button type="button" (click)="close()">Cancel</button>
+        <div class="buttons">
+            <button type="submit" [disabled]="memberForm.invalid">Submit</button>
+            <button type="button" (click)="close()">Cancel</button>
+        </div>
+
     </form>
 </div>
