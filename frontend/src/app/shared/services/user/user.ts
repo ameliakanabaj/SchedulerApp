@@ -36,4 +36,8 @@ export class User {
     delete(id: number): Observable<{ message: string }> {
         return this.http.delete<{ message: string }>(`${this.userUrl}/${id}`);
     }
+
+    resetPassword(current_password: string, new_password: string): Observable<any> {
+        return this.http.post(`${this.userUrl}/change-password`, { current_password, new_password });
+    }
 }
