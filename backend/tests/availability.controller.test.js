@@ -115,6 +115,26 @@ describe("Availability Controller", () => {
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(mockAvailability);
     });
+
+    it("should call next if userModel.getUserById throws", async () => {
+      req.body = { user_id: 1 };
+      const error = new Error("DB error");
+      userModel.getUserById.mockRejectedValue(error);
+
+      await availabilityController.createAvailability(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("should call next if availabilityModel.createAvailability throws", async () => {
+      req.user = { role: "EMPLOYEE", user_id: 1 };
+      req.body = { user_id: 1, start_time: "2024-01-10T10:00:00Z", end_time: "2024-01-10T12:00:00Z" };
+      userModel.getUserById.mockResolvedValue({ user_id: 1 });
+      const error = new Error("DB error");
+      availabilityModel.createAvailability.mockRejectedValue(error);
+
+      await availabilityController.createAvailability(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
   });
 
   describe("getAvailabilityByUser", () => {
@@ -169,6 +189,17 @@ describe("Availability Controller", () => {
       await availabilityController.getAvailabilityByUser(req, res, next);
 
       expect(res.json).toHaveBeenCalledWith([{ id: 1 }]);
+    });
+
+    it("should call next if availabilityModel.getAvailabilityByUser throws", async () => {
+      req.user = { role: "GLOBAL_ADMIN" };
+      req.params.user_id = 5;
+      userModel.getUserById.mockResolvedValue({ user_id: 5 });
+      const error = new Error("DB error");
+      availabilityModel.getAvailabilityByUser.mockRejectedValue(error);
+
+      await availabilityController.getAvailabilityByUser(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 
@@ -243,6 +274,26 @@ describe("Availability Controller", () => {
 
       expect(res.json).toHaveBeenCalledWith({ id: 1 });
     });
+
+    it("should call next if availabilityModel.getAvailabilityById throws", async () => {
+      req.params.id = 1;
+      const error = new Error("DB error");
+      availabilityModel.getAvailabilityById.mockRejectedValue(error);
+
+      await availabilityController.updateAvailability(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("should call next if availabilityModel.updateAvailability throws", async () => {
+      req.params.id = 1;
+      req.user = { role: "EMPLOYEE", user_id: 1 };
+      availabilityModel.getAvailabilityById.mockResolvedValue({ user_id: 1 });
+      const error = new Error("DB error");
+      availabilityModel.updateAvailability.mockRejectedValue(error);
+
+      await availabilityController.updateAvailability(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
   });
  
   describe("deleteAvailability", () => {
@@ -299,6 +350,26 @@ describe("Availability Controller", () => {
       await availabilityController.deleteAvailability(req, res, next);
 
       expect(res.json).toHaveBeenCalledWith({ message: "Availability deleted" });
+    });
+
+    it("should call next if availabilityModel.getAvailabilityById throws", async () => {
+      req.params.id = 1;
+      const error = new Error("DB error");
+      availabilityModel.getAvailabilityById.mockRejectedValue(error);
+
+      await availabilityController.deleteAvailability(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("should call next if availabilityModel.deleteAvailability throws", async () => {
+      req.params.id = 1;
+      req.user = { role: "EMPLOYEE", user_id: 1 };
+      availabilityModel.getAvailabilityById.mockResolvedValue({ user_id: 1 });
+      const error = new Error("DB error");
+      availabilityModel.deleteAvailability.mockRejectedValue(error);
+
+      await availabilityController.deleteAvailability(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });
