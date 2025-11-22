@@ -47,11 +47,6 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
-app.use((err, req, res, next) => {
-  console.error("[GLOBAL ERROR HANDLER]:", err.message);
-  res.status(500).json({ message: "Internal Server Error" });
-});
-
 app.listen(PORT, () => {
   console.log(`Backend HTTP running on ${PORT}`);
 });
