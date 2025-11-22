@@ -1,9 +1,11 @@
 const organizationController = require("../src/controllers/organization.controller");
 const organizationModel = require("../src/models/organization.model");
 const userModel = require("../src/models/user.model");
+const authService = require("../src/services/auth.service");
 
 jest.mock("../src/models/organization.model");
 jest.mock("../src/models/user.model");
+jest.mock("../src/services/auth.service");
 
 describe("Organization Controller", () => {
   let req, res, next;
@@ -18,19 +20,37 @@ describe("Organization Controller", () => {
 
   describe("createOrganization", () => {
     it("should create organization and assign org_id to ORG_ADMIN", async () => {
-      req.user.role = "ORG_ADMIN";
-      req.user.user_id = 1;
-      req.body.name = "TestOrg";
+      req.body = { name: "TestOrg" };
+      req.user = { user_id: 1, role: "ORG_ADMIN" };
 
-      organizationModel.createOrganization.mockResolvedValue({ organization_id: 10, name: "TestOrg" });
+      organizationModel.createOrganization.mockResolvedValue({
+        organization_id: 10,
+        name: "TestOrg"
+      });
+
       userModel.updateUser.mockResolvedValue({});
+      userModel.getUserById.mockResolvedValue({
+        user_id: 1,
+        role: "ORG_ADMIN",
+        organization_id: 10
+      });
+
+      authService.generateToken.mockReturnValue("FAKE_TOKEN");
 
       await organizationController.createOrganization(req, res, next);
 
       expect(organizationModel.createOrganization).toHaveBeenCalledWith({ name: "TestOrg" });
       expect(userModel.updateUser).toHaveBeenCalledWith(1, { organization_id: 10 });
+      expect(authService.generateToken).toHaveBeenCalledWith({
+        user_id: 1,
+        role: "ORG_ADMIN",
+        organization_id: 10
+      });
       expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({ organization_id: 10, name: "TestOrg" });
+      expect(res.json).toHaveBeenCalledWith({
+        organization: { organization_id: 10, name: "TestOrg" },
+        token: "FAKE_TOKEN"
+      });
     });
 
     it("should call next(err) on model error", async () => {
