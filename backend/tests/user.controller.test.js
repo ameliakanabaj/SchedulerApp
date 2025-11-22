@@ -188,6 +188,27 @@ describe("User Controller", () => {
         statusCode: 403,
       });
     });
+
+    it("should call next if getUserByEmail throws error", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      const error = new Error("DB error");
+      userModel.getUserByEmail.mockRejectedValue(error);
+
+      await userController.createUser(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("should call next if createUser throws error", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      req.body = { first_name: "Anna", last_name: "Bell", email: "test@gmail.com", password: "Password123", role: "EMPLOYEE" };
+      userModel.getUserByEmail.mockResolvedValue(null);
+      const error = new Error("DB error");
+      userModel.createUser.mockRejectedValue(error);
+      bcrypt.hash.mockResolvedValue("hashed");
+
+      await userController.createUser(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
   });
 
   describe("getUsersByOrganization", () => {
@@ -215,6 +236,27 @@ describe("User Controller", () => {
         message: "You can only view users from your organization",
         statusCode: 403,
       });
+    });
+
+    it("should allow GLOBAL_ADMIN to get users", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      req.params.organization_id = 10;
+      const users = [{ user_id: 1, email: "test@gmail.com", password: "hashed" }];
+      userModel.getUsersByOrganization.mockResolvedValue(users);
+
+      await userController.getUsersByOrganization(req, res, next);
+
+      expect(res.json).toHaveBeenCalledWith([{ user_id: 1, email: "test@gmail.com" }]);
+    });
+
+    it("should call next if getUsersByOrganization rejects", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      req.params.organization_id = 10;
+      const error = new Error("DB error");
+      userModel.getUsersByOrganization.mockRejectedValue(error);
+
+      await userController.getUsersByOrganization(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 
@@ -305,6 +347,21 @@ describe("User Controller", () => {
         message: "User not found",
         statusCode: 404,
       });
+    });
+
+    it("should remove password from updated user for ORG_ADMIN", async () => {
+      req.user.role = "ORG_ADMIN";
+      req.user.organization_id = 10;
+      req.params.id = 1;
+      req.body = { first_name: "New" };
+      const targetUser = { user_id: 1, organization_id: 10 };
+      const updatedUser = { user_id: 1, first_name: "New", password: "hashed", organization_id: 10 };
+      userModel.getUserById.mockResolvedValue(targetUser);
+      userModel.updateUser.mockResolvedValue(updatedUser);
+
+      await userController.updateUser(req, res, next);
+
+      expect(res.json).toHaveBeenCalledWith({ user_id: 1, first_name: "New", organization_id: 10 });
     });
   });
 
@@ -424,6 +481,31 @@ describe("User Controller", () => {
         message: "User not found",
         statusCode: 404,
       });
+    });
+
+    it("should call next if bcrypt.hash fails", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      req.params.id = 1;
+      req.body = { new_password: "new" };
+      const targetUser = { user_id: 1, email: "test@gmail.com", organization_id: 5 };
+      userModel.getUserById.mockResolvedValue(targetUser);
+      bcrypt.hash.mockRejectedValue(new Error("hash error"));
+
+      await userController.resetPassword(req, res, next);
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+    });
+
+    it("should call next if updateUser fails", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      req.params.id = 1;
+      req.body = { new_password: "new" };
+      const targetUser = { user_id: 1, email: "test@gmail.com", organization_id: 5 };
+      userModel.getUserById.mockResolvedValue(targetUser);
+      bcrypt.hash.mockResolvedValue("hashed");
+      userModel.updateUser.mockRejectedValue(new Error("DB error"));
+
+      await userController.resetPassword(req, res, next);
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
     });
   });
 });
