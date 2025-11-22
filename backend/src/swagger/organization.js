@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/organizations/:
+ * /api/organizations:
  *   post:
  *     summary: Create a new organization
  *     tags:
@@ -45,7 +45,13 @@
  *     responses:
  *       200:
  *         description: List of organizations depending on user role
- *         
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Organization'
+ */
 
 /**
  * @swagger
@@ -102,7 +108,7 @@
  *       200:
  *         description: Organization updated successfully
  *       403:
- *         description: Only GLOBAL_ADMIN or this organizations admin can update this organization
+ *         description: Only GLOBAL_ADMIN or this organization's admin can update this organization
  *       404:
  *         description: Organization not found
  */
