@@ -12,48 +12,29 @@ export class Organization {
     private readonly organizationUrl = `${environment.apiUrl}/organizations`
 
     private readonly http = inject(HttpClient);
-    private readonly toastrService = inject(Toastr);
 
     getAll(): Observable<OrganizationModel[]> {
-        return this.http.get<OrganizationModel[]>(this.organizationUrl).pipe(
-            catchError(this.handleError)
-        );
+        return this.http.get<OrganizationModel[]>(this.organizationUrl);
     }
 
     getById(id: number): Observable<Organization> {
-        return this.http.get<Organization>(`${this.organizationUrl}/${id}`).pipe(
-            catchError(this.handleError)
-        );
+        return this.http.get<Organization>(`${this.organizationUrl}/${id}`);
     }
 
     create(name: string): Observable<Organization> {
-        return this.http.post<Organization>(this.organizationUrl, { name }).pipe(
-            catchError(this.handleError)
-        );
+        return this.http.post<Organization>(this.organizationUrl, { name });
     }
 
     update(id: number, name: string): Observable<Organization> {
-        return this.http.put<Organization>(`${this.organizationUrl}/${id}`, { name }).pipe(
-            catchError(this.handleError)
-        );
+        return this.http.put<Organization>(`${this.organizationUrl}/${id}`, { name });
     }
 
     delete(id: number): Observable<boolean> {
-        return this.http.delete<boolean>(`${this.organizationUrl}/${id}`).pipe(
-            catchError(this.handleError)
-        );
+        return this.http.delete<boolean>(`${this.organizationUrl}/${id}`);
     }
 
     getByIds(ids: number[]): Observable<Organization[]> {
         const params = ids.map(id => `ids=${id}`).join('&');
-        return this.http.get<Organization[]>(`${this.organizationUrl}/?${params}`).pipe(
-            catchError(this.handleError)
-        );
+        return this.http.get<Organization[]>(`${this.organizationUrl}/?${params}`);
     }
-
-    private handleError(error: any) {
-        this.toastrService.error('Error at fetching organization', error);
-        return throwError(() => error);
-    }
-
 }

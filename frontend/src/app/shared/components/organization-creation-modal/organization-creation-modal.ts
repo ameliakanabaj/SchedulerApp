@@ -19,7 +19,7 @@ export class OrganizationCreationModal {
     private readonly toastrService = inject(Toastr);
 
     createOrganization(): void {
-        this.organizationService.create(this.organizationName).subscribe((res) => ({
+        this.organizationService.create(this.organizationName).subscribe(({
             next: (res: any) => {
                 this.toastrService.success('Succsessfully created new organization!')
             },

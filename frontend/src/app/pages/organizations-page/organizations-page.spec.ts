@@ -54,7 +54,10 @@ describe('OrganizationsPage', () => {
 
             expect(modal.openModal).toHaveBeenCalledWith(
                 expect.any(Function),
-                { data: { organizationId: 1 } }
+                { data: { organization: {
+                    id: 1,
+                    name: "TestOrg",
+                }}}
             );
         });
     });
