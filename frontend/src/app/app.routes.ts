@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
-import { Login, Register, LandingPage, OrganizationsPage } from './pages';
+import { Login, Register, LandingPage, OrganizationsPage, AvailabilityPage, Dashboard } from './pages';
 import { AuthGuard } from './core';
-import { Dashboard } from './pages/dashboard/dashboard';
 
 export const routes: Routes = [
     {
@@ -24,6 +23,11 @@ export const routes: Routes = [
     {
         path: 'dashboard',
         component: Dashboard,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: 'availability',
+        component: AvailabilityPage,
         canActivate: [AuthGuard],
     }
     // {
