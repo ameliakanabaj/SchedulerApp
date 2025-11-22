@@ -1,5 +1,6 @@
 const organizationModel = require("../models/organization.model");
 const userModel = require("../models/user.model");
+const { generateToken } = require("../services/auth.service");
 
 async function createOrganization(req, res, next) {
   try {
@@ -10,6 +11,15 @@ async function createOrganization(req, res, next) {
     if (req.user.role === "ORG_ADMIN") {
       await userModel.updateUser(req.user.user_id, {
         organization_id: org.organization_id,
+      });
+
+      const updatedUser = await userModel.getUserById(req.user.user_id);
+
+      const token = generateToken(updatedUser);
+
+      return res.status(201).json({
+        organization: org,
+        token,
       });
     }
 
