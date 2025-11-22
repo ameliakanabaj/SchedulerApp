@@ -66,6 +66,17 @@ describe("Shift Controller", () => {
       });
       expect(res.json).not.toHaveBeenCalled();
     });
+
+    it("should call next(err) if createShift throws", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      req.body = { organization_id: 1, start_time: "2025-01-01T08:00:00Z", end_time: "2025-01-01T16:00:00Z", place: "Office", required_people: 3 };
+      const error = new Error("DB error");
+      shiftModel.createShift.mockRejectedValue(error);
+
+      await shiftController.createShift(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
   });
 
   describe("getAllShifts", () => {
@@ -114,6 +125,15 @@ describe("Shift Controller", () => {
         message: "Forbidden",
         statusCode: 403,
       });
+    });
+
+    it("should call next(err) if getAllShifts throws", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      const error = new Error("DB error");
+      shiftModel.getAllShifts.mockRejectedValue(error);
+
+      await shiftController.getAllShifts(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 
@@ -185,6 +205,29 @@ describe("Shift Controller", () => {
 
       expect(res.json).toHaveBeenCalledWith(mockShift);
     });
+
+    it("should call next(err) if getShiftById throws", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      req.params.id = 1;
+      const error = new Error("DB error");
+      shiftModel.getShiftById.mockRejectedValue(error);
+
+      await shiftController.getShiftById(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("should call next(err) if prisma.assignment.findFirst throws", async () => {
+      req.user.role = "EMPLOYEE";
+      req.user.user_id = 5;
+      req.params.id = 1;
+      const mockShift = { shift_id: 1, organization_id: 2 };
+      shiftModel.getShiftById.mockResolvedValue(mockShift);
+      const error = new Error("DB error");
+      prisma.assignment.findFirst.mockRejectedValue(error);
+
+      await shiftController.getShiftById(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
   });
 
   describe("updateShift", () => {
@@ -229,6 +272,18 @@ describe("Shift Controller", () => {
         statusCode: 403,
       });
     });
+
+    it("should call next(err) if updateShift throws", async () => {
+      req.user.role = "ORG_ADMIN";
+      req.user.organization_id = 2;
+      req.params.id = 1;
+      shiftModel.getShiftById.mockResolvedValue({ shift_id: 1, organization_id: 2 });
+      const error = new Error("DB error");
+      shiftModel.updateShift.mockRejectedValue(error);
+
+      await shiftController.updateShift(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
   });
 
   describe("deleteShift", () => {
@@ -269,6 +324,18 @@ describe("Shift Controller", () => {
         message: "You can only delete shifts in your organization",
         statusCode: 403,
       });
+    });
+
+    it("should call next(err) if deleteShift throws", async () => {
+      req.user.role = "ORG_ADMIN";
+      req.user.organization_id = 2;
+      req.params.id = 1;
+      shiftModel.getShiftById.mockResolvedValue({ shift_id: 1, organization_id: 2 });
+      const error = new Error("DB error");
+      shiftModel.deleteShift.mockRejectedValue(error);
+
+      await shiftController.deleteShift(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });
