@@ -1,5 +1,4 @@
 const { PrismaClient } = require("../generated/prisma");
-const { get } = require("../routes/organization.routes");
 const prisma = new PrismaClient();
 
 async function createShift({ organization_id, start_time, end_time, place, required_people }) {
