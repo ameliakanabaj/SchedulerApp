@@ -4,12 +4,14 @@ import { Availability as AvailabilityService, Modal, Toastr, User } from '@app/s
 import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-modal';
 import { Authentication } from '@app/core';
 import { AvailabilityModel } from '@app/models';
+import { AddNotesModal } from '../add-notes-modal/add-notes-modal';
 
-export interface Availability {
+export interface AvailabilityDTO {
     date: string;
     type: 'all-day' | 'custom' | 'cannot';
     startDate?: string;
     endDate?: string;
+    comments?: string;
 }
 
 export interface Schedule {
@@ -17,6 +19,7 @@ export interface Schedule {
     open: boolean;
     requiredStaff?: number;
     shifts?: Shift[];
+    comments?: string;
 }
 
 export interface Shift {
@@ -34,12 +37,11 @@ export interface Shift {
 })
 export class Calendar {
     xs = input(false);
-
     @Input() mode = 'availability';
     @Input() month: number = new Date().getMonth();
     @Input() year: number = new Date().getFullYear();
     @Input() schedules: Schedule[] = [];
-    @Input() availabilities: Availability[] = [];
+    @Input() availabilities: AvailabilityDTO[] = [];
 
     @Output() updateAvailability = new EventEmitter();
     @Output() updateAdminSettings = new EventEmitter();
@@ -47,6 +49,9 @@ export class Calendar {
     customStart = '';
     customEnd = '';
     daysInMonth = this.generateDays(this.year, this.month);
+
+    private availabilitiesToSend: AvailabilityModel[] = [];
+
     private readonly modalService = inject(Modal);
     private readonly availabilityService = inject(AvailabilityService);
     private readonly authService = inject(Authentication);
@@ -101,8 +106,22 @@ export class Calendar {
         return false;
     }
 
-    getSchedule(day: Date) {
+    getSchedule(day: Date): Schedule | undefined {
         return this.schedules.find(s => s.date === day.toISOString().split('T')[0]);
+    }
+
+    hasComments(day: Date): boolean {
+        const iso = day.toISOString().split('T')[0];
+
+        const hasInAvail = this.availabilities.some(
+            s => s.date === iso && !!s.comments
+        );
+
+        const hasInSchedules = this.schedules.some(
+            s => s.date === iso && !!s.comments
+        );
+
+        return hasInAvail || hasInSchedules;
     }
 
     getAvailability(day: Date) {
@@ -148,6 +167,33 @@ export class Calendar {
                 this.saveCustomHours(day);
             }
         })
+    }
+
+    openAddNoteModal(day: Date): void {
+        const modalRef = this.modalService.openModal(AddNotesModal);
+
+        modalRef.afterClosed$.subscribe((res: any) => {
+            if (res) {
+                this.addCommentToDay(day, res);
+            }
+        })
+    }
+
+    addCommentToDay(day: Date, comment: string): void {
+        const dayISO = day.toISOString().split('T')[0];
+
+        const availability = this.availabilities.find(a => a.date === dayISO);
+
+        if (!availability) {
+            this.availabilities.push({
+                date: dayISO,
+                type: 'all-day',
+                comments: comment,
+            });
+            return;
+        }
+
+        availability.comments = comment;
     }
 
     toggleOpen(day: Date) {

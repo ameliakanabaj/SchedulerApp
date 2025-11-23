@@ -20,7 +20,12 @@
             @if (day) {
                 <div class="day" [ngClass]="{ 'closed' : isDayClosed(day) }">
                     <!-- <span class="date">{{ day.toISOString() | date:'fullDate' }} </span> -->
-                    <span class="date"> {{ day.getDate() }}, {{ day | date:'MMMM'}} </span>
+                    <span class="date">
+                        {{ day.getDate() }}, {{ day | date:'MMMM'}}
+                        @if (mode === 'availability') {
+                            <button class="add-notes" [ngClass]="hasComments(day) ? 'with-notes' : 'without-notes'" (click)="openAddNoteModal(day);"> <i class="fa-regular fa-message"></i> </button>
+                        }
+                    </span>
 
                     @if (isDayClosed(day)) {
                         <div class="closed-day">

@@ -1,0 +1,111 @@
+.modal {
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px var(--primary-shadow);
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.25s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    background: var(--primary-color);
+    color: var(--primary-text);
+    padding: 14px 18px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--primary-white);
+    font-size: 26px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.close-btn:hover {
+    color: var(--primary-light-blue);
+}
+
+.modal-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--secondary-text);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--secondary-white);
+    font-size: 14px;
+    background: var(--secondary-background);
+    outline: none;
+    transition: 0.2s;
+}
+
+textarea:focus {
+    border-color: var(--primary-color);
+    background: var(--primary-white);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 20px;
+}
+
+button.cancel {
+    background: var(--secondary-white);
+    color: var(--secondary-text);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid var(--secondary-white);
+    transition: 0.2s;
+}
+
+button.cancel:hover {
+    background: var(--secondary-background);
+}
+
+button.save {
+    background: var(--primary-color);
+    color: var(--primary-white);
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+}
+
+button.save:hover {
+    background: var(--primary-hover-bg);
+}

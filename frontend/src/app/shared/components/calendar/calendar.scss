@@ -63,11 +63,39 @@
             }
 
             .date {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
                 font-size: 20px;
                 border-bottom: 1px solid var(--primary-color);
                 border-radius: 10px 10px 0 0;
                 padding: 5px;
                 background-color: var(--primary-light-blue);
+
+                .add-notes {
+                    background-color: var(--primary-color);
+                    color: var(--primary-text);
+                    border: none;
+                    border-radius: 10px;
+                    width: 30px;
+                    height: 30px;
+                    transition: all 0.2s ease-in-out;
+                    align-self: flex-end;
+                    margin-right: 10px;
+
+
+                    &:hover {
+                        cursor: pointer;
+                        background-color: var(--primary-text);
+                        transition: all 0.3s ease-in-out;
+                    }
+                }
+
+                .without-notes {
+                    border: 1px solid var(--primary-color);
+                    background: none;
+                    color: var(--primary-color);
+                }
             }
         }
 
@@ -88,6 +116,8 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            margin-bottom: 5px;
+            gap: 2px;
 
             .hours {
                 font-weight: 800;
@@ -118,6 +148,7 @@
 .availability-buttons {
     display: flex;
     flex-direction: column;
+    gap: 1.5px;
 
     button {
         width: 180px;
@@ -129,7 +160,8 @@
         cursor: pointer;
         transition: all 0.15s ease;
         color: var(--secondary-text);
-
+        border: 1px solid var(--primary-color);
+        box-shadow: 2px 2px 2px var(--primary-shadow);
     }
 
     button:hover {
@@ -143,19 +175,20 @@
     }
 
     button.inactive {
+        color: black;
         opacity: 80%;
     }
 
     .whole {
-        background-color: var(--primary-green);
+        background-color: white;
     }
 
     .custom {
-        background-color: var(--primary-blue);
+        background-color: white;
     }
 
     .cannot {
-        background-color: var(--primary-red);
+        background-color: white;
     }
 
 }
