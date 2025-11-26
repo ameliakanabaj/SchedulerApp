@@ -13,6 +13,8 @@ model Organization {
   name            String  @db.VarChar(255)
   shifts          Shift[]
   users           User[]
+
+  schedules Schedule[] @relation("OrgSchedules")
 }
 
 model User {
@@ -79,7 +81,7 @@ model Schedule {
   status          ScheduleStatus  @default(PENDING)
   deadline_generate_date DateTime
 
-  organization    Organization    @relation(fields: [organization_id], references: [organization_id])
+  organization Organization @relation("OrgSchedules", fields: [organization_id], references: [organization_id])
   assignments     Assignment[]    // all assignments created for this schedule
 
   @@index([organization_id])
