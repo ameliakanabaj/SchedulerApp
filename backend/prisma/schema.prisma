@@ -79,7 +79,6 @@ model Schedule {
 
   organization    Organization    @relation(fields: [organization_id], references: [organization_id])
   assignments     Assignment[]    // all assignments created for this schedule
-  creator         User?           @relation(fields: [created_by], references: [user_id])
 
   @@index([organization_id])
 }
