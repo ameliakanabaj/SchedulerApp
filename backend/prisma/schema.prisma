@@ -60,8 +60,10 @@ model Assignment {
   schedule_id   Int
   user_id       Int
   role_on_shift String? @db.VarChar(255)
+
   shift         Shift   @relation(fields: [shift_id], references: [shift_id], onDelete: Cascade, onUpdate: NoAction)
   user          User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  schedule      Schedule  @relation(fields: [schedule_id], references: [schedule_id])
 
   @@unique([shift_id, user_id], map: "uq_shift_user")
   @@index([shift_id], map: "idx_assignment_shift_id")
