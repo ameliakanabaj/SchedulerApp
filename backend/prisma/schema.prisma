@@ -49,7 +49,6 @@ model Availability {
   start_time      DateTime
   end_time        DateTime
   comments        String?   @db.VarChar(500)
-  status          String?   @db.VarChar(50)
   user            User      @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([user_id], map: "idx_availability_user_id")
@@ -58,6 +57,7 @@ model Availability {
 model Assignment {
   assignment_id Int     @id @default(autoincrement())
   shift_id      Int
+  schedule_id   Int
   user_id       Int
   role_on_shift String? @db.VarChar(255)
   shift         Shift   @relation(fields: [shift_id], references: [shift_id], onDelete: Cascade, onUpdate: NoAction)
@@ -66,6 +66,30 @@ model Assignment {
   @@unique([shift_id, user_id], map: "uq_shift_user")
   @@index([shift_id], map: "idx_assignment_shift_id")
   @@index([user_id], map: "idx_assignment_user_id")
+}
+
+model Schedule {
+  schedule_id     Int             @id @default(autoincrement())
+  organization_id Int
+  date_from       DateTime
+  date_to         DateTime
+  generated_at    DateTime        @default(now())
+  status          ScheduleStatus  @default(PENDING)
+  deadline_generate_date DateTime
+
+  organization    Organization    @relation(fields: [organization_id], references: [organization_id])
+  assignments     Assignment[]    // all assignments created for this schedule
+  creator         User?           @relation(fields: [created_by], references: [user_id])
+
+  @@index([organization_id])
+}
+
+enum ScheduleStatus {
+  PENDING
+  GENERATED
+  FAILED
+  APPROVED
+  NOT_APPROVED
 }
 
 enum UserRole {
