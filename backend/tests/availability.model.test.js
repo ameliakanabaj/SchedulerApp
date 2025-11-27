@@ -39,7 +39,6 @@ describe("Availability Model", () => {
       start_time: "2025-01-01T10:00:00Z",
       end_time: "2025-01-01T12:00:00Z",
       comments: "note",
-      status: "AVAILABLE",
     });
 
     expect(prisma.availability.create).toHaveBeenCalledWith({
@@ -48,7 +47,6 @@ describe("Availability Model", () => {
         start_time: new Date("2025-01-01T10:00:00Z"),
         end_time: new Date("2025-01-01T12:00:00Z"),
         comments: "note",
-        status: "AVAILABLE",
       }),
     });
   });
