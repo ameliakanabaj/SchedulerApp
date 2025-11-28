@@ -71,6 +71,47 @@ describe("Schedule Controller", () => {
     });
   });
 
+    describe("getScheduleById", () => {
+        it("should return a schedule by id", async () => {
+            req.user.role = "GLOBAL_ADMIN";
+            req.params.scheduleId = 5;
+          
+            const schedule = { schedule_id: 5, organization_id: 1 };
+            scheduleModel.getScheduleById.mockResolvedValue(schedule);
+          
+            await scheduleController.getScheduleById(req, res, next);
+          
+            expect(scheduleModel.getScheduleById).toHaveBeenCalledWith(5);
+            expect(res.json).toHaveBeenCalledWith(schedule);
+        });
+          
+        it("should return 404 if schedule not found", async () => {
+            req.params.scheduleId = 99;
+        
+            scheduleModel.getScheduleById.mockResolvedValue(null);
+        
+            await scheduleController.getScheduleById(req, res, next);
+        
+            expect(next).toHaveBeenCalledWith({
+                type: "BUSINESS_LOGIC",
+                message: "Schedule not found",
+                statusCode: 404,
+            });
+        });
+    
+        it("should call next(error) on DB error", async () => {
+            req.params.scheduleId = 5;
+        
+            const error = new Error("DB error");
+            scheduleModel.getScheduleById.mockRejectedValue(error);
+        
+            await scheduleController.getScheduleById(req, res, next);
+        
+            expect(next).toHaveBeenCalledWith(error);
+        });
+    });
+  
+
   describe("getSchedulesByOrganization", () => {
     it("should return schedules for GLOBAL_ADMIN", async () => {
       req.user.role = "GLOBAL_ADMIN";

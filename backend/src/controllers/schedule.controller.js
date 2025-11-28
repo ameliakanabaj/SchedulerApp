@@ -134,10 +134,42 @@ async function deleteSchedule(req, res, next) {
   }
 }
 
+async function getScheduleById(req, res, next) {
+  try {
+    const { scheduleId } = req.params;
+
+    const schedule = await scheduleModel.getScheduleById(scheduleId);
+    if (!schedule) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Schedule not found",
+        statusCode: 404,
+      });
+    }
+
+    if (
+      req.user.role !== "GLOBAL_ADMIN" &&
+      Number(req.user.organization_id) !== Number(schedule.organization_id)
+    ) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Access denied",
+        statusCode: 403,
+      });
+    }
+
+    res.json(schedule);
+  } catch (err) {
+    next(err);
+  }
+}
+
+
 module.exports = {
   createSchedule,
   getSchedulesByOrganization,
   getSchedulesForUser,
   updateSchedule,
   deleteSchedule,
+  getScheduleById
 };

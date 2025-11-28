@@ -57,10 +57,17 @@ const deleteScheduleValidation = [
   validate,
 ];
 
+const getScheduleValidation = [
+  param("scheduleId")
+    .isInt().withMessage("scheduleId must be an integer"),
+  validate,
+];
+
 module.exports = {
   createScheduleValidation,
   updateScheduleValidation,
   getOrganizationSchedulesValidation,
   getUserSchedulesValidation,
-  deleteScheduleValidation
+  deleteScheduleValidation,
+  getScheduleValidation,
 };

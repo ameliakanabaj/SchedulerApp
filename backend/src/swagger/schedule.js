@@ -173,3 +173,52 @@
  *       401:
  *         description: Missing token
  */
+
+/**
+ * @swagger
+ * /api/schedules/{scheduleId}:
+ *   get:
+ *     summary: Get single schedule by ID
+ *     tags: [Schedules]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: scheduleId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the schedule
+ *     responses:
+ *       200:
+ *         description: Schedule found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 schedule_id:
+ *                   type: integer
+ *                 organization_id:
+ *                   type: integer
+ *                 date_from:
+ *                   type: string
+ *                   format: date-time
+ *                 date_to:
+ *                   type: string
+ *                   format: date-time
+ *                 generated_at:
+ *                   type: string
+ *                   format: date-time
+ *                 status:
+ *                   type: string
+ *                   enum: [PENDING, GENERATED, APPROVED, REJECTED, NOT_APPROVED]
+ *                 assignments:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Schedule not found
+ */

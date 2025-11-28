@@ -7,7 +7,8 @@ const {
   updateScheduleValidation,
   getOrganizationSchedulesValidation,
   getUserSchedulesValidation,
-  deleteScheduleValidation
+  deleteScheduleValidation,
+  getScheduleValidation
 } = require("../validations/schedule.validation");
 
 router.post("/", auth(["GLOBAL_ADMIN", "ORG_ADMIN"]), createScheduleValidation, controller.createSchedule);
@@ -15,5 +16,6 @@ router.get("/organization/:organizationId", getOrganizationSchedulesValidation, 
 router.get("/user/:userId", getUserSchedulesValidation, controller.getSchedulesForUser);
 router.patch("/:scheduleId", auth(["GLOBAL_ADMIN", "ORG_ADMIN"]), updateScheduleValidation, controller.updateSchedule);
 router.delete("/:scheduleId", auth(["GLOBAL_ADMIN", "ORG_ADMIN"]), deleteScheduleValidation, controller.deleteSchedule);
+router.get("/:scheduleId", getScheduleValidation, controller.getScheduleById);
 
 module.exports = router;

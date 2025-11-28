@@ -59,6 +59,19 @@ describe("Schedule Model", () => {
   
       expect(result).toEqual({ schedule_id: 7 });
     });
+    
+    test("getScheduleById should call prisma.schedule.findUnique with numeric id", async () => {
+        prisma.schedule.findUnique.mockResolvedValue({ schedule_id: 3 });
+    
+        const res = await scheduleModel.getScheduleById(3);
+    
+        expect(prisma.schedule.findUnique).toHaveBeenCalledWith({
+            where: { schedule_id: 3 },
+            include: { assignments: true, organization: true },
+        });
+    
+        expect(res).toEqual({ schedule_id: 3 });
+    });
   
     test("getSchedulesForOrganization should call findMany with orderBy", async () => {
       const mockSchedules = [{ schedule_id: 10 }];
