@@ -1,0 +1,14 @@
+<div class="modal">
+    <app-modal-header title="Add note" />
+
+    <div class="modal-content">
+        <label for="note"> Your note for this day: </label>
+        <textarea id="note" [(ngModel)]="note"
+            placeholder="Write additional notes about your availability..."></textarea>
+    </div>
+
+    <div class="modal-actions">
+        <button class="cancel" (click)="close()">Cancel</button>
+        <button class="save" (click)="submit()">Save</button>
+    </div>
+</div>
