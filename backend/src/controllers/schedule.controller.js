@@ -63,6 +63,13 @@ async function getSchedulesForUser(req, res, next) {
         message: "Access denied",
         statusCode: 403,
       });
+    } else if (req.user.role !== "GLOBAL_ADMIN" &&
+      Number(req.user.organization_id) !== Number(organizationId)) {
+        return next({
+          type: "BUSINESS_LOGIC",
+          message: "Access denied",
+          statusCode: 403,
+        });
     }
 
     const schedules = await scheduleModel.getSchedulesForUser(userId);
