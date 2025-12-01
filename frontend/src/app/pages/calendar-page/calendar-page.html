@@ -1,5 +1,7 @@
 @if (schedule) {
+    <h2> Schedule {{ schedule.schedule_id }}</h2>
+    <h4> deadline: {{ schedule.deadline_generate_date }} </h4>
     <app-calendar [scheduleRange]="schedule" />
 } @else {
-    <div class="error"> ERROR 404, sadly, there is no calendar with this id :[ </div>
+    <div class="no-org-alert"> ERROR 404, sadly, there is no calendar with this id :[ </div>
 }

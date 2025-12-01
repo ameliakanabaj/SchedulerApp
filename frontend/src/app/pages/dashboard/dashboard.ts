@@ -4,6 +4,7 @@ import { Calendar } from "@app/shared/components";
 import { RouterLink } from "@angular/router";
 import { Modal } from '@app/shared/services';
 import { PasswordReset } from '@app/features/password-reset/password-reset';
+import { Authentication } from '@app/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,6 +13,7 @@ import { PasswordReset } from '@app/features/password-reset/password-reset';
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
+    userHasOrganization = true;
     today = new Date();
     wasPasswordNotifDisplayed? = true;
 
@@ -28,6 +30,7 @@ export class Dashboard implements OnInit {
     ]; // temp
 
     private readonly modalService = inject(Modal);
+    private readonly authService = inject(Authentication);
 
     // ng on init z pobraniem schedules i wtedy upcoming shifts dodanie
     ngOnInit(): void {
@@ -36,6 +39,10 @@ export class Dashboard implements OnInit {
 
         if (!this.wasPasswordNotifDisplayed) {
             this.openPasswordChangeModal();
+        }
+
+        if (!this.authService.getOrgId()) {
+            this.userHasOrganization = false;
         }
     }
 

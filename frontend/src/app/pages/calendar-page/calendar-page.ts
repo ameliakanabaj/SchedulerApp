@@ -5,7 +5,7 @@ import { Calendar } from '@app/shared/components';
 import { Schedule } from '@app/shared/services/schedule/schedule';
 
 const tempSchedule: ScheduleModel = {
-    id: 1,
+    schedule_id: 1,
     organization_id: 4,
     date_from: "2025-12-04",
     date_to: "2025-12-25",
