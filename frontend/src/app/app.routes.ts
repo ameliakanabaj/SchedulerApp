@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { Login, Register, LandingPage, OrganizationsPage, AvailabilityPage, Dashboard } from './pages';
 import { AuthGuard } from './core';
+import { CalendarPage } from './pages/calendar-page/calendar-page';
 
 export const routes: Routes = [
     {
@@ -29,9 +30,10 @@ export const routes: Routes = [
         path: 'availability',
         component: AvailabilityPage,
         canActivate: [AuthGuard],
+    },
+    {
+        path: 'calendar/:id',
+        component: CalendarPage,
+        canActivate: [AuthGuard],
     }
-    // {
-    //     path: 'organizations/:id',
-    //     component: OrganizationDetailsPage,
-    // }
 ];

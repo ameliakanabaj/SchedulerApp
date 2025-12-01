@@ -32,7 +32,7 @@
                             <span> closed </span>
                         </div>
                     } @else {
-                        <div class="open-day">
+                        <div class="open-day" [ngClass]="{'range-day': isInScheduleRange(day)}">
                             <ng-container *ngTemplateOutlet="calendarMode, context: {
                                 mode,
                                 day,
@@ -59,9 +59,9 @@
 <ng-template #calendarMode let-mode="mode" let-day="day">
     @if (mode === 'availability') {
         <div class="availability-buttons">
-            <button class="whole" [ngClass]="getAvailability(day)?.type === 'all-day' ? 'active' : 'inactive'" (click)="setAvailability(day, 'all-day')"> Whole day </button>
-            <button class="custom" [ngClass]="getAvailability(day)?.type === 'custom' ? 'active' : 'inactive'" (click)="openCustomHoursModal(day, '7', '20')"> Custom hours </button>
-            <button class="cannot" [ngClass]="getAvailability(day)?.type === 'cannot' ? 'active' : 'inactive'" (click)="setAvailability(day, 'cannot')"> Cannot work </button>
+            <button class="whole" [ngClass]="getDayType(day) === 'all-day' ? 'active' : 'inactive'" (click)="setAvailability(day, 'all-day')"> Whole day </button>
+            <button class="custom" [ngClass]="getDayType(day) === 'custom' ? 'active' : 'inactive'" (click)="openCustomHoursModal(day, '7', '20')"> Custom hours </button>
+            <button class="cannot" [ngClass]="getDayType(day) === 'cannot' ? 'active' : 'inactive'" (click)="setAvailability(day, 'cannot')"> Cannot work </button>
         </div>
     } @else if (mode === 'admin') {
         <div class="admin-buttons">

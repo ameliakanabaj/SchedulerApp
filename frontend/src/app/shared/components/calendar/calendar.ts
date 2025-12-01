@@ -5,28 +5,23 @@ import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-
 import { Authentication } from '@app/core';
 import { AvailabilityModel } from '@app/models';
 import { AddNotesModal } from '../add-notes-modal/add-notes-modal';
-
-export interface AvailabilityDTO {
-    date: string;
-    type: 'all-day' | 'custom' | 'cannot';
-    startDate?: string;
-    endDate?: string;
-    comments?: string;
-}
-
-export interface Schedule {
-    date: string;
-    open: boolean;
-    requiredStaff?: number;
-    shifts?: Shift[];
-    comments?: string;
-}
+import { ScheduleModel } from '@app/models/schedule.model';
 
 export interface Shift {
     userId: number;
     userName: string;
     startDate: string;
     endDate: string;
+}
+
+const tempSchedule: ScheduleModel = {
+    id: 1,
+    organization_id: 4,
+    date_from: "2025-12-04",
+    date_to: "2025-12-25",
+    generatedAt: 'poniedzialek',
+    status: 'closed',
+    deadline_generate_date: 'wtorek 21 grudnia',
 }
 
 @Component({
@@ -40,8 +35,9 @@ export class Calendar {
     @Input() mode = 'availability';
     @Input() month: number = new Date().getMonth();
     @Input() year: number = new Date().getFullYear();
-    @Input() schedules: Schedule[] = [];
-    @Input() availabilities: AvailabilityDTO[] = [];
+    @Input() scheduleRange: ScheduleModel | null = null;
+    @Input() schedules: ScheduleModel[] = [];
+    @Input() availabilities: AvailabilityModel[] = [];
 
     @Output() updateAvailability = new EventEmitter();
     @Output() updateAdminSettings = new EventEmitter();
@@ -106,50 +102,73 @@ export class Calendar {
         return false;
     }
 
-    getSchedule(day: Date): Schedule | undefined {
-        return this.schedules.find(s => s.date === day.toISOString().split('T')[0]);
-    }
 
     hasComments(day: Date): boolean {
         const iso = day.toISOString().split('T')[0];
 
-        const hasInAvail = this.availabilities.some(
-            s => s.date === iso && !!s.comments
+        return this.availabilities.some(a =>
+            a.start_time.startsWith(iso) && !!a.comments
         );
-
-        const hasInSchedules = this.schedules.some(
-            s => s.date === iso && !!s.comments
-        );
-
-        return hasInAvail || hasInSchedules;
     }
 
-    getAvailability(day: Date) {
-        return this.availabilities.find(a => a.date === day.toISOString().split('T')[0]);
+
+    getAvailability(day: Date): AvailabilityModel | undefined {
+        const iso = day.toISOString().split('T')[0];
+
+        return this.availabilities.find(a => 
+            a.start_time.startsWith(iso)
+        );
     }
 
     setAvailability(day: Date, type: 'all-day' | 'custom' | 'cannot') {
-        const date = day.toISOString().split('T')[0];
+        const iso = day.toISOString().split('T')[0];
         const existing = this.getAvailability(day);
 
-        if (existing) {
-            existing.type = type;
-        } else {
-            this.availabilities.push({ date, type });
+        if (type === 'all-day') {
+            const start = `${iso}T00:00:00`;
+            const end   = `${iso}T23:59:59`;
+
+            if (existing) {
+                existing.start_time = start;
+                existing.end_time = end;
+            } else {
+                this.availabilities.push({
+                    start_time: start,
+                    end_time: end,
+                });
+            }
+        }
+
+        if (type === 'cannot') {
+            const start = `${iso}T00:00:00`;
+
+            if (existing) {
+                existing.start_time = start;
+                existing.end_time = start;
+            } else {
+                this.availabilities.push({
+                    start_time: start,
+                    end_time: start,
+                });
+            }
         }
     }
 
     saveCustomHours(day: Date) {
-        const date = day.toISOString().split('T')[0];
-        const start = new Date(`${date}T${this.customStart}`).toISOString();
-        const end = new Date(`${date}T${this.customEnd}`).toISOString();
+        const iso = day.toISOString().split('T')[0];
+        const start = `${iso}T${this.customStart}:00`;
+        const end   = `${iso}T${this.customEnd}:00`;
 
         const existing = this.getAvailability(day);
+
         if (existing) {
-            existing.startDate = start;
-            existing.endDate = end;
+            existing.start_time = start;
+            existing.end_time = end;
         } else {
-            this.availabilities.push({ date, type: 'custom', startDate: start, endDate: end });
+            this.availabilities.push({
+                start_time: start,
+                end_time: end,
+            });
         }
     }
 
@@ -180,25 +199,19 @@ export class Calendar {
     }
 
     addCommentToDay(day: Date, comment: string): void {
-        const dayISO = day.toISOString().split('T')[0];
+        const iso = day.toISOString().split('T')[0];
+        const existing = this.getAvailability(day);
 
-        const availability = this.availabilities.find(a => a.date === dayISO);
-
-        if (!availability) {
-            this.availabilities.push({
-                date: dayISO,
-                type: 'all-day',
-                comments: comment,
-            });
+        if (existing) {
+            existing.comments = comment;
             return;
         }
 
-        availability.comments = comment;
-    }
-
-    toggleOpen(day: Date) {
-        const sched = this.getSchedule(day);
-        if (sched) sched.open = !sched.open;
+        this.availabilities.push({
+            start_time: `${iso}T00:00:00`,
+            end_time: `${iso}T23:59:59`,
+            comments: comment,
+        });
     }
 
     sendAvailability(): void {
@@ -214,5 +227,31 @@ export class Calendar {
                 }
             });
         }
+    }
+
+    isInScheduleRange(day: Date): boolean {
+        if (!this.scheduleRange) return false;
+
+        const from = new Date(this.scheduleRange.date_from);
+        const to = new Date(this.scheduleRange.date_to);
+
+        const d = new Date(day);
+        d.setHours(0,0,0,0);
+        from.setHours(0,0,0,0);
+        to.setHours(0,0,0,0);
+
+        return d >= from && d <= to;
+    }
+
+    getDayType(day: Date): 'all-day' | 'custom' | 'cannot' | null {
+        const av = this.getAvailability(day);
+        if (!av) return null;
+
+        const start = av.start_time.split('T')[1];
+        const end = av.end_time.split('T')[1];
+
+        if (start === "00:00:00" && end === "00:00:00") return 'cannot';
+        if (start === "00:00:00" && end === "23:59:59") return 'all-day';
+        return 'custom';
     }
 }
