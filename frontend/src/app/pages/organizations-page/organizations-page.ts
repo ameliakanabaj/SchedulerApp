@@ -14,7 +14,6 @@ export class OrganizationsPage implements OnInit {
     organization = signal<OrganizationModel | null>(null);
 
     private readonly modalService = inject(Modal);
-    private readonly toastr = inject(Toastr);
     private readonly organizationService = inject(Organization)
 
     ngOnInit(): void {
@@ -26,13 +25,12 @@ export class OrganizationsPage implements OnInit {
 
         modalRef.afterClosed$.subscribe((res: any) => {
             if (res) {
-                this.toastr.success('Organization created successfully!');
-                this.organization.set(res);
+                this.organization.set(res.organization);
             }
         });
     }
 
-    openAddNewMemberModal(): void {
+openAddNewMemberModal(): void {
         const modalRef = this.modalService.openModal(AddNewMemberModal, { data: {
             organization: this.organization(),
         }});

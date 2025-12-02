@@ -52,8 +52,41 @@ body {
     }
 }
 
-.no-org-alert {
+.no-org-alert-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     color: var(--secondary-text);
-    font-size: 40px;
-    margin-top: 20px;
+
+    .fa-solid {
+        color: var(--primary-color);
+    }
+
+    .no-org-alert {
+        color: var(--secondary-text);
+        font-size: 4rem;
+        margin-top: 20%;
+    }
 }
+
+.classic-button {
+    margin-top: 20px;
+    font-size: 3rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    border: 2px solid var(--primary-color);
+    padding: 10px 20px;
+    border-radius: 16px;
+
+
+    &:hover {
+        text-decoration: underline;
+        background-color: var(--primary-hover-bg);
+        color: var(--primary-text);
+        transform: scale(1.05);
+        transition: all 0.2s ease-in-out;
+    }
+}
+

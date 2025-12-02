@@ -1,5 +1,8 @@
 @if (!userHasOrganization) {
-    <h2 class="no-org-alert"> You do not belong to any organization</h2>
+    <div class="no-org-alert-container">
+        <h2 class="no-org-alert"> <i class="fa-solid fa-triangle-exclamation"></i> You do not belong to any organization <i class="fa-solid fa-triangle-exclamation"></i></h2>
+        <a routerLink="/organizations" class="classic-button"> Create one now! </a>
+    </div>
 } @else {
     <div class="availability-page-container">
         @if (isUserOrgAdmin) {

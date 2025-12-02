@@ -4,6 +4,7 @@ import { DialogRef } from '@ngneat/dialog';
 import { FormsModule } from '@angular/forms';
 import { Organization } from '@app/shared/services/organization/organization';
 import { Toastr } from '@app/shared/services';
+import { OrganizationModel } from '@app/models';
 
 @Component({
   selector: 'app-organization-creation-modal',
@@ -13,6 +14,7 @@ import { Toastr } from '@app/shared/services';
 })
 export class OrganizationCreationModal {
     organizationName: string = '';
+    organization: OrganizationModel | null = null;
 
     private readonly dialogRef = inject(DialogRef);
     private readonly organizationService = inject(Organization);
@@ -21,6 +23,7 @@ export class OrganizationCreationModal {
     createOrganization(): void {
         this.organizationService.create(this.organizationName).subscribe(({
             next: (res: any) => {
+                this.dialogRef.close(res);
                 this.toastrService.success('Succsessfully created new organization!')
             },
             error: (err: any) => {
@@ -31,7 +34,6 @@ export class OrganizationCreationModal {
 
     save(): void {
         this.createOrganization();
-        this.dialogRef.close(this.organizationName);
     }
 
     close(): void {
