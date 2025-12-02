@@ -4,7 +4,6 @@ import { ModalHeader } from "@app/shared/components/modal-header/modal-header/mo
 import { FormsModule } from '@angular/forms';
 import { Schedule } from '@app/shared/services/schedule/schedule';
 import { Toastr } from '@app/shared/services';
-import { ScheduleModel } from '@app/models/schedule.model';
 
 @Component({
   selector: 'app-create-schedule',

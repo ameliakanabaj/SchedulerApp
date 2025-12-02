@@ -24,7 +24,7 @@ describe('CalendarPage', () => {
         providers: [
             {
                 provide: ActivatedRoute,
-                useValue: { snapshot: { paramMap: { get: () => '1' } } }, // use numeric id string
+                useValue: { snapshot: { paramMap: { get: () => '1' } } },
             },
             {
                 provide: HttpClient,

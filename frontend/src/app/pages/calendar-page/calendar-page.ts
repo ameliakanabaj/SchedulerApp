@@ -4,16 +4,6 @@ import { ScheduleModel } from '@app/models/schedule.model';
 import { Calendar } from '@app/shared/components';
 import { Schedule } from '@app/shared/services/schedule/schedule';
 
-const tempSchedule: ScheduleModel = {
-    schedule_id: 1,
-    organization_id: 4,
-    date_from: "2025-12-04",
-    date_to: "2025-12-25",
-    generatedAt: 'poniedzialek',
-    status: 'closed',
-    deadline_generate_date: 'wtorek 21 grudnia',
-}
-
 @Component({
   selector: 'app-calendar-page',
   imports: [Calendar],

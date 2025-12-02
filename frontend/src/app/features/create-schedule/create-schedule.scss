@@ -1,5 +1,3 @@
-/* ...existing code... */
-
 .create-schedule-container {
   max-width: 640px;
   margin: 0 auto;
@@ -109,7 +107,6 @@
   }
 }
 
-/* responsive */
 @media (max-width: 680px) {
   .create-schedule-container {
     padding: 1rem;
@@ -126,7 +123,6 @@
   }
 }
 
-/* subtle entrance animation */
 @keyframes floatIn {
   from { opacity: 0; transform: translateY(8px) scale(0.995); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -135,5 +131,3 @@
 .create-schedule-container {
   animation: floatIn .28s cubic-bezier(.2,.9,.2,1) both;
 }
-
-/* ...existing code... */
