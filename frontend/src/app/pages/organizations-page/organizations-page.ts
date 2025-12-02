@@ -36,6 +36,8 @@ openAddNewMemberModal(): void {
         }});
 
         modalRef.afterClosed$.subscribe((res: any) => {
+            console.log(res);
+            
             if (res) {
                 this.getOrganization();
             }
@@ -45,6 +47,8 @@ openAddNewMemberModal(): void {
     private getOrganization(): void {
         this.organizationService.getAll().subscribe((res) => {
             if (res.length > 0) {
+                console.log('sciagam');
+                
                 this.organization.set(res[0]);
             }
         });

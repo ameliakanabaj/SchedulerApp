@@ -18,7 +18,6 @@ export class AvailabilityPage implements OnInit {
     userHasOrganization = true;
     isUserOrgAdmin = false;
 
-
     schedules: ScheduleModel[] = [];
     orgId: number | null = -1;   
     

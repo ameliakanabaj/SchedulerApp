@@ -30,12 +30,12 @@ export class AddNewMemberModal implements OnInit {
         this.userService.create({ organization_id: this.organizationId, first_name: this.firstName, last_name: this.lastName, email: this.email, password: this.password, role: 'EMPLOYEE' }).subscribe(({
             next: (res: any) => {
                 this.toastrService.success('Succsessfully created new member!')
+                this.modalRef.close('save');
             },
             error: (err: any) => {
                 this.toastrService.error(err.statusText, 'Something went wrong! Try again later')
             }
         }));
-        this.modalRef.close('save');
     }
 
     close(): void {
