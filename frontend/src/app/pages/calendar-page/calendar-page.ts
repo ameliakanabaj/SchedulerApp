@@ -28,12 +28,9 @@ export class CalendarPage {
 
     ngOnInit(): void {
         const id = Number(this.route.snapshot.paramMap.get('id'));
-        console.log(id);
         
         this.scheduleService.getById(id).subscribe(schedule => {
             this.schedule = schedule;
         });
-
-        this.schedule = tempSchedule //temp
     }
 }

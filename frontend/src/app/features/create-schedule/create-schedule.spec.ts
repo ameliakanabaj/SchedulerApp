@@ -1,23 +1,34 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CreateSchedule } from './create-schedule';
+import { createComponentFactory, Spectator } from '@ngneat/spectator';
+import { DialogRef } from '@ngneat/dialog';
+import { HttpClient } from '@angular/common/http';
+import { Toastr } from '../../shared/services/toastr/toastr';
 
 describe('CreateSchedule', () => {
-  let component: CreateSchedule;
-  let fixture: ComponentFixture<CreateSchedule>;
+    let sp: Spectator<CreateSchedule>;
+    const createComponent = createComponentFactory({
+        component: CreateSchedule,
+        providers: [
+            {
+                provide: DialogRef,
+                useValue: { data: { organizationId: 1 }, close: jest.fn()},
+            },
+            {
+                provide: HttpClient,
+                useValue: {},
+            },
+            {
+                provide: Toastr,
+                useValue: {},
+            }
+        ]
+    });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [CreateSchedule]
-    })
-    .compileComponents();
+    beforeEach(() => {
+        sp = createComponent();
+    });
 
-    fixture = TestBed.createComponent(CreateSchedule);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(sp.component).toBeTruthy();
+    });
 });

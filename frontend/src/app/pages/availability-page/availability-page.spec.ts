@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { AvailabilityPage } from './availability-page';
 import { createComponentFactory, Spectator } from '@ngneat/spectator';
 import { Toastr } from '../../shared/services/toastr/toastr';
+import { ActivatedRoute } from '@angular/router';
 
 describe('AvailabilityPage', () => {
     let sp: Spectator<AvailabilityPage>;
@@ -14,6 +15,10 @@ describe('AvailabilityPage', () => {
             },
             {
                 provide: Toastr,
+                useValue: {},
+            },
+            {
+                provide: ActivatedRoute,
                 useValue: {},
             }
         ]

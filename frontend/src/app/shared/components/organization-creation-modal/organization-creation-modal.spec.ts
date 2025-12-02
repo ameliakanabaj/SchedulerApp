@@ -35,7 +35,7 @@ describe('OrganizationCreationModal', () => {
 
             sp.component.save();
 
-            expect(modal.close).toHaveBeenCalledWith(sp.component.organizationName);
+            expect(modal.close).toHaveBeenCalledWith([]);
         });
     });
 

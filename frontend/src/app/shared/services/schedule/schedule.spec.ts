@@ -1,16 +1,26 @@
 import { TestBed } from '@angular/core/testing';
 
 import { Schedule } from './schedule';
+import { createServiceFactory, Spectator, SpectatorService } from '@ngneat/spectator';
+import { HttpClient } from '@angular/common/http';
 
 describe('Schedule', () => {
-  let service: Schedule;
+    let sp: SpectatorService<Schedule>;
+    const createService = createServiceFactory({
+        service: Schedule,
+        providers: [
+            {
+                provide: HttpClient,
+                useValue: {},
+            }
+        ]
+    });
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Schedule);
-  });
+    beforeEach(() => {
+        sp = createService();
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    it('should be created', () => {
+        expect(sp.service).toBeTruthy();
+    });
 });
