@@ -1,28 +1,13 @@
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, inject, input, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, input, Input, OnInit, Output } from '@angular/core';
 import { Availability as AvailabilityService, Modal, Toastr, User } from '@app/shared/services';
 import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-modal';
 import { Authentication } from '@app/core';
-import { AvailabilityModel } from '@app/models';
+import { AvailabilityModel, ShiftModel } from '@app/models';
 import { AddNotesModal } from '../add-notes-modal/add-notes-modal';
 import { ScheduleModel } from '@app/models/schedule.model';
-
-export interface Shift {
-    userId: number;
-    userName: string;
-    startDate: string;
-    endDate: string;
-}
-
-const tempSchedule: ScheduleModel = {
-    schedule_id: 1,
-    organization_id: 4,
-    date_from: "2025-12-04",
-    date_to: "2025-12-25",
-    generatedAt: 'poniedzialek',
-    status: 'closed',
-    deadline_generate_date: 'wtorek 21 grudnia',
-}
+import { Shift } from '@app/shared/services/shift/shift';
+import { SetShiftHoursModal } from '@app/features/set-shift-hours-modal/set-shift-hours-modal';
 
 @Component({
   selector: 'app-calendar',
@@ -30,28 +15,54 @@ const tempSchedule: ScheduleModel = {
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })
-export class Calendar {
+export class Calendar implements OnInit {
     xs = input(false);
-    @Input() mode = 'availability';
+    @Input() mode: 'availability' | 'admin' | 'view' = 'availability';
     @Input() month: number = new Date().getMonth();
     @Input() year: number = new Date().getFullYear();
     @Input() scheduleRange: ScheduleModel | null = null;
     @Input() schedules: ScheduleModel[] = [];
     @Input() availabilities: AvailabilityModel[] = [];
 
-    @Output() updateAvailability = new EventEmitter();
-    @Output() updateAdminSettings = new EventEmitter();
-
+    shifts: ShiftModel[] = [];
     customStart = '';
     customEnd = '';
+    isSelectMultipleDaysMode = false;
+    customDays: Date[] = [];
     daysInMonth = this.generateDays(this.year, this.month);
 
-    private availabilitiesToSend: AvailabilityModel[] = [];
+    readonly authService = inject(Authentication);
 
     private readonly modalService = inject(Modal);
     private readonly availabilityService = inject(AvailabilityService);
-    private readonly authService = inject(Authentication);
     private readonly toastrService = inject(Toastr);
+    private readonly shiftService = inject(Shift);
+
+    ngOnInit(): void {
+        if (this.mode === 'admin') {
+            this.getShifts();
+        } else if (this.mode === 'availability') {
+            this.getUserAvailabilities();
+        }
+    }
+
+    setMode(newMode: 'availability' | 'admin' | 'view'): void {
+        this.mode = newMode;
+        if (this.mode === 'admin') {
+            this.getShifts();
+        }
+    }
+
+    getShifts(): void {
+        this.shiftService.getAllShifts().subscribe({
+            next: (shifts) => {
+                this.shifts = shifts;
+            },
+            error: (err) => {
+                this.toastrService.error(err.statusText, 'Could not load shifts');
+            }
+        });
+    }
 
     generateDays(year: number, month: number): Date[] {
         const days: Date[] = [];
@@ -110,7 +121,10 @@ export class Calendar {
             a.start_time.startsWith(iso) && !!a.comments
         );
     }
-
+    getShiftsForDay(day: Date): ShiftModel[] {
+        const iso = day.toISOString().split('T')[0];
+        return this.shifts.filter(s => s.start_time.startsWith(iso));
+    }
 
     getAvailability(day: Date): AvailabilityModel | undefined {
         const iso = day.toISOString().split('T')[0];
@@ -172,6 +186,41 @@ export class Calendar {
         }
     }
 
+    openShiftModal(day: Date | Date[], shift: ShiftModel | null = null): void {
+        const modalRef = this.modalService.openModal(SetShiftHoursModal, {
+            data: {
+                day,
+                shift
+            }
+        });
+
+        modalRef.afterClosed$.subscribe((res: any) => {
+            if (!res) return;
+
+            if (Array.isArray(day)) {
+                this.applyShiftToMultipleDays(day, res);
+                return;
+            }
+
+            this.applyShiftToSingleDay(day, res, shift);
+        });
+    }
+
+    applyShiftToScheduleRange(): void {
+        if (!this.scheduleRange) return;
+
+        const from = new Date(this.scheduleRange.date_from);
+        const to = new Date(this.scheduleRange.date_to);
+
+        const days: Date[] = [];
+
+        for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+            days.push(new Date(d));
+        }
+
+        this.openShiftModal(days);
+    }
+
     openCustomHoursModal(day: Date, startTime: string, endTime: string): void {
         const modalRef = this.modalService.openModal(SetCustomHoursModal, { data: {
             minTime: startTime,
@@ -216,9 +265,8 @@ export class Calendar {
 
     sendAvailability(): void {
         const userId = this.authService.getUserId();
-        const filteredAvailabilites: AvailabilityModel[] = [];
         if (userId) {
-            this.availabilityService.bulkCreateAvailability(userId, filteredAvailabilites).subscribe({
+            this.availabilityService.bulkCreateAvailability(userId, this.availabilities).subscribe({
                 next: (res) => {
                     this.toastrService.success('Availability has been sent.');
                 },
@@ -253,5 +301,54 @@ export class Calendar {
         if (start === "00:00:00" && end === "00:00:00") return 'cannot';
         if (start === "00:00:00" && end === "23:59:59") return 'all-day';
         return 'custom';
+    }
+
+    
+    private applyShiftToMultipleDays(days: Date[], data: any): void {
+        for (const day of days) {
+            const iso = day.toISOString().split('T')[0];
+
+            this.shifts.push({
+                id: 0,
+                organization_id: this.authService.getOrgId()!,
+                start_time: `${iso}T${data.start}:00`,
+                end_time: `${iso}T${data.end}:00`,
+                required_people: data.required_people,
+                place: data.place,
+                assignments: []
+            });
+        }
+    }
+
+    private applyShiftToSingleDay(day: Date, data: any, existingShift: ShiftModel | null): void {
+        const iso = day.toISOString().split('T')[0];
+
+        if (existingShift) {
+            existingShift.start_time = `${iso}T${data.start}:00`;
+            existingShift.end_time = `${iso}T${data.end}:00`;
+            existingShift.required_people = data.required_people;
+            existingShift.place = data.place;
+        } else {
+            this.shifts.push({
+                id: 0,
+                organization_id: this.authService.getOrgId()!,
+                start_time: `${iso}T${data.start}:00`,
+                end_time: `${iso}T${data.end}:00`,
+                required_people: data.required_people,
+                place: data.place,
+                assignments: []
+            });
+        }
+    }
+
+    private getUserAvailabilities(): void {
+        this.availabilityService.getAvailabilityByUser(this.authService.getUserId()!).subscribe({
+            next: (availabilities) => {
+                this.availabilities = availabilities;
+            },
+            error: (err) => {
+                this.toastrService.error(err.statusText, 'Could not load availabilities');
+            }
+        });
     }
 }

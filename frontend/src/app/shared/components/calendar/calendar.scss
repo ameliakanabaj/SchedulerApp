@@ -48,7 +48,7 @@
 
         .day {
             background-color: var(--secondary-white);
-            height: 130px;
+            height: 180px;
             width: 200px;
             border-radius: 10px;
             display: flex;
@@ -114,10 +114,12 @@
         .open-day {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             margin-bottom: 5px;
             gap: 2px;
+            overflow: auto;
+
 
             .hours {
                 font-weight: 800;
@@ -151,8 +153,7 @@
     gap: 1.5px;
 
     button {
-        width: 180px;
-        height: 100%;
+        width: 180px !important;
 
         border: 1px solid #ccc;
         border-radius: 6px;
@@ -210,8 +211,128 @@
     }
 }
 
-.range-day {
-  background-color: rgba(0, 150, 255, 0.25);
-  border: 2px solid #0096ff;
-  border-radius: 6px;
+.day-empty {
+  background: transparent;
+  height: 130px;
+  border-radius: 10px;
+  box-shadow: none;
+  opacity: 0.35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(51,51,51,0.25);
+  font-size: 0.95rem;
+}
+
+.closed-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% - 40px);
+  color: var(--primary-red);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  background: linear-gradient(180deg, rgba(255,61,61,0.04), rgba(255,61,61,0.02));
+  border-radius: 0 0 10px 10px;
+  margin: 8px;
+}
+
+.shift-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    background: linear-gradient(90deg, rgba(25,118,210,0.4), rgba(94,197,133,0.4));
+    color: var(--secondary-text);
+    font-size: 0.85rem;
+    margin: 6px 0;
+    box-shadow: 0 6px 12px rgba(16,16,16,0.4);
+}
+
+.add-shift,
+.add-notes,
+.without-notes,
+.with-notes {
+    display: inline-grid;
+    place-items: center;
+    border-radius: 8px;
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+
+.add-shift {
+  background: var(--primary-color);
+  color: var(--primary-text);
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.add-shift[disabled] {
+    background: rgb(102, 102, 102);
+    cursor: not-allowed;
+}
+
+
+.with-notes {
+  border: 1px solid rgba(25,118,210,0.12);
+  color: var(--primary-blue);
+  background: rgba(25,118,210,0.03);
+}
+.without-notes {
+  border: 1px dashed rgba(25,118,210,0.06);
+  background: transparent;
+  color: var(--primary-blue);
+}
+
+.availability-buttons {
+  align-items: center;
+  button {
+    width: 140px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.88rem;
+    border-radius: 8px;
+  }
+}
+
+.admin-info {
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(161,31,74,0.03), rgba(25,118,210,0.02));
+  color: var(--secondary-text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+
+  .buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .calendar .calendar-grid .day,
+  .calendar .calendar-grid .day-empty {
+    height: 110px;
+    min-height: 110px;
+  }
+
+  .availability-send {
+    font-size: 1.4rem;
+    padding: 8px;
+  }
+
+  .availability-buttons {
+    button { width: 120px; font-size: 0.82rem; padding: 0.4rem; }
+  }
+}
+
+.day :focus,
+.add-notes:focus,
+.add-shift:focus,
+button:focus {
+  outline: 3px solid rgba(161,31,74,0.12);
+  outline-offset: 2px;
 }

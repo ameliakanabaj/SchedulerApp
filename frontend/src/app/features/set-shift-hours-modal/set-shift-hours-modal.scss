@@ -1,0 +1,175 @@
+.set-shift-modal {
+  padding: 1rem 1.25rem;
+  background: var(--primary-white);
+  color: var(--secondary-text);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(16,16,16,0.08);
+
+  .modal-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.6rem;
+
+    h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      color: var(--secondary-text);
+    }
+
+    .sub {
+      font-size: 0.8rem;
+      color: rgba(51,51,51,0.55);
+    }
+  }
+
+  .modal-form {
+    display: grid;
+    gap: 0.6rem;
+
+    label {
+      font-size: 0.85rem;
+      color: rgba(51,51,51,0.7);
+    }
+
+    input[type="time"],
+    input[type="text"],
+    input[type="number"] {
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      border: 1.2px solid var(--secondary-white);
+      background: var(--primary-white);
+      color: var(--secondary-text);
+      font-size: 0.95rem;
+      transition: border-color .12s ease, box-shadow .12s ease;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 6px 18px rgba(161,31,74,0.06);
+      }
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      margin-top: 0.45rem;
+
+      .btn {
+        padding: 0.56rem 0.9rem;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+      }
+
+      .btn-cancel {
+        background: transparent;
+        color: var(--secondary-text);
+        border: 1px solid rgba(0,0,0,0.06);
+
+        &:hover { background: rgba(0,0,0,0.03); }
+      }
+
+      .btn-save {
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        color: var(--primary-text);
+
+        &:disabled {
+          background: var(--secondary-white);
+          color: rgba(51,51,51,0.45);
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+.set-shift-modal {
+  padding: 1rem 1.25rem;
+  background: var(--primary-white);
+  color: var(--secondary-text);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(16,16,16,0.08);
+
+  .modal-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.6rem;
+
+    h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      color: var(--secondary-text);
+    }
+
+    .sub {
+      font-size: 0.8rem;
+      color: rgba(51,51,51,0.55);
+    }
+  }
+
+  .modal-form {
+    display: grid;
+    gap: 0.6rem;
+
+    label {
+      font-size: 0.85rem;
+      color: rgba(51,51,51,0.7);
+    }
+
+    input[type="time"],
+    input[type="text"],
+    input[type="number"] {
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      border: 1.2px solid var(--secondary-white);
+      background: var(--primary-white);
+      color: var(--secondary-text);
+      font-size: 0.95rem;
+      transition: border-color .12s ease, box-shadow .12s ease;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 6px 18px rgba(161,31,74,0.06);
+      }
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      margin-top: 0.45rem;
+
+      .btn {
+        padding: 0.56rem 0.9rem;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+      }
+
+      .btn-cancel {
+        background: transparent;
+        color: var(--secondary-text);
+        border: 1px solid rgba(0,0,0,0.06);
+
+        &:hover { background: rgba(0,0,0,0.03); }
+      }
+
+      .btn-save {
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        color: var(--primary-text);
+
+        &:disabled {
+          background: var(--secondary-white);
+          color: rgba(51,51,51,0.45);
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}

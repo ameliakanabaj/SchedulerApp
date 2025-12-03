@@ -1,0 +1,22 @@
+<app-modal-header title="Set shift" />
+
+<div class="set-shift-modal">
+    <form class="modal-form" (ngSubmit)="save()" #f="ngForm" novalidate>
+        <label for="startTime">Start time</label>
+        <input id="startTime" name="startTime" type="time" [(ngModel)]="startTime" required />
+
+        <label for="endTime">End time</label>
+        <input id="endTime" name="endTime" type="time" [(ngModel)]="endTime" required />
+
+        <label for="requiredPeople">Required people</label>
+        <input id="requiredPeople" name="requiredPeople" type="number" min="1" [(ngModel)]="required_people" />
+
+        <label for="place">Place / Notes</label>
+        <input id="place" name="place" type="text" [(ngModel)]="place" placeholder="Optional" />
+
+        <div class="actions">
+        <button type="button" class="btn btn-cancel" (click)="close()">Cancel</button>
+        <button type="submit" class="btn btn-save" [disabled]="!startTime || !endTime">Save</button>
+        </div>
+    </form>
+</div>
