@@ -24,7 +24,6 @@ export class SetShiftHoursModal implements OnInit {
         if (data.day) this.day = data.day;
         if (data.shift) {
             const s: any = data.shift;
-            // shift model may store full ISO timestamps — extract times for inputs
             if (s.start_time) this.startTime = s.start_time.split('T')[1]?.slice(0,5) ?? '';
             if (s.end_time) this.endTime = s.end_time.split('T')[1]?.slice(0,5) ?? '';
             if (s.required_people) this.required_people = s.required_people;
@@ -34,7 +33,6 @@ export class SetShiftHoursModal implements OnInit {
 
     save(): void {
         if (!this.startTime || !this.endTime) {
-            // minimal validation: require times
             this.modalRef.close({ error: 'missing_times' });
             return;
         }

@@ -4,6 +4,7 @@ import { ModalHeader } from "@app/shared/components/modal-header/modal-header/mo
 import { FormsModule } from '@angular/forms';
 import { Schedule } from '@app/shared/services/schedule/schedule';
 import { Toastr } from '@app/shared/services';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-schedule',
@@ -15,6 +16,7 @@ export class CreateSchedule implements OnInit {
     private readonly modalRef = inject(DialogRef);
     private readonly scheduleService = inject(Schedule);
     private readonly toastrService = inject(Toastr);
+    private readonly router = inject(Router);
 
     mode: 'create' | 'edit' = 'create';
     organizationId = this.modalRef.data.organizationId;
@@ -65,9 +67,10 @@ export class CreateSchedule implements OnInit {
             date_to: this.toISO(this.dateTo),
             deadline_generate_date: this.toISO(this.deadline),
         }).subscribe({
-            next: () => {
+            next: (res) => {
                 this.toastrService.success('Schedule created successfully');
                 this.close(true);
+                this.router.navigate(['/calendar', res.schedule_id]);
             },
             error: () => {
                 this.toastrService.error('Failed to create schedule');
@@ -83,9 +86,10 @@ export class CreateSchedule implements OnInit {
             date_to: this.toISO(this.dateTo),
             deadline_generate_date: this.toISO(this.deadline),
         }).subscribe({
-            next: () => {
+            next: (res) => {
                 this.toastrService.success('Schedule updated successfully');
                 this.close(true);
+                
             },
             error: () => {
                 this.toastrService.error('Failed to update schedule');

@@ -43,6 +43,17 @@
         grid-column: span 8;
         grid-row: span 2;
         box-shadow: 0 6px 18px var(--primary-shadow);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        h3 {
+            padding: 30px;
+            background-color: var(--primary-hover-bg);
+            border-radius: 20px;
+            color: var(--primary-text);
+            box-shadow: 2px 2px 8px var(--primary-shadow);
+        }
         .calendar-header {
             display: flex;
             justify-content: space-between;

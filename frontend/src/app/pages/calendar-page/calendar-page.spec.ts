@@ -3,8 +3,10 @@ import { CalendarPage } from './calendar-page';
 import { createComponentFactory, Spectator } from '@ngneat/spectator';
 import { HttpClient } from '@angular/common/http';
 import { Schedule } from '../../shared/services/schedule/schedule';
-import { of } from 'rxjs';
+import { Authentication } from '../../core/services/auth/authentication';
+import { Availability } from '../../shared/services/availability/availability';
 import { Toastr } from '../../shared/services/toastr/toastr';
+import { of } from 'rxjs';
 
 describe('CalendarPage', () => {
     let sp: Spectator<CalendarPage>;
@@ -37,19 +39,45 @@ describe('CalendarPage', () => {
                 }
             },
             {
+                provide: Authentication,
+                useValue: {
+                    getUserId: jest.fn().mockReturnValue(123),
+                    hasRole: jest.fn().mockReturnValue(false),
+                }
+            },
+            {
+                provide: Availability,
+                useValue: {
+                    getAvailabilityByUser: jest.fn().mockReturnValue(of([])),
+                }
+            },
+            {
                 provide: Toastr,
-                useValue: {},
+                useValue: {
+                    success: jest.fn(),
+                    error: jest.fn(),
+                },
             }
         ]
     });
 
     beforeEach(() => {
+        jest.clearAllMocks();
         sp = createComponent();
-
-        (sp.component as any).scheduleService.getById = jest.fn();
     });
 
     it('should create', () => {
         expect(sp.component).toBeTruthy();
+    });
+
+    it('should load schedule on init', () => {
+        const schedule = sp.inject(Schedule);
+        expect(schedule.getById).toHaveBeenCalledWith(1);
+        expect(sp.component.schedule).toEqual(tempSchedule);
+    });
+
+    it('should load user availabilities on init', () => {
+        const availability = sp.inject(Availability);
+        expect(availability.getAvailabilityByUser).toHaveBeenCalledWith(123);
     });
 });

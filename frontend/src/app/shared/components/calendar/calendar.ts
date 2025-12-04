@@ -1,6 +1,6 @@
 import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, inject, input, Input, OnInit, Output } from '@angular/core';
-import { Availability as AvailabilityService, Modal, Toastr, User } from '@app/shared/services';
+import { Component, inject, input, Input, OnInit } from '@angular/core';
+import { Availability as AvailabilityService, Modal, Toastr } from '@app/shared/services';
 import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-modal';
 import { Authentication } from '@app/core';
 import { AvailabilityModel, ShiftModel } from '@app/models';
@@ -39,6 +39,10 @@ export class Calendar implements OnInit {
     private readonly shiftService = inject(Shift);
 
     ngOnInit(): void {
+        if (this.authService.hasRole('ORG_ADMIN')) {
+            this.mode = 'admin';
+        }
+
         if (this.mode === 'admin') {
             this.getShifts();
         } else if (this.mode === 'availability') {
@@ -62,6 +66,10 @@ export class Calendar implements OnInit {
                 this.toastrService.error(err.statusText, 'Could not load shifts');
             }
         });
+    }
+
+    removeShift(shift: ShiftModel): void {
+        this.shifts = this.shifts.filter(s => s !== shift);
     }
 
     generateDays(year: number, month: number): Date[] {
@@ -108,11 +116,6 @@ export class Calendar implements OnInit {
         this.month += 1;
         this.refreshCalendar();
     }
-
-    isDayClosed(date: Date): boolean {
-        return false;
-    }
-
 
     hasComments(day: Date): boolean {
         const iso = day.toISOString().split('T')[0];
@@ -214,8 +217,13 @@ export class Calendar implements OnInit {
 
         const days: Date[] = [];
 
-        for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
-            days.push(new Date(d));
+        const current = new Date(from);
+        current.setHours(0, 0, 0, 0);
+        to.setHours(0, 0, 0, 0);
+
+        while (current <= to) {
+            days.push(new Date(current));
+            current.setDate(current.getDate() + 1);
         }
 
         this.openShiftModal(days);

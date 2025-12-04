@@ -16,6 +16,7 @@ export class Dashboard implements OnInit {
     userHasOrganization = true;
     today = new Date();
     wasPasswordNotifDisplayed? = true;
+    schedule = null;
 
     workdays = [];
 
@@ -24,10 +25,11 @@ export class Dashboard implements OnInit {
         { date: new Date(Date.now() + 86400000), start: '12:00', end: '20:00' }
     ];
 
-    notifications = [
-        { message: 'Zmieniono Twoją zmianę na 23.11', date: new Date() },
-        { message: 'Nowy komunikat od managera', date: new Date() }
-    ]; // temp
+    notifications: { message: string, date: Date }[] = [];
+    // notifications = [
+    //     { message: 'Zmieniono Twoją zmianę na 23.11', date: new Date() },
+    //     { message: 'Nowy komunikat od managera', date: new Date() }
+    // ]; // temp
 
     private readonly modalService = inject(Modal);
     private readonly authService = inject(Authentication);

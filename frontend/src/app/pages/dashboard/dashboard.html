@@ -12,13 +12,17 @@
 
         <div class="grid">
             <div class="card calendar">
-                <div class="calendar-header">
-                    <h3>Schedule</h3>
-                    <a routerLink="/availability">
-                        <button class="btn-availability"> Update availability </button>
-                    </a>
-                </div>
-                <app-calendar [xs]="true" mode="view"/>
+                @if (!schedule) {
+                    <h3> Your schedule will be displayed here, once it will be created </h3>
+                } @else {
+                    <div class="calendar-header">
+                        <h3>Schedule</h3>
+                        <a routerLink="/availability">
+                            <button class="btn-availability"> Update availability </button>
+                        </a>
+                    </div>
+                    <app-calendar [xs]="true" mode="view"/>
+                }
             </div>
 
             <div class="card shifts">
@@ -39,10 +43,14 @@
 
                 <div class="notifications-list">
                     @for (n of notifications; track $index) {
-                        <div class="notif">
-                            {{ n.message }}
-                            <span class="date">{{ n.date | date:'shortDate' }}</span>
-                        </div>
+                        @if (n) {
+                            <div class="notif">
+                                {{ n.message }}
+                                <span class="date">{{ n.date | date:'shortDate' }}</span>
+                            </div>
+                        }
+                    } @empty {
+                        <h4> empty :( </h4>
                     }
                 </div>
             </div>
