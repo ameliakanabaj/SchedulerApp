@@ -31,6 +31,8 @@ export class Calendar implements OnInit {
     customDays: Date[] = [];
     daysInMonth = this.generateDays(this.year, this.month);
 
+    activeMode: 'all-day' | 'custom' | 'cannot' = 'all-day';
+
     readonly authService = inject(Authentication);
 
     private readonly modalService = inject(Modal);
@@ -70,6 +72,10 @@ export class Calendar implements OnInit {
 
     removeShift(shift: ShiftModel): void {
         this.shifts = this.shifts.filter(s => s !== shift);
+    }
+
+    removeAllShifts(): void {
+        this.shifts = [];
     }
 
     generateDays(year: number, month: number): Date[] {
@@ -124,6 +130,7 @@ export class Calendar implements OnInit {
             a.start_time.startsWith(iso) && !!a.comments
         );
     }
+
     getShiftsForDay(day: Date): ShiftModel[] {
         const iso = day.toISOString().split('T')[0];
         return this.shifts.filter(s => s.start_time.startsWith(iso));
@@ -135,6 +142,10 @@ export class Calendar implements OnInit {
         return this.availabilities.find(a => 
             a.start_time.startsWith(iso)
         );
+    }
+
+    clearAvailability(): void {
+        this.availabilities = [];
     }
 
     setAvailability(day: Date, type: 'all-day' | 'custom' | 'cannot') {
@@ -229,18 +240,14 @@ export class Calendar implements OnInit {
         this.openShiftModal(days);
     }
 
-    openCustomHoursModal(day: Date, startTime: string, endTime: string): void {
-        const modalRef = this.modalService.openModal(SetCustomHoursModal, { data: {
-            minTime: startTime,
-            maxTime: endTime,
-        }});
+    openCustomHoursModal(): void {
+        this.activeMode = 'custom';
+        const modalRef = this.modalService.openModal(SetCustomHoursModal);
 
         modalRef.afterClosed$.subscribe((res: any) => {
             if (res) {
                 this.customStart = res.startTime;
                 this.customEnd = res.endTime;
-
-                this.saveCustomHours(day);
             }
         })
     }
@@ -311,6 +318,13 @@ export class Calendar implements OnInit {
         return 'custom';
     }
 
+    getDaySelectedHours(day: Date): string {
+        const av = this.getAvailability(day);
+        if (!av) return '';
+        const start = av.start_time.split('T')[1].substring(0,5);
+        const end = av.end_time.split('T')[1].substring(0,5);
+        return `${start} - ${end}`;
+    }
     
     private applyShiftToMultipleDays(days: Date[], data: any): void {
         for (const day of days) {

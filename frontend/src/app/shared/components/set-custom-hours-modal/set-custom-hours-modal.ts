@@ -9,21 +9,11 @@ import { ModalHeader } from '../modal-header/modal-header/modal-header';
   templateUrl: './set-custom-hours-modal.html',
   styleUrl: './set-custom-hours-modal.scss',
 })
-export class SetCustomHoursModal implements OnInit {
+export class SetCustomHoursModal {
     startTime = '';
     endTime = '';
-    day!: Date;
-    minTime = '';
-    maxTime = '';
 
     private readonly modalRef = inject(DialogRef);
-
-    ngOnInit(): void {
-        const data = this.modalRef.data;
-        this.minTime = data.minTime;
-        this.maxTime = data.maxTime;
-        this.day = data.day;
-    }
 
     saveHours(): void {
         this.modalRef.close({ startTime: this.startTime, endTime: this.endTime});
