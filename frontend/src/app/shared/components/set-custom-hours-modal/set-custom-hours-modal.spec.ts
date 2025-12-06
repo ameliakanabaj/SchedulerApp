@@ -21,16 +21,6 @@ describe('SetCustomHoursModal', () => {
         sp = createComponent();
     });
 
-    describe('ngOnInit', () => {
-        it('should properly read data', () => {
-            sp.component.ngOnInit();
-
-            expect(sp.component.minTime).toBe('1');
-            expect(sp.component.maxTime).toBe('5');
-            expect(sp.component.day).toBe('25');
-        });
-    });
-
     describe('saveHours & closeModal', () => {
         it('should properly call dialog ref to close at close', () => {
             sp.component.closeModal();

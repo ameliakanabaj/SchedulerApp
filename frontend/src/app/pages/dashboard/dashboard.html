@@ -30,10 +30,14 @@
                 
                 <div class="shifts-list">
                     @for (shift of upcomingShifts; track $index) {
-                        <div class="shift">
-                            <strong>{{ shift.date | date:'EEEE, dd MMM' }}</strong>
-                            <p>{{ shift.start }} - {{ shift.end }}</p>
-                        </div>
+                        @if (shift) {
+                            <div class="shift">
+                                <strong>{{ shift.date | date:'EEEE, dd MMM' }}</strong>
+                                <p>{{ shift.start }} - {{ shift.end }}</p>
+                            </div>
+                        }
+                    } @empty {
+                        <p> No shifts assigned for now </p>
                     }
                 </div>
             </div>
@@ -50,7 +54,7 @@
                             </div>
                         }
                     } @empty {
-                        <h4> empty :( </h4>
+                        <p> No new notifications to display </p>
                     }
                 </div>
             </div>

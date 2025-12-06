@@ -20,10 +20,11 @@ export class Dashboard implements OnInit {
 
     workdays = [];
 
-    upcomingShifts = [
-        { date: new Date(), start: '08:00', end: '16:00' },
-        { date: new Date(Date.now() + 86400000), start: '12:00', end: '20:00' }
-    ];
+    // upcomingShifts = [
+    //     { date: new Date(), start: '08:00', end: '16:00' },
+    //     { date: new Date(Date.now() + 86400000), start: '12:00', end: '20:00' }
+    // ];
+    upcomingShifts: { date: Date, start: string, end: string}[] = [];
 
     notifications: { message: string, date: Date }[] = [];
     // notifications = [

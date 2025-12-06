@@ -4,13 +4,12 @@ import { RouterLink } from '@angular/router';
 import { Authentication } from '@app/core';
 import { CreateSchedule } from '@app/features/create-schedule/create-schedule';
 import { ScheduleModel } from '@app/models/schedule.model';
-import { Calendar } from '@app/shared/components';
 import { Modal } from '@app/shared/services';
 import { Schedule } from '@app/shared/services/schedule/schedule';
 
 @Component({
   selector: 'app-availability-page',
-  imports: [Calendar, RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe],
   templateUrl: './availability-page.html',
   styleUrl: './availability-page.scss',
 })
