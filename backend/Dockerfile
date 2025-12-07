@@ -18,4 +18,4 @@ COPY --from=build /app /app
 
 EXPOSE 8083
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
