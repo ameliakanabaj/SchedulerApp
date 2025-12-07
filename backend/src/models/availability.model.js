@@ -62,11 +62,12 @@ async function getAvailabilitiesByUserIds(userIds = []) {
   });
 }
 
-async function updateAvailability(id, data) {
-  const allowed = {};
-  if (data.start_time) allowed.start_time = new Date(data.start_time);
-  if (data.end_time) allowed.end_time = new Date(data.end_time);
-  if (data.comments !== undefined) allowed.comments = data.comments;
+async function updateAvailability(id, data, existing) {
+  const allowed = {
+    start_time: data.start_time ? new Date(data.start_time) : existing.start_time,
+    end_time: data.end_time ? new Date(data.end_time) : existing.end_time,
+    comments: data.comments !== undefined ? data.comments : existing.comments,
+  };
 
   return await prisma.availability.update({
     where: { availability_id: Number(id) },
@@ -81,6 +82,22 @@ async function deleteAvailability(id) {
   return true;
 }
 
+async function deleteAvailabilityByUserAndDay(user_id, dateString) {
+  const startOfDay = new Date(dateString + "T00:00:00.000Z");
+  const nextDayStart = new Date(startOfDay);
+  nextDayStart.setDate(nextDayStart.getDate() + 1);
+
+  return await prisma.availability.deleteMany({
+    where: {
+      user_id: Number(user_id),
+      start_time: {
+        gte: startOfDay,
+        lt: nextDayStart
+      }
+    },
+  });
+}
+
 module.exports = {
   createAvailability,
   createAvailabilitiesBulk,
@@ -89,4 +106,5 @@ module.exports = {
   getAvailabilitiesByUserIds,
   updateAvailability,
   deleteAvailability,
+  deleteAvailabilityByUserAndDay,
 };

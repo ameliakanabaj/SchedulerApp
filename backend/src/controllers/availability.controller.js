@@ -33,18 +33,9 @@ async function createAvailability(req, res, next) {
       return next({ type: "BUSINESS_LOGIC", message: "No permission", statusCode: 403 });
     }
 
-    const existingAvailabilities = await availabilityModel.getAvailabilityByUser(user_id);
-    const hasConflict = existingAvailabilities.some(a =>
-      (new Date(start_time) < a.end_time && new Date(end_time) > a.start_time)
-    );
+    const day = new Date(start_time).toISOString().split("T")[0];
 
-    if (hasConflict) {
-      return next({
-        type: "BUSINESS_LOGIC",
-        message: "Availability overlaps with existing record",
-        statusCode: 400,
-      });
-    }
+    await availabilityModel.deleteAvailabilityByUserAndDay(user_id, day);
 
     const availability = await availabilityModel.createAvailability({
       user_id,
@@ -103,60 +94,17 @@ async function createAvailabilitiesBulk(req, res, next) {
       }
     }
 
-    const existingAvailabilities = await availabilityModel.getAvailabilitiesByUserIds(userIds);
-
-    const availabilityMap = {};
-    existingAvailabilities.forEach(a => {
-      if (!availabilityMap[a.user_id]) availabilityMap[a.user_id] = [];
-      availabilityMap[a.user_id].push(a);
-    });
-
     for (const item of items) {
-      const existing = availabilityMap[item.user_id] || [];
-      const s = new Date(item.start_time);
-      const e = new Date(item.end_time);
-
-      const conflict = existing.some(a =>
-        s < a.end_time && e > a.start_time
-      );
-
-      if (conflict) {
-        return next({
-          type: "BUSINESS_LOGIC",
-          message: `Availability for user ${item.user_id} overlaps with existing record`,
-          statusCode: 400,
-        });
-      }
-    }
-
-    const byUser = {};
-
-    for (const i of items) {
-      if (!byUser[i.user_id]) byUser[i.user_id] = [];
-      byUser[i.user_id].push(i);
-    }
-
-    for (const userId in byUser) {
-      const arr = byUser[userId];
-
-      arr.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
-
-      for (let i = 0; i < arr.length - 1; i++) {
-        const currEnd = new Date(arr[i].end_time);
-        const nextStart = new Date(arr[i + 1].start_time);
-
-        if (currEnd > nextStart) {
-          return next({
-            type: "BUSINESS_LOGIC",
-            message: `Bulk conflict for user ${userId}: items overlap with each other`,
-            statusCode: 400,
-          });
-        }
-      }
+      const day = new Date(item.start_time).toISOString().split("T")[0];
+      await availabilityModel.deleteAvailabilityByUserAndDay(item.user_id, day);
     }
 
     const created = await availabilityModel.createAvailabilitiesBulk(items);
-    res.status(201).json({ inserted: created.length, records: created });
+
+    res.status(201).json({
+      inserted: created.length,
+      records: created
+    });
 
   } catch (err) {
     next(err);
@@ -200,8 +148,13 @@ async function getAvailabilityByUser(req, res, next) {
 async function updateAvailability(req, res, next) {
   try {
     const { id } = req.params;
-
     const existing = req.existing;
+
+    const updateData = Array.isArray(req.body) ? req.body[0] : req.body;
+
+    if (!updateData) {
+      return next({ type: "BUSINESS_LOGIC", message: "Missing update data", statusCode: 400 });
+    }
 
     const targetUser = await userModel.getUserById(existing.user_id);
 
@@ -209,31 +162,14 @@ async function updateAvailability(req, res, next) {
       return next({ type: "BUSINESS_LOGIC", message: "No permission", statusCode: 403 });
     }
 
-    const s = req.body.start_time
-      ? new Date(req.body.start_time)
-      : existing.start_time;
-
-    const e = req.body.end_time
-      ? new Date(req.body.end_time)
-      : existing.end_time;
-
-    const all = await availabilityModel.getAvailabilityByUser(existing.user_id);
-
-    const conflict = all.some(a =>
-      a.availability_id !== existing.availability_id &&
-      s < a.end_time &&
-      e > a.start_time
-    );
-
-    if (conflict) {
-      return next({
-        type: "BUSINESS_LOGIC",
-        message: "Updated availability overlaps with existing record",
-        statusCode: 400
-      });
+    const s = updateData.start_time ? new Date(updateData.start_time) : existing.start_time;
+    const now = new Date();
+    if (s <= now) {
+      return next({ type: "BUSINESS_LOGIC", message: "start_time must be in the future", statusCode: 400 });
     }
 
-    const updated = await availabilityModel.updateAvailability(id, req.body);
+    const updated = await availabilityModel.updateAvailability(id, updateData, existing);
+
     res.json(updated);
 
   } catch (err) {

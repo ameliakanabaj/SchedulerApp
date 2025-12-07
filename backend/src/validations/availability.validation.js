@@ -9,10 +9,16 @@ const validate = (req, res, next) => {
 const validateDateRange = (start, end) => {
   const s = new Date(start);
   const e = new Date(end);
+  const now = new Date();
 
   if (isNaN(s) || isNaN(e)) return "Invalid dates";
   if (e <= s) return "end_time must be after start_time";
-  if (s <= new Date()) return "start_time must be in the future";
+
+  if (s <= now || e <= now) return "start_time and end_time must be in the future";
+
+  if (s.toISOString().split("T")[0] !== e.toISOString().split("T")[0]) {
+    return "start_time and end_time must be on the same day";
+  }
 
   return null;
 };
@@ -25,8 +31,13 @@ const createAvailabilityValidation = [
     return true;
   }),
 
-  body("start_time").exists().isISO8601().withMessage("start_time must be valid ISO date"),
-  body("end_time").exists().isISO8601().withMessage("end_time must be valid ISO date"),
+  body("start_time")
+    .exists().withMessage("start_time is required")
+    .isISO8601().withMessage("start_time must be valid ISO date"),
+
+  body("end_time")
+    .exists().withMessage("end_time is required")
+    .isISO8601().withMessage("end_time must be valid ISO date"),
 
   body().custom((value) => {
     const error = validateDateRange(value.start_time, value.end_time);
@@ -38,7 +49,9 @@ const createAvailabilityValidation = [
 ];
 
 const createAvailabilitiesBulkValidation = [
-  body().isArray({ min: 1 }).withMessage("Body must be an array with at least 1 item"),
+  body()
+    .isArray({ min: 1 })
+    .withMessage("Body must be an array with at least 1 item"),
 
   body("*.user_id").custom((value, { req }) => {
     if (req.user.role === "EMPLOYEE" && value !== undefined) {
@@ -47,8 +60,13 @@ const createAvailabilitiesBulkValidation = [
     return true;
   }),
 
-  body("*.start_time").exists().isISO8601().withMessage("start_time must be valid"),
-  body("*.end_time").exists().isISO8601().withMessage("end_time must be valid"),
+  body("*.start_time")
+    .exists().withMessage("start_time is required")
+    .isISO8601().withMessage("start_time must be valid"),
+
+  body("*.end_time")
+    .exists().withMessage("end_time is required")
+    .isISO8601().withMessage("end_time must be valid"),
 
   body().custom((rows) => {
     for (const r of rows) {
@@ -78,4 +96,4 @@ const updateAvailabilityValidation = [
   validate,
 ];
 
-module.exports = { createAvailabilityValidation, createAvailabilitiesBulkValidation, updateAvailabilityValidation };
+module.exports = { createAvailabilityValidation, createAvailabilitiesBulkValidation, updateAvailabilityValidation, validateDateRange, };
