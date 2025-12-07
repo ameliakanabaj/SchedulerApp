@@ -1,9 +1,41 @@
 <div class="calendar" [ngClass]="{ 'calendar-xs' : xs() }">
+    @if (authService.hasRole('ORG_ADMIN') && !xs()) {
+        <div class="mode-switcher">
+            <button [ngClass]="mode === 'availability' ? 'active' : 'inactive'" (click)="setMode('availability')"> Availability Mode </button>
+            <button [ngClass]="mode === 'admin' ? 'active' : 'inactive'" (click)="setMode('admin')"> Admin Mode </button>
+            <button [ngClass]="mode === 'view' ? 'active' : 'inactive'" (click)="setMode('view')"> View Mode </button>
+        </div>
+    }
     <div class="calendar-header">
         <i class="fa-solid fa-backward" (click)="previousMonth()"></i>
         <h3>{{ year }} / {{ month + 1 }}</h3>
         <i class="fa-solid fa-forward" (click)="nextMonth()"></i>
     </div>
+    @if (mode === 'admin') {
+        <div class="admin-info">
+            <h3> You can set closed days and manage shifts. </h3>
+            <div class="buttons">
+                @if (scheduleRange) {
+                    <button class="select-all-days" (click)="applyShiftToScheduleRange()"> Select All Days </button>
+                    <button class="select-all-days" [disabled]="shifts.length === 0" (click)="removeAllShifts()"> Remove all shifts </button>
+                }
+                <!-- <button (click)="isSelectMultipleDaysMode = !isSelectMultipleDaysMode"> Activate Bulk Select </button> -->
+                <!-- @if (customDays.length > 0) {
+                    <button (click)="openShiftModal(customDays)"> Create shifts to selected days. </button>
+                } -->
+            </div>
+        </div>
+    } @else if (mode === 'availability') {
+        <div class="admin-info">
+            <h3> Please select your availability for the month. </h3>
+            <div class="buttons">
+                <button class="select-all-days" [ngClass]="activeMode === 'all-day' ? 'active' : 'inactive'" (click)="activeMode = 'all-day'"> Whole day </button>
+                <button class="select-all-days" [ngClass]="activeMode === 'custom' ? 'active' : 'inactive'" (click)="openCustomHoursModal()"> Custom Hours </button>
+                <button class="select-all-days" [ngClass]="activeMode === 'cannot' ? 'active' : 'inactive'" (click)="activeMode = 'cannot'"> Cannot Work </button>
+                <button class="select-all-days" [disabled]="availabilities.length === 0" (click)="clearAvailability()"> Clear all availability </button>
+            </div>
+        </div>
+    }
     <div class="days-list">
         <ul>
             <li> Monday </li>
@@ -18,28 +50,47 @@
     <div class="calendar-grid">
         @for (day of daysInMonth; track $index) {
             @if (day) {
-                <div class="day" [ngClass]="{ 'closed' : isDayClosed(day) }">
-                    <!-- <span class="date">{{ day.toISOString() | date:'fullDate' }} </span> -->
-                    <span class="date">
-                        {{ day.getDate() }}, {{ day | date:'MMMM'}}
-                        @if (mode === 'availability') {
-                            <button class="add-notes" [ngClass]="hasComments(day) ? 'with-notes' : 'without-notes'" (click)="openAddNoteModal(day);"> <i class="fa-regular fa-message"></i> </button>
-                        }
-                    </span>
+                @let isDayInScheduleRange = (isInScheduleRange(day) && scheduleRange ? true : false);
+                @if (mode === 'availability') {
+                    <div (click)="activeMode !== 'custom' ? setAvailability(day, activeMode) : saveCustomHours(day)" class="day">
+                        <!-- <span class="date">{{ day.toISOString() | date:'fullDate' }} </span> -->
+                        <span class="date">
+                            {{ day.getDate() }}, {{ day | date:'MMMM'}}
+                            @if (mode === 'availability') {
+                                <button class="add-notes" [ngClass]="hasComments(day) ? 'with-notes' : 'without-notes'" (click)="openAddNoteModal(day);"> <i class="fa-regular fa-message"></i> </button>
+                            }
+                        </span>
 
-                    @if (isDayClosed(day)) {
-                        <div class="closed-day">
-                            <span> closed </span>
-                        </div>
-                    } @else {
                         <div class="open-day">
                             <ng-container *ngTemplateOutlet="calendarMode, context: {
                                 mode,
                                 day,
                             }"/>
                         </div>
-                    }
-                </div>
+                    </div>
+                } @else if (mode === 'admin') {
+                    <div class="day">
+                        <!-- <span class="date">{{ day.toISOString() | date:'fullDate' }} </span> -->
+                        <span class="date">
+                            {{ day.getDate() }}, {{ day | date:'MMMM'}}
+                        </span>
+                        <div class="open-day" [ngClass]="{'range-day': isDayInScheduleRange}">
+                            @for (shift of getShiftsForDay(day); track $index) {
+                                <div class="shift-entry">
+                                    <span> <i class="fa-solid fa-clock"></i>: {{ shift.start_time | date:'h:mm a' }} - {{ shift.end_time | date:'h:mm a' }} </span>
+                                    <span> <i class="fa-solid fa-person"></i>: {{ shift.required_people }}</span>
+                                    <button class="remove-shift" (click)="removeShift(shift)"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                            }
+                            @if (isDayInScheduleRange) {}
+                            <ng-container *ngTemplateOutlet="calendarMode, context: {
+                                mode,
+                                day,
+                                isDayInScheduleRange
+                            }"/>
+                        </div>
+                    </div>
+                }
             } @else {
                 <div class="day-empty"></div>
             }
@@ -50,22 +101,32 @@
         <button class="availability-send" (click)="sendAvailability()"> Send your availability </button>
     } @else if (mode === 'admin') {
         <div class="admin-buttons">
-            <button class="cancel-button"> Cancel changes </button>
-            <button class="save-button"> Save changes </button>
+            <button class="shifts-send"> Send shifts </button>
         </div>
     }
 </div>
 
-<ng-template #calendarMode let-mode="mode" let-day="day">
+<ng-template #calendarMode let-mode="mode" let-day="day" let-isDayInScheduleRange="isDayInScheduleRange">
     @if (mode === 'availability') {
         <div class="availability-buttons">
-            <button class="whole" [ngClass]="getAvailability(day)?.type === 'all-day' ? 'active' : 'inactive'" (click)="setAvailability(day, 'all-day')"> Whole day </button>
-            <button class="custom" [ngClass]="getAvailability(day)?.type === 'custom' ? 'active' : 'inactive'" (click)="openCustomHoursModal(day, '7', '20')"> Custom hours </button>
-            <button class="cannot" [ngClass]="getAvailability(day)?.type === 'cannot' ? 'active' : 'inactive'" (click)="setAvailability(day, 'cannot')"> Cannot work </button>
+            @switch (getDayType(day)) {
+                @case ('all-day') {
+                    <div class="whole"> Whole day </div>
+                }
+                @case ('custom') {
+                    <div class="custom"> Custom hours <i class="fa-solid fa-circle-info" title="{{ getDaySelectedHours(day) }}"></i></div>
+                }
+                @case ('cannot') {
+                    <div class="cannot"> Cannot work </div>
+                }
+            }
+            <!-- <button class="whole" [ngClass]="getDayType(day) === 'all-day' ? 'active' : 'inactive'" (click)="setAvailability(day, 'all-day')"> Whole day </button> -->
+            <!-- <button class="custom" [ngClass]="getDayType(day) === 'custom' ? 'active' : 'inactive'" (click)="openCustomHoursModal(day, '7', '20')"> Custom hours </button> -->
+            <!-- <button class="cannot" [ngClass]="getDayType(day) === 'cannot' ? 'active' : 'inactive'" (click)="setAvailability(day, 'cannot')"> Cannot work </button> -->
         </div>
     } @else if (mode === 'admin') {
-        <div class="admin-buttons">
-            <button> Change status </button>
+        <div class="admin-buttons-day">
+            <button class="add-shift" (click)="openShiftModal(day)" [disabled]="!isDayInScheduleRange"> Add Shift </button>
         </div>
     } @else {
 

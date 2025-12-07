@@ -28,7 +28,7 @@ export class Authentication {
         }
 
         const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.roles.includes(role);
+        return payload.role === role;
     }
 
     logout(): void {
@@ -47,6 +47,16 @@ export class Authentication {
 
         const payload = JSON.parse(atob(token.split('.')[1]));
         return payload.userId;
+    }
+
+    getOrgId(): number | null {
+        const token = this.getToken();
+        if (!token) {
+            return null;
+        }
+
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.organization_id;
     }
 
     isAuthenticated(): boolean {

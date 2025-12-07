@@ -3,8 +3,8 @@ import { AssignmentModel } from "./assignment.model";
 export interface ShiftModel {
     id: number,
     organization_id: number,
-    start_time: Date,
-    end_time: Date,
+    start_time: string,
+    end_time: string,
     required_people?: number,
     place?: string,
     assignments: AssignmentModel[],

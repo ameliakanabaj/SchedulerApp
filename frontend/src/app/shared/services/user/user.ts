@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from 'environments/environment.developement';
-import { catchError, Observable, throwError } from 'rxjs';
-import { Toastr } from '@app/shared/services';
+import { environment } from 'environments/environment';
+import { Observable } from 'rxjs';
 import { UserModel } from '@app/models';
 
 @Injectable({

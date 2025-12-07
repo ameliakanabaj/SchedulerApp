@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Toastr } from '@app/shared/services';
 import { Authentication } from '@app/core';
 
 @Component({
     selector: 'app-register',
-    imports: [FormsModule],
+    imports: [FormsModule, RouterLink],
     templateUrl: './register.html',
     styleUrl: './register.scss',
 })

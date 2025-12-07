@@ -1,7 +1,7 @@
 import { Register } from './register';
 import { createComponentFactory, Spectator } from '@ngneat/spectator';
 import { of, Subject, throwError } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Toastr } from '../../../shared/services/toastr/toastr';
 import { Authentication } from '../../../core/services/auth/authentication';
 
@@ -34,6 +34,10 @@ describe('Register', () => {
             {
                 provide: Authentication,
                 useValue: authMock,
+            },
+            {
+                provide: ActivatedRoute,
+                useValue: {},
             }
         ]
     });

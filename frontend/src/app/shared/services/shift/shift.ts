@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from 'environments/environment.developement';
+import { environment } from 'environments/environment';
 import { ShiftModel } from '@app/models';
 import { Observable } from 'rxjs';
 

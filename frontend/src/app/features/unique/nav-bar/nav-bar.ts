@@ -12,17 +12,19 @@ import { Authentication } from '@app/core';
 })
 export class NavBar implements OnInit {
     userAuthenticated = signal(false);
-    route = signal(''); // temp hardcode
+    route = signal('');
 
     isDarkMode = signal(false);
 
     @Output() darkMode = new EventEmitter<boolean>();
 
     private readonly authService = inject(Authentication);
+    private readonly activatedRoute = inject(ActivatedRoute);
 
     ngOnInit(): void {
         this.isDarkMode.set(true);
         this.userAuthenticated.set(this.authService.isAuthenticated());
+        this.route.set(this.activatedRoute.snapshot.routeConfig?.path ?? '');
     }
 
     toggleDarkMode(): void {

@@ -1,0 +1,21 @@
+<app-modal-header [title]="mode === 'create' ? 'Create New Schedule' : 'Edit Schedule'"/>
+
+<div class="create-schedule-container">
+    <form class="schedule-form" (ngSubmit)="createOrUpdateSchedule()">
+        <label for="dateFrom"> Date From: </label>
+        <input type="date" id="dateFrom" name="dateFrom" [(ngModel)]="dateFrom" required />
+
+        <label for="dateTo"> Date To: </label>
+        <input type="date" id="dateTo" name="dateTo" [(ngModel)]="dateTo" required />
+
+        <label for="deadline"> Deadline Date: </label>
+        <input type="date" id="deadline" name="deadline" [(ngModel)]="deadline" required />
+
+        <div class="form-actions">
+            <button type="button" (click)="close(false)"> Cancel </button>
+            <button type="submit" [disabled]="!dateFrom || !dateTo || !deadline">
+                {{ mode === 'create' ? 'Create Schedule' : 'Update Schedule' }}
+            </button>
+        </div>
+    </form>
+</div>

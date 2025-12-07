@@ -4,5 +4,4 @@ export interface AvailabilityModel {
   start_time: string;
   end_time: string;
   comments?: string;
-  status?: string;
 }

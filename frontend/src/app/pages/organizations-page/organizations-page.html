@@ -1,9 +1,8 @@
 <div class="organizations-page-container">
-
     @if (!organization()) {
             <h2> You are not a member of any organization yet. </h2>
             <p> To get started, you can create a new organization. </p>
-            <button class="create-organization-button" (click)="openCreateOrganizationModal();"> Create Organization </button>
+            <button class="classic-button" (click)="openCreateOrganizationModal();"> Create Organization </button>
     } @else {
         <div class="organization-card">
             <div class="organization-card-header">
@@ -11,10 +10,8 @@
                 <button class="add-new-button" (click)="openAddNewMemberModal()"> Add new member </button>
             </div>
             <div class="organization-card-body">
-                @if (organization()) {
-                    @for (user of organization()!.users; track $index) {
-                        <app-user-card [user]="user" />
-                    }
+                @for (user of organization()!.users; track $index) {
+                    <app-user-card [user]="user" />
                 }
             </div>
         </div>

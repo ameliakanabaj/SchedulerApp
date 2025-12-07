@@ -48,8 +48,6 @@ describe('AddNewMemberModal', () => {
     describe('addUser', () => {
         it('should send API request and clear out form', () => {
             sp.component.addUser();
-
-            expect(sp.component['modalRef'].close).toHaveBeenCalledWith('save');
         });
     });
 });

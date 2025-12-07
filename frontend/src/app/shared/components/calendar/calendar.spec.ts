@@ -1,23 +1,58 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { Calendar } from './calendar';
 import { createComponentFactory, Spectator } from '@ngneat/spectator';
 import { Authentication } from '../../../core/services/auth/authentication';
-import { HttpClient } from '@angular/common/http';
 import { Toastr } from '../../services/toastr/toastr';
+import { Modal } from '../../services/modal/modal';
+import { Availability } from '../../services/availability/availability';
+import { Shift } from '../../services/shift/shift';
+import { of } from 'rxjs';
 
 describe('Calendar', () => {
     let sp: Spectator<Calendar>;
     const createComponent = createComponentFactory({
         component: Calendar,
         providers: [
-            { provide: Authentication, useValue: {}},
-            { provide: HttpClient, useValue: {}},
-            { provide: Toastr, useValue: {}},
+            {
+                provide: Authentication,
+                useValue: {
+                    hasRole: jest.fn().mockReturnValue(false),
+                    getUserId: jest.fn().mockReturnValue(123),
+                    getOrgId: jest.fn().mockReturnValue(1),
+                }
+            },
+            {
+                provide: Toastr,
+                useValue: {
+                    success: jest.fn(),
+                    error: jest.fn(),
+                }
+            },
+            {
+                provide: Modal,
+                useValue: {
+                    openModal: jest.fn().mockReturnValue({
+                        afterClosed$: of(null)
+                    })
+                }
+            },
+            {
+                provide: Availability,
+                useValue: {
+                    getAvailabilityByUser: jest.fn().mockReturnValue(of([])),
+                    bulkCreateAvailability: jest.fn().mockReturnValue(of({}))
+                }
+            },
+            {
+                provide: Shift,
+                useValue: {
+                    getAllShifts: jest.fn().mockReturnValue(of([]))
+                }
+            }
         ]
     });
 
     beforeEach(() => {
+        jest.clearAllMocks();
         sp = createComponent();
     })
 

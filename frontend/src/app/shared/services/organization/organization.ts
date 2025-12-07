@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from 'environments/environment.developement';
-import { catchError, Observable, throwError } from 'rxjs';
+import { environment } from 'environments/environment';
+import { Observable, tap } from 'rxjs';
 import { OrganizationModel } from '@app/models';
-import { Toastr } from '@app/shared/services';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +20,10 @@ export class Organization {
         return this.http.get<Organization>(`${this.organizationUrl}/${id}`);
     }
 
-    create(name: string): Observable<Organization> {
-        return this.http.post<Organization>(this.organizationUrl, { name });
+    create(name: string): Observable<any> {
+        return this.http.post<{ organization: Organization, token: string}>(this.organizationUrl, { name }).pipe(
+            tap((res) => localStorage.setItem('authToken', res.token)
+        ));
     }
 
     update(id: number, name: string): Observable<Organization> {
