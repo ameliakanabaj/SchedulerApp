@@ -338,4 +338,89 @@ describe("Shift Controller", () => {
       expect(next).toHaveBeenCalledWith(error);
     });
   });
+
+  describe("createShiftsBulk", () => {
+    it("ORG_ADMIN cannot create shifts for another org", async () => {
+      req.user = { role: "ORG_ADMIN", organization_id: 2 };
+      req.body = [
+        { organization_id: 2, start_time: "2026-01-01T10:00:00Z", end_time: "2026-01-01T12:00:00Z" },
+        { organization_id: 3, start_time: "2026-01-01T12:00:00Z", end_time: "2026-01-01T14:00:00Z" }
+      ];
+
+      await shiftController.createShiftsBulk(req, res, next);
+
+      expect(next).toHaveBeenCalledWith({
+        type: "BUSINESS_LOGIC",
+        message: "You can only create shifts for your organization (2)",
+        statusCode: 403,
+      });
+    });
+
+    it("should return 400 if start_time is in the past", async () => {
+      req.user = { role: "GLOBAL_ADMIN" };
+      req.body = [
+        { organization_id: 1, start_time: "2000-01-01T10:00:00Z", end_time: "2000-01-01T12:00:00Z" }
+      ];
+
+      await shiftController.createShiftsBulk(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "BUSINESS_LOGIC",
+          message: expect.stringContaining("Shift start_time cannot be in the past")
+        })
+      );
+    });
+
+    it("should create shifts and return 201", async () => {
+      req.user = { role: "GLOBAL_ADMIN" };
+      req.body = [
+        {
+          organization_id: 1,
+          start_time: "2030-01-01T10:00:00Z",
+          end_time: "2030-01-01T12:00:00Z"
+        },
+        {
+          organization_id: 1,
+          start_time: "2030-01-02T10:00:00Z",
+          end_time: "2030-01-02T12:00:00Z"
+        }
+      ];
+
+      shiftModel.createShiftsBulk.mockResolvedValue([
+        { shift_id: 1 },
+        { shift_id: 2 }
+      ]);
+
+      await shiftController.createShiftsBulk(req, res, next);
+
+      expect(shiftModel.createShiftsBulk).toHaveBeenCalledWith(req.body);
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({
+        inserted: 2,
+        records: [
+          { shift_id: 1 },
+          { shift_id: 2 }
+        ]
+      });
+    });
+
+    it("should call next(err) when model throws", async () => {
+      req.user = { role: "GLOBAL_ADMIN" };
+      req.body = [
+        {
+          organization_id: 1,
+          start_time: "2030-01-01T10:00:00Z",
+          end_time: "2030-01-01T12:00:00Z"
+        }
+      ];
+
+      const err = new Error("DB error");
+      shiftModel.createShiftsBulk.mockRejectedValue(err);
+
+      await shiftController.createShiftsBulk(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(err);
+    });
+  });
 });
