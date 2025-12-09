@@ -1,58 +1,62 @@
-@if (!userHasOrganization) {
-    <div class="no-org-alert-container">
-        <h2 class="no-org-alert"> <i class="fa-solid fa-triangle-exclamation"></i> You do not belong to any organization <i class="fa-solid fa-triangle-exclamation"></i></h2>
-        <a routerLink="/organizations" class="classic-button"> Create one now! </a>
-    </div>
+@if (isLoading) {
+    <app-loading />
 } @else {
-    <div class="availability-page-container">
-        @if (isUserOrgAdmin) {
-            <button class="createNewSchedule" (click)="openNewScheduleModal()">
-                Create New Schedule
-            </button>
-        }
-        @if (schedules.length > 0) {
-            <div class="schedules-grid">
-                @for (schedule of schedules; track $index) {
-                    <article class="schedule-card">
-                        <div class="card-accent" aria-hidden="true"></div>
+    @if (!userHasOrganization) {
+        <div class="no-org-alert-container">
+            <h2 class="no-org-alert"> <i class="fa-solid fa-triangle-exclamation"></i> You do not belong to any organization <i class="fa-solid fa-triangle-exclamation"></i></h2>
+            <a routerLink="/organizations" class="classic-button"> Create one now! </a>
+        </div>
+    } @else {
+        <div class="availability-page-container">
+            @if (isUserOrgAdmin) {
+                <button class="createNewSchedule" (click)="openNewScheduleModal()">
+                    Create New Schedule
+                </button>
+            }
+            @if (schedules.length > 0) {
+                <div class="schedules-grid">
+                    @for (schedule of schedules; track $index) {
+                        <article class="schedule-card">
+                            <div class="card-accent" aria-hidden="true"></div>
 
-                        <header class="card-head">
-                            <h3 class="title">Schedule #{{ schedule.schedule_id}} </h3>
-                            <span class="status" [attr.data-status]="schedule.status">{{ schedule.status }}</span>
-                        </header>
+                            <header class="card-head">
+                                <h3 class="title">Schedule #{{ $index }} </h3>
+                                <span class="status" [attr.data-status]="schedule.status">{{ schedule.status }}</span>
+                            </header>
 
-                        <div class="card-body">
-                            <div class="dates">
-                                <div class="date">
-                                    <div class="label"> From </div>
-                                    <div class="value">{{ schedule.date_from | date:'mediumDate' }}</div>
+                            <div class="card-body">
+                                <div class="dates">
+                                    <div class="date">
+                                        <div class="label"> From </div>
+                                        <div class="value">{{ schedule.date_from | date:'mediumDate' }}</div>
+                                    </div>
+                                    <div class="date">
+                                        <div class="label"> To </div>
+                                        <div class="value">{{ schedule.date_to | date:'mediumDate' }}</div>
+                                    </div>
                                 </div>
-                                <div class="date">
-                                    <div class="label"> To </div>
-                                    <div class="value">{{ schedule.date_to | date:'mediumDate' }}</div>
+
+                                <div class="meta">
+                                    <div class="generated">Generated: <strong>{{ schedule.generatedAt }}</strong></div>
+                                    <div class="deadline">Deadline: <strong>{{ schedule.deadline_generate_date }}</strong></div>
+                                    <div class="assignments">{{ schedule.assignments?.length ?? 0 }} assignments</div>
                                 </div>
                             </div>
 
-                            <div class="meta">
-                                <div class="generated">Generated: <strong>{{ schedule.generatedAt }}</strong></div>
-                                <div class="deadline">Deadline: <strong>{{ schedule.deadline_generate_date | date:'short' }}</strong></div>
-                                <div class="assignments">{{ schedule.assignments?.length ?? 0 }} assignments</div>
-                            </div>
-                        </div>
-
-                        <footer class="card-foot">
-                            <a class="view-calendar" [routerLink]="['/calendar', schedule.schedule_id]"> Send Availability </a>
-                            @if (isUserOrgAdmin) {
-                                <button class="btn-edit" type="button" (click)="openEditScheduleModal(schedule)">Edit</button>
-                            }
-                        </footer>
-                    </article>
-                }
-            </div>
-        } @else {
-            <div class="no-schedules">
-                No schedules yet - create one to get started.
-            </div>
-        }
-    </div>
+                            <footer class="card-foot">
+                                <a class="view-calendar" [routerLink]="['/calendar', schedule.schedule_id]"> Send Availability </a>
+                                @if (isUserOrgAdmin) {
+                                    <button class="btn-edit" type="button" (click)="openEditScheduleModal(schedule)">Edit</button>
+                                }
+                            </footer>
+                        </article>
+                    }
+                </div>
+            } @else {
+                <div class="no-schedules">
+                    No schedules yet - create one to get started.
+                </div>
+            }
+        </div>
+    }
 }

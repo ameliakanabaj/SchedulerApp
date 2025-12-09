@@ -6,16 +6,18 @@ import { CreateSchedule } from '@app/features/create-schedule/create-schedule';
 import { ScheduleModel } from '@app/models/schedule.model';
 import { Modal } from '@app/shared/services';
 import { Schedule } from '@app/shared/services/schedule/schedule';
+import { Loading } from "@app/shared/components";
 
 @Component({
   selector: 'app-availability-page',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, Loading],
   templateUrl: './availability-page.html',
   styleUrl: './availability-page.scss',
 })
 export class AvailabilityPage implements OnInit {
     userHasOrganization = true;
     isUserOrgAdmin = false;
+    isLoading = true;
 
     schedules: ScheduleModel[] = [];
     orgId: number | null = -1;   
@@ -30,9 +32,11 @@ export class AvailabilityPage implements OnInit {
         if (this.orgId) {
             this.scheduleService.getAllByOrganization(this.orgId).subscribe((res) => {
                 this.schedules = this.sortSchedulesByDateTo(res);
+                this.isLoading = false;
             });
         } else {
             this.userHasOrganization = false;
+            this.isLoading = false;
         }
 
         if (this.authService.hasRole('ORG_ADMIN')) {

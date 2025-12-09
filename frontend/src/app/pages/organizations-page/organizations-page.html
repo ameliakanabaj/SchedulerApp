@@ -1,5 +1,10 @@
+@if (isLoading) {
+    <app-loading text="Loading organization data..." />
+}
+
 <div class="organizations-page-container">
     @if (!organization()) {
+
             <h2> You are not a member of any organization yet. </h2>
             <p> To get started, you can create a new organization. </p>
             <button class="classic-button" (click)="openCreateOrganizationModal();"> Create Organization </button>
