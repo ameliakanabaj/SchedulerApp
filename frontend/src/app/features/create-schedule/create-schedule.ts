@@ -4,7 +4,7 @@ import { ModalHeader } from "@app/shared/components/modal-header/modal-header/mo
 import { FormsModule } from '@angular/forms';
 import { Schedule } from '@app/shared/services/schedule/schedule';
 import { Toastr } from '@app/shared/services';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-schedule',
@@ -18,6 +18,7 @@ export class CreateSchedule implements OnInit {
     private readonly toastrService = inject(Toastr);
     private readonly router = inject(Router);
 
+    isLoading = true;
     mode: 'create' | 'edit' = 'create';
     organizationId = this.modalRef.data.organizationId;
     scheduleId?: number = this.modalRef.data.scheduleId;
@@ -33,6 +34,8 @@ export class CreateSchedule implements OnInit {
         if (this.scheduleId) {
             this.mode = 'edit';
             this.loadSchedule();
+        } else {
+            this.isLoading = false;
         }
     }
 
@@ -50,6 +53,8 @@ export class CreateSchedule implements OnInit {
                 this.close(false);
             }
         });
+
+        this.isLoading = false;
     }
 
     createOrUpdateSchedule(): void {
