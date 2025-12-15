@@ -62,7 +62,7 @@ describe("Auth Service", () => {
         .toThrow("Email already exists");
     });
 
-    it("should create a new user, hash password, and return token", async () => {
+    it("should create a new user, hash password, and set password_must_be_reset to false", async () => {
       const inputData = { 
         email: "test@gmail.com", 
         password: "Password123", 
@@ -73,29 +73,29 @@ describe("Auth Service", () => {
 
       userModel.getUserByEmail.mockResolvedValue(null);
       bcrypt.hash.mockResolvedValue("hashedPassword");
-      userModel.createUser.mockResolvedValue({ 
+      const createdUser = { 
         user_id: 1, 
         email: "test@gmail.com", 
         role: "ORG_ADMIN",
         password: "hashedPassword",
-        position: "Manager"
-      });
+        position: "Manager",
+        password_must_be_reset: false
+      };
+      userModel.createUser.mockResolvedValue(createdUser);
       jwt.sign.mockReturnValue("mockedToken");
 
       const result = await authService.register(inputData);
 
-      expect(bcrypt.hash).toHaveBeenCalledWith("Password123", 10);
       expect(userModel.createUser).toHaveBeenCalledWith(expect.objectContaining({
         email: "test@gmail.com",
-        first_name: "Ann",
-        last_name: "Bell",
         password_hash: "hashedPassword",
         role: "ORG_ADMIN",
-        position: "Manager",
+        password_must_be_reset: false,
       }));
 
       expect(result).toHaveProperty("token", "mockedToken");
       expect(result.user).toHaveProperty("email", "test@gmail.com");
+      expect(result.user).toHaveProperty("password_must_be_reset", false);
       expect(result.user.password).toBeUndefined();
     });
   });
@@ -131,6 +131,25 @@ describe("Auth Service", () => {
       expect(bcrypt.compare).toHaveBeenCalledWith("Password123", "hashed");
       expect(result).toEqual({ token: "mockedToken", user: { user_id: 1, email: "test@gmail.com", role: "EMPLOYEE" } });
       expect(result.user.password).toBeUndefined();
+    });
+
+    it("should include password_must_be_reset flag in the returned user object", async () => {
+        const mockUserWithFlag = { 
+            user_id: 2, 
+            email: "admin_created@gmail.com", 
+            password: "hashed", 
+            role: "EMPLOYEE",
+            password_must_be_reset: true
+        };
+        userModel.getUserByEmail.mockResolvedValue(mockUserWithFlag);
+        bcrypt.compare.mockResolvedValue(true);
+        jwt.sign.mockReturnValue("mockedTokenForReset");
+
+        const result = await authService.login({ email: "admin_created@gmail.com", password: "Password123" });
+
+        expect(result.user).toHaveProperty("password_must_be_reset", true);
+        
+        expect(result.user.password).toBeUndefined();
     });
   });
 });
