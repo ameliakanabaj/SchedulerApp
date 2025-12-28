@@ -1,3 +1,5 @@
+const prisma = require("./prisma");
+
 //pomocnicza funkcja tymczasowa
 async function send_notifications(shift_id) {
     console.log(
@@ -6,12 +8,18 @@ async function send_notifications(shift_id) {
   }
   
 async function generateSchedule(schedule_id) {
+  console.log("schedule_id:", schedule_id);
+
     try {
       const schedule = await prisma.schedule.findUnique({
         where: { schedule_id },
         include: { organization: true },
       });
   
+
+      console.log("schedule:", schedule);
+      console.log("date_from:", schedule.date_from);
+      console.log("date_to:", schedule.date_to);
       if (!schedule) {
         throw new Error("Schedule not found");
       }
@@ -24,6 +32,9 @@ async function generateSchedule(schedule_id) {
         },
       });
   
+      console.log("shifts found:", shifts.length);
+      console.log("shifts:", shifts);
+
       const users = await prisma.user.findMany({
         where: { organization_id: schedule.organization_id },
         include: { availabilities: true },
@@ -110,7 +121,7 @@ async function generateSchedule(schedule_id) {
     //     where: { schedule_id },
     //     data: { status: "GENERATED" },
     //   });
-  
+      console.log(assignments);
       return assignments;
     } catch (error) {
       console.error("Schedule generation failed:", error);
@@ -122,5 +133,11 @@ async function generateSchedule(schedule_id) {
   
       throw error;
     }
-  }
+}
   
+generateSchedule(2);
+
+
+module.exports = {
+  generateSchedule,
+};
