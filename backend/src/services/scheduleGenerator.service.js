@@ -8,7 +8,6 @@ async function send_notifications(shift_id) {
   }
   
 async function generateSchedule(schedule_id) {
-  console.log("schedule_id:", schedule_id);
 
     try {
       const schedule = await prisma.schedule.findUnique({
@@ -16,10 +15,6 @@ async function generateSchedule(schedule_id) {
         include: { organization: true },
       });
   
-
-      console.log("schedule:", schedule);
-      console.log("date_from:", schedule.date_from);
-      console.log("date_to:", schedule.date_to);
       if (!schedule) {
         throw new Error("Schedule not found");
       }
@@ -31,9 +26,6 @@ async function generateSchedule(schedule_id) {
           end_time: { lte: schedule.date_to },
         },
       });
-  
-      console.log("shifts found:", shifts.length);
-      console.log("shifts:", shifts);
 
       const users = await prisma.user.findMany({
         where: { organization_id: schedule.organization_id },
@@ -80,11 +72,6 @@ async function generateSchedule(schedule_id) {
         }
   
         candidates.sort((a, b) => a.assigned_hours - b.assigned_hours);
-
-        console.log("SHIFT:", shift.shift_id);
-        console.log("required:", requiredPeople);
-        console.log("candidates:", candidates.map(c => c.user_id));
-
   
         for (let i = 0; i < requiredPeople; i++) {
             const chosen = candidates[i];
@@ -94,9 +81,6 @@ async function generateSchedule(schedule_id) {
             );
     
             worker.assigned_hours += shiftHours;
-            
-            console.log("chosen:", chosen.user_id);
-            console.log("assigned_hours:", worker.assigned_hours);
 
             assignments.push({
                 shift_id: shift.shift_id,
@@ -140,9 +124,6 @@ async function generateSchedule(schedule_id) {
       throw error;
     }
 }
-  
-generateSchedule(2);
-
 
 module.exports = {
   generateSchedule,
