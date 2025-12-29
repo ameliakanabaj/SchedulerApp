@@ -71,10 +71,10 @@ async function generateSchedule(schedule_id) {
     
             await send_notifications(shift.shift_id);
   
-        //   await prisma.schedule.update({
-        //     where: { schedule_id },
-        //     data: { status: "FAILED" },
-        //   });
+          await prisma.schedule.update({
+            where: { schedule_id },
+            data: { status: "FAILED" },
+          });
   
           return [];
         }
@@ -107,29 +107,35 @@ async function generateSchedule(schedule_id) {
       }
   
       for (const a of assignments) {
-        // await prisma.assignment.create({
-        //   data: {
-        //     schedule_id,
-        //     shift_id: a.shift_id,
-        //     user_id: a.user_id,
-        //     roleOnShift: a.role_on_shift,
-        //   },
-        // });
+        await prisma.assignment.create({
+          data: {
+            schedule_id,
+            shift_id: a.shift_id,
+            user_id: a.user_id,
+            role_on_shift: a.role_on_shift,
+          },
+        });
       }
   
-    //   await prisma.schedule.update({
-    //     where: { schedule_id },
-    //     data: { status: "GENERATED" },
-    //   });
+      await prisma.schedule.update({
+        where: { schedule_id },
+        data: { 
+          status: "GENERATED",
+          generated_at: new Date(),
+        },
+      });
       console.log(assignments);
       return assignments;
     } catch (error) {
       console.error("Schedule generation failed:", error);
   
-    //   await prisma.schedule.update({
-    //     where: { schedule_id },
-    //     data: { status: "FAILED" },
-    //   });
+      await prisma.schedule.update({
+        where: { schedule_id },
+        data: { 
+          status: "FAILED",
+          generated_at: new Date(), 
+        },
+      });
   
       throw error;
     }
