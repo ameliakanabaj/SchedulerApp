@@ -1,4 +1,5 @@
 const scheduleModel = require("../models/schedule.model");
+const scheduleGenerator = require("../services/scheduleGenerator.service");
 
 async function createSchedule(req, res, next) {
   try {
@@ -171,6 +172,51 @@ async function getScheduleById(req, res, next) {
   }
 }
 
+async function generateSchedule(req, res, next) {
+  try {
+    const { scheduleId } = req.body;
+
+    if (!scheduleId) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "scheduleId is required",
+        statusCode: 400,
+      });
+    }
+
+    const schedule = await scheduleModel.getScheduleById(scheduleId);
+
+    if (!schedule) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Schedule not found",
+        statusCode: 404,
+      });
+    }
+
+    if (
+      req.user.role !== "GLOBAL_ADMIN" &&
+      Number(req.user.organization_id) !== Number(schedule.organization_id)
+    ) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Access denied",
+        statusCode: 403,
+      });
+    }
+
+    const assignments = await scheduleGenerator.generateSchedule(scheduleId);
+
+    res.json({
+      message: "Schedule generated",
+      assignments,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+
 
 module.exports = {
   createSchedule,
@@ -178,5 +224,6 @@ module.exports = {
   getSchedulesForUser,
   updateSchedule,
   deleteSchedule,
-  getScheduleById
+  getScheduleById,
+  generateSchedule
 };
