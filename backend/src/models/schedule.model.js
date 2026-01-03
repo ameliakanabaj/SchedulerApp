@@ -58,6 +58,42 @@ async function deleteSchedule(id) {
   return true;
 }
 
+async function canGenerateSchedule(scheduleId) {
+  const schedule = await prisma.schedule.findUnique({
+    where: { schedule_id: Number(scheduleId) },
+    include: {
+      organization: {
+        include: {
+          users: {
+            include: {
+              availabilities: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!schedule) return null;
+
+  const now = new Date();
+
+  const deadlineDatePassed = now >= schedule.deadline_generate_date;
+
+  const users = schedule.organization.users;
+
+  const allUsersSentAvailability =
+    users.length > 0 &&
+    users.every((user) => user.availabilities.length > 0);
+
+  return {
+    deadlineDatePassed,
+    allUsersSentAvailability,
+    canGenerate: deadlineDatePassed || allUsersSentAvailability,
+  };
+}
+
+
 module.exports = {
   createSchedule,
   getScheduleById,
@@ -65,4 +101,5 @@ module.exports = {
   getSchedulesForUser,
   updateSchedule,
   deleteSchedule,
+  canGenerateSchedule
 };

@@ -70,6 +70,13 @@ const generateScheduleValidation = [
   validate,
 ];
 
+const checkGenerateScheduleValidation = [
+  param("scheduleId")
+    .isInt().withMessage("scheduleId must be an integer"),
+  validate,
+];
+
+
 module.exports = {
   createScheduleValidation,
   updateScheduleValidation,
@@ -77,5 +84,6 @@ module.exports = {
   getUserSchedulesValidation,
   deleteScheduleValidation,
   getScheduleValidation,
-  generateScheduleValidation
+  generateScheduleValidation,
+  checkGenerateScheduleValidation
 };

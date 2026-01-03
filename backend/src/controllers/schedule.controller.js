@@ -216,6 +216,38 @@ async function generateSchedule(req, res, next) {
   }
 }
 
+async function checkIfScheduleReady(req, res, next) {
+  try {
+    const { scheduleId } = req.params;
+
+    const schedule = await scheduleModel.getScheduleById(scheduleId);
+
+    if (!schedule) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Schedule not found",
+        statusCode: 404,
+      });
+    }
+
+    if (
+      req.user.role !== "GLOBAL_ADMIN" &&
+      Number(req.user.organization_id) !== Number(schedule.organization_id)
+    ) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Access denied",
+        statusCode: 403,
+      });
+    }
+
+    const result = await scheduleModel.canGenerateSchedule(scheduleId);
+
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
 
 
 module.exports = {
@@ -225,5 +257,6 @@ module.exports = {
   updateSchedule,
   deleteSchedule,
   getScheduleById,
-  generateSchedule
+  generateSchedule,
+  checkIfScheduleReady
 };
