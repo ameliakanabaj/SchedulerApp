@@ -1,3 +1,5 @@
+const notificationService = require("./notifications.service");
+
 async function generateSchedule(schedule_id) {
     const schedule = await prisma.schedule.findUnique({
         where: { schedule_id },
@@ -78,6 +80,22 @@ async function generateSchedule(schedule_id) {
         where: { schedule_id },
         data: { status: "GENERATED" }
     });
+
+    const admins = await prisma.user.findMany({
+        where: {
+            organization_id: schedule.organization_id,
+            role: "ORG_ADMIN"
+        }
+    });
+
+    for (const admin of admins) {
+        await notificationService.sendNotification({
+            userId: admin.user_id,
+            scheduleId: schedule_id,
+            type: "SCHEDULE_GENERATED",
+            message: `Schedule #${schedule_id} has been successfully generated with ${assignments.length} assignments.`
+        });
+    }
 
     return assignments;
 }

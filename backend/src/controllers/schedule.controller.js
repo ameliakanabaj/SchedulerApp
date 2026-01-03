@@ -1,4 +1,6 @@
 const scheduleModel = require("../models/schedule.model");
+const notificationService = require("../services/notifications.service");
+const userModel = require("../models/user.model");
 
 async function createSchedule(req, res, next) {
   try {
@@ -21,6 +23,19 @@ async function createSchedule(req, res, next) {
       date_to,
       deadline_generate_date,
     });
+
+    const employees = await userModel.getUsersByOrganization(organization_id);
+
+    const targets = employees.filter(u => u.role === "EMPLOYEE");
+
+    Promise.allSettled(targets.map(user => {
+        return notificationService.sendNotification({
+            userId: user.user_id,
+            scheduleId: schedule.schedule_id,
+            type: "AVAILABILITY_OPEN",
+            message: `Availability is open for period: ${date_from} to ${date_to}. Please submit before ${deadline_generate_date}.`
+        });
+    }));
 
     res.status(201).json(schedule);
   } catch (err) {
