@@ -1,4 +1,5 @@
 const scheduleModel = require("../models/schedule.model");
+const scheduleGenerator = require("../services/scheduleGenerator.service");
 const notificationService = require("../services/notifications.service");
 const userModel = require("../models/user.model");
 
@@ -24,18 +25,23 @@ async function createSchedule(req, res, next) {
       deadline_generate_date,
     });
 
-    const employees = await userModel.getUsersByOrganization(organization_id);
+    if (schedule) {
+        const users = await userModel.getUsersByOrganization(organization_id);
+        const employees = users.filter(u => u.role === "EMPLOYEE");
 
-    const targets = employees.filter(u => u.role === "EMPLOYEE");
+        employees.forEach(user => {
+            const startStr = new Date(date_from).toLocaleDateString("pl-PL");
+            const endStr = new Date(date_to).toLocaleDateString("pl-PL");
+            const deadlineStr = new Date(deadline_generate_date).toLocaleDateString("pl-PL");
 
-    Promise.allSettled(targets.map(user => {
-        return notificationService.sendNotification({
-            userId: user.user_id,
-            scheduleId: schedule.schedule_id,
-            type: "AVAILABILITY_OPEN",
-            message: `Availability is open for period: ${date_from} to ${date_to}. Please submit before ${deadline_generate_date}.`
+            notificationService.sendNotification({
+                userId: user.user_id,
+                scheduleId: schedule.schedule_id,
+                type: "AVAILABILITY_OPEN",
+                message: `Availability is open for period: ${startStr} to ${endStr}. Please submit before ${deadlineStr}.`
+            }).catch(err => console.error("Notification error:", err));
         });
-    }));
+    }
 
     res.status(201).json(schedule);
   } catch (err) {
@@ -78,13 +84,6 @@ async function getSchedulesForUser(req, res, next) {
         message: "Access denied",
         statusCode: 403,
       });
-    } else if (req.user.role !== "GLOBAL_ADMIN" &&
-      Number(req.user.organization_id) !== Number(organizationId)) {
-        return next({
-          type: "BUSINESS_LOGIC",
-          message: "Access denied",
-          statusCode: 403,
-        });
     }
 
     const schedules = await scheduleModel.getSchedulesForUser(userId);
@@ -186,6 +185,82 @@ async function getScheduleById(req, res, next) {
   }
 }
 
+async function generateSchedule(req, res, next) {
+  try {
+    const { scheduleId } = req.body;
+
+    if (!scheduleId) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "scheduleId is required",
+        statusCode: 400,
+      });
+    }
+
+    const schedule = await scheduleModel.getScheduleById(scheduleId);
+
+    if (!schedule) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Schedule not found",
+        statusCode: 404,
+      });
+    }
+
+    if (
+      req.user.role !== "GLOBAL_ADMIN" &&
+      Number(req.user.organization_id) !== Number(schedule.organization_id)
+    ) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Access denied",
+        statusCode: 403,
+      });
+    }
+
+    const assignments = await scheduleGenerator.generateSchedule(scheduleId);
+
+    res.json({
+      message: "Schedule generated",
+      assignments,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function checkIfScheduleReady(req, res, next) {
+  try {
+    const { scheduleId } = req.params;
+
+    const schedule = await scheduleModel.getScheduleById(scheduleId);
+
+    if (!schedule) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Schedule not found",
+        statusCode: 404,
+      });
+    }
+
+    if (
+      req.user.role !== "GLOBAL_ADMIN" &&
+      Number(req.user.organization_id) !== Number(schedule.organization_id)
+    ) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Access denied",
+        statusCode: 403,
+      });
+    }
+
+    const result = await scheduleModel.canGenerateSchedule(scheduleId);
+
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
 
 module.exports = {
   createSchedule,
@@ -193,5 +268,7 @@ module.exports = {
   getSchedulesForUser,
   updateSchedule,
   deleteSchedule,
-  getScheduleById
+  getScheduleById,
+  generateSchedule,
+  checkIfScheduleReady
 };
