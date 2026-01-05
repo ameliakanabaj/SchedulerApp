@@ -4,6 +4,7 @@ const path = require("path");
 const cors = require("cors"); 
 const errorHandler = require("./src/middlewares/errorHandler.middleware");
 const { swaggerUi, swaggerSpec } = require("./swagger");
+const cronService = require("./src/services/cron.service");
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
@@ -56,4 +57,5 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Backend HTTP running on ${PORT}`);
+  cronService.init();
 });
