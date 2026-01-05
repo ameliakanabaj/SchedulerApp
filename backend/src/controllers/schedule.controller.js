@@ -96,28 +96,48 @@ async function getSchedulesForUser(req, res, next) {
 async function updateSchedule(req, res, next) {
   try {
     const { scheduleId } = req.params;
+    
+    const { deadline_generate_date } = req.body; 
 
     const existing = await scheduleModel.getScheduleById(scheduleId);
     if (!existing) {
-      return next({
-        type: "BUSINESS_LOGIC",
-        message: "Schedule not found",
-        statusCode: 404,
-      });
+      return next({ type: "BUSINESS_LOGIC", message: "Schedule not found", statusCode: 404 });
     }
 
     if (
       req.user.role !== "GLOBAL_ADMIN" &&
       Number(req.user.organization_id) !== Number(existing.organization_id)
     ) {
-      return next({
-        type: "BUSINESS_LOGIC",
-        message: "Access denied",
-        statusCode: 403,
-      });
+      return next({ type: "BUSINESS_LOGIC", message: "Access denied", statusCode: 403 });
     }
 
     const updated = await scheduleModel.updateSchedule(scheduleId, req.body);
+
+    if (deadline_generate_date) {
+        const oldDeadline = new Date(existing.deadline_generate_date);
+        const newDeadline = new Date(deadline_generate_date);
+
+        if (newDeadline > oldDeadline) {
+            console.log(`[UPDATE] Deadline extended to ${newDeadline}. Sending notifications...`);
+            
+            const users = await userModel.getUsersByOrganization(existing.organization_id);
+            const employees = users.filter(u => u.role === "EMPLOYEE");
+
+            const deadlineStr = newDeadline.toLocaleDateString("en-GB");
+            const startStr = new Date(existing.date_from).toLocaleDateString("en-GB");
+            const endStr = new Date(existing.date_to).toLocaleDateString("en-GB");
+
+            employees.forEach(user => {
+                notificationService.sendNotification({
+                    userId: user.user_id,
+                    scheduleId: scheduleId,
+                    type: "AVAILABILITY_OPEN", 
+                    message: `Attention! The availability submission deadline for the schedule (${startStr} - ${endStr}) has been extended to ${deadlineStr}. Please submit your missing availability!`
+                }).catch(err => console.error("Notification update error:", err));
+            });
+        }
+    }
+
     res.json(updated);
   } catch (err) {
     next(err);

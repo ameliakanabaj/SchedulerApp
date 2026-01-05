@@ -55,17 +55,6 @@ async function generateSchedule(schedule_id) {
             console.warn(
                 `Shift ${shift.shift_id}: required ${requiredPeople}, available ${candidates.length}`
             );
-    
-            const employees = users.filter(u => u.role === "EMPLOYEE");
-            
-            for (const emp of employees) {
-                notificationService.sendNotification({
-                    userId: emp.user_id,
-                    scheduleId: schedule_id,
-                    type: "MISSING_AVAILABILITY",
-                    message: `Schedule generation failed. Missing coverage for shift ID ${shift.shift_id}. Please submit your availability!`
-                }).catch(err => console.error("Notification error:", err));
-            }
   
             await prisma.schedule.update({
                 where: { schedule_id: Number(schedule_id) },
