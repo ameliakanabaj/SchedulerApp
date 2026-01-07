@@ -55,7 +55,7 @@ async function generateSchedule(schedule_id) {
             console.warn(
                 `Shift ${shift.shift_id}: required ${requiredPeople}, available ${candidates.length}`
             );
-  
+            
             await prisma.schedule.update({
                 where: { schedule_id: Number(schedule_id) },
                 data: { status: "FAILED" },
