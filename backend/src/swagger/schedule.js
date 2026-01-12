@@ -222,3 +222,104 @@
  *       404:
  *         description: Schedule not found
  */
+
+/**
+ * @swagger
+ * /api/schedules/generate:
+ *   post:
+ *     summary: Generate assignments for a schedule
+ *     description: >
+ *       Generates work assignments for all shifts within the schedule time range.
+ *     tags: [Schedules]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - scheduleId
+ *             properties:
+ *               scheduleId:
+ *                 type: integer
+ *                 example: 12
+ *     responses:
+ *       200:
+ *         description: Schedule generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Schedule generated
+ *                 assignments:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       shift_id:
+ *                         type: integer
+ *                         example: 5
+ *                       user_id:
+ *                         type: integer
+ *                         example: 3
+ *                       role_on_shift:
+ *                         type: string
+ *                         nullable: true
+ *       400:
+ *         description: Invalid request body
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Schedule not found
+ *       401:
+ *         description: Missing token
+ */
+
+/**
+ * @swagger
+ * /api/schedules/{scheduleId}/can-generate:
+ *   get:
+ *     summary: Check if schedule is ready to be generated
+ *     description: >
+ *       Returns information whether the schedule can be generated.
+ *       The schedule can be generated if either the deadline_generate_date has passed
+ *       or all users from the organization have submitted their availability.
+ *     tags: [Schedules]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: scheduleId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Schedule ID
+ *     responses:
+ *       200:
+ *         description: Schedule generation readiness status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 canGenerate:
+ *                   type: boolean
+ *                   example: true
+ *                 deadlineDatePassed:
+ *                   type: boolean
+ *                   example: false
+ *                 allUsersSentAvailability:
+ *                   type: boolean
+ *                   example: true
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Schedule not found
+ *       401:
+ *         description: Missing token
+ */
