@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 import { Router, RouterLink } from '@angular/router';
 import { Toastr } from '@app/shared/services';
 import { Authentication } from '@app/core';
-import { passwordStrengthValidator } from 'app/validators/password.validator';
+import { passwordStrengthValidator } from '@app/validators/password.validator';
 
 @Component({
   selector: 'app-register',
