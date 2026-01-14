@@ -39,6 +39,15 @@
             border-radius: 5px;
             padding-right: 40px;
         }
+
+        .error {
+            background: var(--primary-red);
+            border-radius: 6px;
+            color: var(--primary-white);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            padding: 0.35rem 0.5rem;
+        }
     }
 
 
@@ -90,6 +99,17 @@
             &:hover {
                 background-color: var(--secondary-white);
             }
+
+            &:disabled {
+                background-color: #bdbdbd;   
+                color: #666;                
+                cursor: not-allowed;
+                opacity: 0.7;
+              }
+          
+              &:disabled:hover {
+                background-color: #bdbdbd;
+              }
         }
     }
 }

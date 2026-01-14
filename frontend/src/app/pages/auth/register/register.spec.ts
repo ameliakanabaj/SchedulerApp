@@ -51,14 +51,16 @@ describe('Register', () => {
         it('should show error toastr if passwords do not match', () => {
             const toastr = sp.inject(Toastr);
             
-            sp.component.password = 'password123';
-            sp.component.confirmPassword = 'password456';
-
+            sp.component.registerForm.patchValue({
+                password: 'Password123',
+                confirmPassword: 'Password456',
+            });
+            
             sp.component.onRegister();
 
             expect(toastr.error).toHaveBeenCalledWith('Passwords do not match', 'Registration Error');
-            expect(sp.component.password).toBe('');
-            expect(sp.component.confirmPassword).toBe('');
+            expect(sp.component.registerForm.value.password).toBe('');
+            expect(sp.component.registerForm.value.confirmPassword).toBe('');
         });
 
         it('should call register service and navigate to login on success', () => {
@@ -70,16 +72,19 @@ describe('Register', () => {
                 first_name: 'John',
                 last_name: 'Doe',
                 email: 'john@example.com',
-                password: 'password123'
+                password: 'Password123'
             };
 
             (auth.register as unknown as jest.Mock).mockReturnValue(of({}));
 
-            sp.component.firstName = registerData.first_name;
-            sp.component.lastName = registerData.last_name;
-            sp.component.email = registerData.email;
-            sp.component.password = registerData.password;
-            sp.component.confirmPassword = registerData.password;
+            sp.component.registerForm.patchValue({
+                firstName: registerData.first_name,
+                lastName: registerData.last_name,
+                email: registerData.email,
+                password: registerData.password,
+                confirmPassword: registerData.password,
+            });
+            
 
             sp.component.onRegister();
 
