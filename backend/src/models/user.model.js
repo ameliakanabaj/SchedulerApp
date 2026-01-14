@@ -10,6 +10,14 @@ async function getUserById(user_id) {
   });
 }
 
+async function getUsersByIds(ids = []) {
+  if (!Array.isArray(ids) || ids.length === 0) return [];
+  return await prisma.user.findMany({
+    where: { user_id: { in: ids.map(Number) } },
+    include: { organization: true },
+  });
+}
+
 async function getUserByEmail(email) {
   return await prisma.user.findUnique({
     where: { email },
@@ -101,6 +109,7 @@ module.exports = {
   createUser,
   getUserByEmail,
   getUserById,
+  getUsersByIds,
   getAllUsers,
   getUsersByOrganization,
   deleteUser,
