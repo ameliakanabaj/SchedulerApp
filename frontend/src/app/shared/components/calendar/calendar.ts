@@ -9,7 +9,7 @@ import { ScheduleModel } from '@app/models/schedule.model';
 import { Shift } from '@app/shared/services/shift/shift';
 import { SetShiftHoursModal } from '@app/features/set-shift-hours-modal/set-shift-hours-modal';
 import { Schedule } from '@app/shared/services/schedule/schedule';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-calendar',
@@ -44,7 +44,6 @@ export class Calendar implements OnInit {
     private readonly toastrService = inject(Toastr);
     private readonly shiftService = inject(Shift);
     private readonly scheduleService = inject(Schedule);
-    private readonly router = inject(Router);
     private readonly activatedRoute = inject(ActivatedRoute);
 
     ngOnInit(): void {
@@ -201,7 +200,7 @@ export class Calendar implements OnInit {
         }
 
         if (type === 'cannot') {
-            const start = `${iso}T00:00:00`;
+            const start = `${iso}T00:00:00Z`;
 
             if (existing) {
                 existing.start_time = start;
@@ -217,8 +216,8 @@ export class Calendar implements OnInit {
 
     saveCustomHours(day: Date) {
         const iso = day.toISOString().split('T')[0];
-        const start = `${iso}T${this.customStart}:00`;
-        const end   = `${iso}T${this.customEnd}:00`;
+        const start = `${iso}T${this.customStart}:00Z`;
+        const end   = `${iso}T${this.customEnd}:00Z`;
 
         const existing = this.getAvailability(day);
 
@@ -305,8 +304,8 @@ export class Calendar implements OnInit {
         }
 
         this.availabilities.push({
-            start_time: `${iso}T00:00:00`,
-            end_time: `${iso}T23:59:59`,
+            start_time: `${iso}T00:00:00Z`,
+            end_time: `${iso}T23:59:59Z`,
             comments: comment,
         });
     }
@@ -374,8 +373,11 @@ export class Calendar implements OnInit {
         const start = av.start_time.split('T')[1];
         const end = av.end_time.split('T')[1];
 
-        if (start === "00:00:00" && end === "00:00:00") return 'cannot';
-        if (start === "00:00:00" && end === "23:59:59") return 'all-day';
+        console.log(day, start, end);
+        
+
+        if (start === "00:00:00.000Z" && end === "00:00:00.000Z") return 'cannot';
+        if (start === "00:00:00.000Z" && end === "23:59:59.000Z") return 'all-day';
         return 'custom';
     }
 
