@@ -34,6 +34,7 @@ async function register(data) {
     password_hash: hashed,
     role: "ORG_ADMIN",
     position: data.position || null,
+    password_must_be_reset: false,
   });
 
   const token = generateToken(user);

@@ -75,30 +75,31 @@ describe("User Model", () => {
   });
 
   test("createUser should call prisma.user.create with mapped fields and include organization", async () => {
-    const created = { user_id: 10, email: "example@gmail.com" };
+    const created = { user_id: 10, email: "example@gmail.com", password_must_be_reset: true };
     prisma.user.create.mockResolvedValue(created);
 
     const result = await userModel.createUser({
-      organization_id: 7,
-      first_name: "Ann",
-      last_name: "Bell",
-      email: "example@gmail.com",
-      password_hash: "hashed",
-      role: "EMPLOYEE",
-      position: "Dev",
-    });
-
-    expect(prisma.user.create).toHaveBeenCalledWith({
-      data: {
+        organization_id: 7,
         first_name: "Ann",
         last_name: "Bell",
         email: "example@gmail.com",
-        password: "hashed",
+        password_hash: "hashed",
         role: "EMPLOYEE",
         position: "Dev",
-        organization_id: 7,
-      },
-      include: { organization: true },
+    });
+
+    expect(prisma.user.create).toHaveBeenCalledWith({
+        data: {
+            first_name: "Ann",
+            last_name: "Bell",
+            email: "example@gmail.com",
+            password: "hashed",
+            role: "EMPLOYEE",
+            position: "Dev",
+            organization_id: 7,
+            password_must_be_reset: true,
+        },
+        include: { organization: true },
     });
 
     expect(result).toEqual(created);
@@ -116,25 +117,25 @@ describe("User Model", () => {
   });
 
   test("updateUser should handle organization connect and password and include organization", async () => {
-    const updated = { user_id: 4, email: "user@gmail.com" };
+    const updated = { user_id: 4, email: "user@gmail.com", password_must_be_reset: true };
     prisma.user.update.mockResolvedValue(updated);
 
     const res = await userModel.updateUser(4, {
-      organization_id: 3,
-      password: "newpass",
-      first_name: "New",
-      email: "user@gmail.com",
+        organization_id: 3,
+        password: "newpass",
+        first_name: "New",
+        email: "user@gmail.com",
     });
 
     expect(prisma.user.update).toHaveBeenCalledWith({
-      where: { user_id: 4 },
-      data: {
-        first_name: "New",
-        email: "user@gmail.com",
-        organization: { connect: { organization_id: 3 } },
-        password: "newpass",
-      },
-      include: { organization: true },
+        where: { user_id: 4 },
+        data: {
+            first_name: "New",
+            email: "user@gmail.com",
+            organization: { connect: { organization_id: 3 } },
+            password: "newpass",
+        },
+        include: { organization: true },
     });
 
     expect(res).toEqual(updated);
@@ -151,5 +152,66 @@ describe("User Model", () => {
       },
       include: { organization: true },
     });
+  });
+
+  test("createUser should default password_must_be_reset to true", async () => {
+    const created = { user_id: 10, email: "default@gmail.com", password_must_be_reset: true };
+    prisma.user.create.mockResolvedValue(created);
+
+    const result = await userModel.createUser({
+        first_name: "Ann",
+        last_name: "Bell",
+        email: "default@gmail.com",
+        password_hash: "hashed",
+    });
+
+    expect(prisma.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+            data: expect.objectContaining({
+                password_must_be_reset: true,
+            }),
+        })
+    );
+    expect(result).toEqual(created);
+});
+
+  test("createUser should accept explicit password_must_be_reset: false", async () => {
+      const created = { user_id: 11, email: "explicit@gmail.com", password_must_be_reset: false };
+      prisma.user.create.mockResolvedValue(created);
+
+      const result = await userModel.createUser({
+          first_name: "Ann",
+          last_name: "Bell",
+          email: "explicit@gmail.com",
+          password_hash: "hashed",
+          password_must_be_reset: false,
+      });
+
+      expect(prisma.user.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+              data: expect.objectContaining({
+                  password_must_be_reset: false,
+              }),
+          })
+      );
+      expect(result).toEqual(created);
+  });
+
+  test("updateUser should handle password_must_be_reset update", async () => {
+    const updated = { user_id: 4, password_must_be_reset: false };
+    prisma.user.update.mockResolvedValue(updated);
+
+    const res = await userModel.updateUser(4, {
+        password_must_be_reset: false,
+    });
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { user_id: 4 },
+        data: {
+            password_must_be_reset: false,
+        },
+        include: { organization: true },
+    });
+    expect(res).toEqual(updated);
   });
 });
