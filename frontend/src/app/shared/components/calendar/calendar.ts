@@ -8,6 +8,8 @@ import { AddNotesModal } from '../add-notes-modal/add-notes-modal';
 import { ScheduleModel } from '@app/models/schedule.model';
 import { Shift } from '@app/shared/services/shift/shift';
 import { SetShiftHoursModal } from '@app/features/set-shift-hours-modal/set-shift-hours-modal';
+import { Schedule } from '@app/shared/services/schedule/schedule';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-calendar',
@@ -21,7 +23,6 @@ export class Calendar implements OnInit {
     @Input() month: number = new Date().getMonth();
     @Input() year: number = new Date().getFullYear();
     @Input() scheduleRange: ScheduleModel | null = null;
-    @Input() schedules: ScheduleModel[] = [];
     @Input() availabilities: AvailabilityModel[] = [];
 
     shifts: ShiftModel[] = [];
@@ -33,12 +34,18 @@ export class Calendar implements OnInit {
 
     activeMode: 'all-day' | 'custom' | 'cannot' = 'all-day';
 
+    scheduleId!: number;
+    isScheduleReadyToGenerate = false;
+
     readonly authService = inject(Authentication);
 
     private readonly modalService = inject(Modal);
     private readonly availabilityService = inject(AvailabilityService);
     private readonly toastrService = inject(Toastr);
     private readonly shiftService = inject(Shift);
+    private readonly scheduleService = inject(Schedule);
+    private readonly router = inject(Router);
+    private readonly activatedRoute = inject(ActivatedRoute);
 
     ngOnInit(): void {
         if (this.authService.hasRole('ORG_ADMIN')) {
@@ -50,12 +57,32 @@ export class Calendar implements OnInit {
         } else if (this.mode === 'availability') {
             this.getUserAvailabilities();
         }
+
+        this.activatedRoute.params.subscribe((param) => {
+            this.scheduleId = param['id'];
+        });
+        
+        this.scheduleService.canGenerate(this.scheduleId).subscribe((res) => {
+            this.isScheduleReadyToGenerate = res.canGenerate;
+            console.log(res);
+            
+            
+        });
+
+        const userId = this.authService.getUserId();
+
+        this.availabilityService.getAvailabilityByUser(userId!).subscribe((res) => {
+            this.availabilities = res;
+            console.log(this.availabilities);
+            
+        });
+        
     }
 
     setMode(newMode: 'availability' | 'admin' | 'view'): void {
         this.mode = newMode;
         if (this.mode === 'admin') {
-            this.getShifts();
+            this.getShifts();            
         }
     }
 
@@ -63,6 +90,8 @@ export class Calendar implements OnInit {
         this.shiftService.getAllShifts().subscribe({
             next: (shifts) => {
                 this.shifts = shifts;
+                console.log(shifts);
+                
             },
             error: (err) => {
                 this.toastrService.error(err.statusText, 'Could not load shifts');
@@ -71,7 +100,11 @@ export class Calendar implements OnInit {
     }
 
     removeShift(shift: ShiftModel): void {
-        this.shifts = this.shifts.filter(s => s !== shift);
+        console.log(shift);
+        
+        this.shifts = this.shifts.filter(s => s.shift_id !== shift.shift_id);
+
+        // this.shiftService.deleteShift(shift.id).subscribe();
     }
 
     removeAllShifts(): void {
@@ -153,8 +186,8 @@ export class Calendar implements OnInit {
         const existing = this.getAvailability(day);
 
         if (type === 'all-day') {
-            const start = `${iso}T00:00:00`;
-            const end   = `${iso}T23:59:59`;
+            const start = `${iso}T00:00:00Z`;
+            const end   = `${iso}T23:59:59Z`;
 
             if (existing) {
                 existing.start_time = start;
@@ -280,16 +313,44 @@ export class Calendar implements OnInit {
 
     sendAvailability(): void {
         const userId = this.authService.getUserId();
+
+        const payload = this.availabilities.map(s => ({
+            ...s,
+            user_id: userId,
+        }));
+
+        console.log(payload);
+        
+        
         if (userId) {
-            this.availabilityService.bulkCreateAvailability(userId, this.availabilities).subscribe({
-                next: (res) => {
+            this.availabilityService.bulkCreateAvailability(payload).subscribe({
+                next: () => {
                     this.toastrService.success('Availability has been sent.');
                 },
                 error: (err) => {
                     this.toastrService.error(err.statusText, 'Something went wrong!');
+                    console.log(err);
+                    
                 }
             });
         }
+    }
+
+    sendShifts(): void {
+        console.log(this.shifts);
+        
+        this.shiftService.createBulk(this.shifts).subscribe({
+            next: () => {
+                this.toastrService.success('Shifts have been created.');
+            },
+            error: (err) => {
+                if (err.error?.errors?.length) {
+                    this.toastrService.error(err.error.errors.join(', '), 'Validation error');
+                } else {
+                    this.toastrService.error('Date is already in the past','Error');
+                }
+            }
+        })
     }
 
     isInScheduleRange(day: Date): boolean {
@@ -331,7 +392,7 @@ export class Calendar implements OnInit {
             const iso = day.toISOString().split('T')[0];
 
             this.shifts.push({
-                id: 0,
+                shift_id: 0,
                 organization_id: this.authService.getOrgId()!,
                 start_time: `${iso}T${data.start}:00`,
                 end_time: `${iso}T${data.end}:00`,
@@ -352,7 +413,7 @@ export class Calendar implements OnInit {
             existingShift.place = data.place;
         } else {
             this.shifts.push({
-                id: 0,
+                shift_id: 0,
                 organization_id: this.authService.getOrgId()!,
                 start_time: `${iso}T${data.start}:00`,
                 end_time: `${iso}T${data.end}:00`,

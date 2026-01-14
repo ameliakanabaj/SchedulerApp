@@ -1,7 +1,7 @@
 import { AssignmentModel } from "./assignment.model";
 
 export interface ShiftModel {
-    id: number,
+    shift_id: number,
     organization_id: number,
     start_time: string,
     end_time: string,

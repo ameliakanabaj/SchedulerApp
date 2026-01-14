@@ -1,4 +1,8 @@
 <div class="calendar" [ngClass]="{ 'calendar-xs' : xs() }">
+
+
+    CAN GENERATE ???? {{ isScheduleReadyToGenerate }}
+
     @if (authService.hasRole('ORG_ADMIN') && !xs()) {
         <div class="mode-switcher">
             <button [ngClass]="mode === 'availability' ? 'active' : 'inactive'" (click)="setMode('availability')"> Availability Mode </button>
@@ -101,7 +105,7 @@
         <button class="availability-send" (click)="sendAvailability()"> Send your availability </button>
     } @else if (mode === 'admin') {
         <div class="admin-buttons">
-            <button class="shifts-send"> Send shifts </button>
+            <button class="shifts-send" (click)="sendShifts()"> Send shifts </button>
         </div>
     }
 </div>

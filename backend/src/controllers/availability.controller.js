@@ -53,7 +53,7 @@ async function createAvailability(req, res, next) {
 
 async function createAvailabilitiesBulk(req, res, next) {
   try {
-    const items = req.body;
+    const items = req.body.days;
 
     if (req.user.role === "EMPLOYEE") {
       items.forEach(i => i.user_id = req.user.user_id);
@@ -107,6 +107,11 @@ async function createAvailabilitiesBulk(req, res, next) {
     });
 
   } catch (err) {
+    console.log('BŁĄD');
+    console.log(req.body);
+    
+    console.log(err);
+    
     next(err);
   }
 }
@@ -138,6 +143,8 @@ async function getAvailabilityByUser(req, res, next) {
     }
 
     const availabilities = await availabilityModel.getAvailabilityByUser(user_id);
+    console.log(availabilities);
+    
     res.json(availabilities);
 
   } catch (err) {
