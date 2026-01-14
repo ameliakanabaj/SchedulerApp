@@ -35,12 +35,8 @@ export class Register {
   });
 
   onRegister() {
-    if (this.registerForm.invalid) {
-      return;
-    }
-
     const { password, confirmPassword } = this.registerForm.value;
-
+  
     if (password !== confirmPassword) {
       this.toastr.error('Passwords do not match', 'Registration Error');
       this.registerForm.patchValue({
@@ -49,7 +45,11 @@ export class Register {
       });
       return;
     }
-
+  
+    if (this.registerForm.invalid) {
+      return;
+    }
+  
     this.authService
       .register({
         first_name: this.registerForm.value.firstName!,
@@ -71,6 +71,7 @@ export class Register {
         },
       });
   }
+  
 
 
   public get passwordControl(): FormControl<string | null> {
