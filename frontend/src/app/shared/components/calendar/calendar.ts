@@ -25,20 +25,23 @@ export class Calendar implements OnInit {
     @Input() scheduleRange: ScheduleModel | null = null;
     @Input() availabilities: AvailabilityModel[] = [];
 
-    shiftsFromDB: ShiftModel[] = [] // tylko do sprawdzenia czy trzeba robic api requesta z deletem (bo zmiany usuwaja sie instant)
-    shifts: ShiftModel[] = [];
-    customStart = '';
-    customEnd = '';
-    isSelectMultipleDaysMode = false;
-    customDays: Date[] = [];
     daysInMonth = this.generateDays(this.year, this.month);
 
-    activeMode: 'all-day' | 'custom' | 'cannot' = 'all-day';
+    // SHIFTS dane 
 
+    shiftsFromDB: ShiftModel[] = [] // tylko do sprawdzenia czy trzeba robic api requesta z deletem (bo zmiany usuwaja sie instant)
+    shifts: ShiftModel[] = [];
     shiftCopied?: ShiftModel;
     shiftClipboard?: ShiftModel;
 
+    // AVAILABILITY dane
+    activeMode: 'all-day' | 'custom' | 'cannot' = 'all-day';
+    customStart = '';
+    customEnd = '';
+
+
     scheduleId!: number;
+    schedule?: ScheduleModel;
     isScheduleReadyToGenerate = false;
 
     readonly authService = inject(Authentication);
@@ -59,6 +62,8 @@ export class Calendar implements OnInit {
             this.getShifts();
         } else if (this.mode === 'availability') {
             this.getUserAvailabilities();
+        } else if (this.mode === 'view') {
+            this.getSchedule();
         }
 
         this.activatedRoute.params.subscribe((param) => {
@@ -75,6 +80,12 @@ export class Calendar implements OnInit {
             this.availabilities = res;
         });
         
+    }
+
+    getSchedule(): void {
+        this.scheduleService.getById(this.scheduleId).subscribe(sched => {
+            this.schedule = sched;
+        });
     }
 
     setMode(newMode: 'availability' | 'admin' | 'view'): void {
@@ -131,14 +142,13 @@ export class Calendar implements OnInit {
         const endTime = this.shiftClipboard.end_time.split('T')[1];
 
         this.shifts.push({
-            shift_id: 0,
             organization_id: this.authService.getOrgId()!,
-            start_time: `${iso}T${startTime}`,
-            end_time: `${iso}T${endTime}`,
+            start_time: `${iso}T${startTime}.000Z`,
+            end_time: `${iso}T${endTime}.000Z`,
             required_people: this.shiftClipboard.required_people,
             place: this.shiftClipboard.place,
             assignments: []
-        });
+        } as any);
 
         this.toastrService.success(`Shift pasted on ${day.getDate()}`);
     }
@@ -427,20 +437,20 @@ export class Calendar implements OnInit {
             const iso = day.toISOString().split('T')[0];
 
             this.shifts.push({
-                shift_id: 0,
                 organization_id: this.authService.getOrgId()!,
                 start_time: `${iso}T${data.start}:00`,
                 end_time: `${iso}T${data.end}:00`,
                 required_people: data.required_people,
                 place: data.place,
                 assignments: []
-            });
+            } as any);
         }
     }
 
     private applyShiftToSingleDay(day: Date, data: any, existingShift: ShiftModel | null): void {
         const iso = day.toISOString().split('T')[0];
-
+        console.log(day, iso, data.start);
+        
         if (existingShift) {
             existingShift.start_time = `${iso}T${data.start}:00`;
             existingShift.end_time = `${iso}T${data.end}:00`;
@@ -448,14 +458,13 @@ export class Calendar implements OnInit {
             existingShift.place = data.place;
         } else {
             this.shifts.push({
-                shift_id: 0,
                 organization_id: this.authService.getOrgId()!,
-                start_time: `${iso}T${data.start}:00`,
-                end_time: `${iso}T${data.end}:00`,
+                start_time: `${iso}T${data.start}:00.000Z`,
+                end_time: `${iso}T${data.end}:00.000Z`,
                 required_people: data.required_people,
                 place: data.place,
                 assignments: []
-            });
+            } as any);
         }
     }
 

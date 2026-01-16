@@ -2,11 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { DialogRef } from '@ngneat/dialog';
 import { FormsModule } from '@angular/forms';
 import { ModalHeader } from "@app/shared/components/modal-header/modal-header/modal-header";
-import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-set-shift-hours-modal',
-  imports: [FormsModule, ModalHeader, DatePipe],
+  imports: [FormsModule, ModalHeader],
   templateUrl: './set-shift-hours-modal.html',
   styleUrl: './set-shift-hours-modal.scss',
 })
