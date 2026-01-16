@@ -162,14 +162,14 @@ export class Calendar implements OnInit {
             return;
         }
 
-        const iso = day.toISOString().split('T')[0];
+        const iso = this.getLocalDateString(day);
         const startTime = this.shiftClipboard.start_time.split('T')[1];
         const endTime = this.shiftClipboard.end_time.split('T')[1];
 
         this.shifts.push({
             organization_id: this.authService.getOrgId()!,
-            start_time: `${iso}T${startTime}.000Z`,
-            end_time: `${iso}T${endTime}.000Z`,
+            start_time: `${iso}T${startTime}`,
+            end_time: `${iso}T${endTime}`,
             required_people: this.shiftClipboard.required_people,
             place: this.shiftClipboard.place,
             assignments: []
@@ -487,12 +487,13 @@ export class Calendar implements OnInit {
     
     private applyShiftToMultipleDays(days: Date[], data: any): void {
         for (const day of days) {
-            const iso = day.toISOString().split('T')[0];
+            const startTime = this.buildUtcISOString(day, data.start);
+            const endTime = this.buildUtcISOString(day, data.end);
 
             this.shifts.push({
                 organization_id: this.authService.getOrgId()!,
-                start_time: `${iso}T${data.start}:00`,
-                end_time: `${iso}T${data.end}:00`,
+                start_time: startTime,
+                end_time: endTime,
                 required_people: data.required_people,
                 place: data.place,
                 assignments: []
@@ -501,18 +502,15 @@ export class Calendar implements OnInit {
     }
 
     private applyShiftToSingleDay(day: Date, data: any, existingShift: ShiftModel | null): void {
-        const iso = day.toISOString().split('T')[0];
-
-        console.log('Po zamknieciu modala, przed build utc iso string:', data.start, data.end);
-
         const startTime = this.buildUtcISOString(day, data.start);
         const endTime = this.buildUtcISOString(day, data.end);
-        
+
+        console.log('Po zamknieciu modala, przed build utc iso string:', data.start, data.end);
         console.log('Po przebudowie:', startTime, endTime);
         
         if (existingShift) {
-            existingShift.start_time = `${iso}T${data.start}:00`;
-            existingShift.end_time = `${iso}T${data.end}:00`;
+            existingShift.start_time = startTime;
+            existingShift.end_time = endTime;
             existingShift.required_people = data.required_people;
             existingShift.place = data.place;
         } else {
