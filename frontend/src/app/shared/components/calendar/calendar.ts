@@ -63,17 +63,12 @@ export class Calendar implements OnInit {
         
         this.scheduleService.canGenerate(this.scheduleId).subscribe((res) => {
             this.isScheduleReadyToGenerate = res.canGenerate;
-            console.log(res);
-            
-            
         });
 
         const userId = this.authService.getUserId();
 
         this.availabilityService.getAvailabilityByUser(userId!).subscribe((res) => {
             this.availabilities = res;
-            console.log(this.availabilities);
-            
         });
         
     }
@@ -88,9 +83,10 @@ export class Calendar implements OnInit {
     getShifts(): void {
         this.shiftService.getAllShifts().subscribe({
             next: (shifts) => {
-                this.shifts = shifts;
+                console.log('Shift z backend:');
                 console.log(shifts);
                 
+                this.shifts = shifts;
             },
             error: (err) => {
                 this.toastrService.error(err.statusText, 'Could not load shifts');
@@ -99,11 +95,13 @@ export class Calendar implements OnInit {
     }
 
     removeShift(shift: ShiftModel): void {
+        console.log("Shift usunięty");
+        
         console.log(shift);
         
         this.shifts = this.shifts.filter(s => s.shift_id !== shift.shift_id);
 
-        // this.shiftService.deleteShift(shift.id).subscribe();
+        this.shiftService.deleteShift(shift.shift_id).subscribe();
     }
 
     removeAllShifts(): void {
@@ -185,8 +183,8 @@ export class Calendar implements OnInit {
         const existing = this.getAvailability(day);
 
         if (type === 'all-day') {
-            const start = `${iso}T00:00:00Z`;
-            const end   = `${iso}T23:59:59Z`;
+            const start = `${iso}T00:00:00.000Z`;
+            const end   = `${iso}T23:59:59.000Z`;
 
             if (existing) {
                 existing.start_time = start;
@@ -200,7 +198,7 @@ export class Calendar implements OnInit {
         }
 
         if (type === 'cannot') {
-            const start = `${iso}T00:00:00Z`;
+            const start = `${iso}T00:00:00.000Z`;
 
             if (existing) {
                 existing.start_time = start;
@@ -216,8 +214,8 @@ export class Calendar implements OnInit {
 
     saveCustomHours(day: Date) {
         const iso = day.toISOString().split('T')[0];
-        const start = `${iso}T${this.customStart}:00Z`;
-        const end   = `${iso}T${this.customEnd}:00Z`;
+        const start = `${iso}T${this.customStart}:00.000Z`;
+        const end   = `${iso}T${this.customEnd}:00.000Z`;
 
         const existing = this.getAvailability(day);
 
