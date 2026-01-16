@@ -276,6 +276,8 @@ export class Calendar implements OnInit {
     }
 
     openShiftModal(day: Date | Date[], shift: ShiftModel | null = null): void {
+        console.log('otwarty dzien: ' + day);
+        
         const modalRef = this.modalService.openModal(SetShiftHoursModal, {
             data: {
                 day,
@@ -449,7 +451,13 @@ export class Calendar implements OnInit {
 
     private applyShiftToSingleDay(day: Date, data: any, existingShift: ShiftModel | null): void {
         const iso = day.toISOString().split('T')[0];
-        console.log(day, iso, data.start);
+
+        console.log('Po zamknieciu modala, przed build utc iso string:', data.start, data.end);
+
+        const startTime = this.buildUtcISOString(day, data.start);
+        const endTime = this.buildUtcISOString(day, data.end);
+        
+        console.log('Po przebudowie:', startTime, endTime);
         
         if (existingShift) {
             existingShift.start_time = `${iso}T${data.start}:00`;
@@ -459,14 +467,35 @@ export class Calendar implements OnInit {
         } else {
             this.shifts.push({
                 organization_id: this.authService.getOrgId()!,
-                start_time: `${iso}T${data.start}:00.000Z`,
-                end_time: `${iso}T${data.end}:00.000Z`,
+                start_time: startTime,
+                end_time: endTime,
                 required_people: data.required_people,
                 place: data.place,
                 assignments: []
             } as any);
         }
+        console.log(this.shifts);
+        
     }
+
+    private buildUtcISOString(day: Date, time: string): string {
+        const [hours, minutes] = time.split(':').map(Number);
+
+        const localDate = new Date(
+            day.getFullYear(),
+            day.getMonth(),
+            day.getDate(),
+            hours,
+            minutes,
+            0,
+            0
+        );
+
+        console.log(localDate.toISOString);
+        
+        return localDate.toISOString(); // <-- UTC, .000Z
+    }
+
 
     private getUserAvailabilities(): void {
         this.availabilityService.getAvailabilityByUser(this.authService.getUserId()!).subscribe({
