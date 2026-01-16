@@ -25,6 +25,7 @@ export class Calendar implements OnInit {
     @Input() scheduleRange: ScheduleModel | null = null;
     @Input() availabilities: AvailabilityModel[] = [];
 
+    shiftsFromDB: ShiftModel[] = [] // tylko do sprawdzenia czy trzeba robic api requesta z deletem (bo zmiany usuwaja sie instant)
     shifts: ShiftModel[] = [];
     customStart = '';
     customEnd = '';
@@ -33,6 +34,9 @@ export class Calendar implements OnInit {
     daysInMonth = this.generateDays(this.year, this.month);
 
     activeMode: 'all-day' | 'custom' | 'cannot' = 'all-day';
+
+    shiftCopied?: ShiftModel;
+    shiftClipboard?: ShiftModel;
 
     scheduleId!: number;
     isScheduleReadyToGenerate = false;
@@ -85,8 +89,8 @@ export class Calendar implements OnInit {
             next: (shifts) => {
                 console.log('Shift z backend:');
                 console.log(shifts);
-                
-                this.shifts = shifts;
+                this.shiftsFromDB = shifts;
+                this.shifts = this.shiftsFromDB;
             },
             error: (err) => {
                 this.toastrService.error(err.statusText, 'Could not load shifts');
@@ -101,11 +105,42 @@ export class Calendar implements OnInit {
         
         this.shifts = this.shifts.filter(s => s.shift_id !== shift.shift_id);
 
-        this.shiftService.deleteShift(shift.shift_id).subscribe();
+
+        if (this.shiftsFromDB.includes(shift)) {
+            this.shiftService.deleteShift(shift.shift_id).subscribe();
+        }
     }
 
     removeAllShifts(): void {
         this.shifts = [];
+    }
+
+    copyShift(shift: ShiftModel): void {
+        this.shiftClipboard = { ...shift };
+        this.toastrService.success(`Shift copied`);
+    }
+
+    pasteShift(day: Date): void {
+        if (!this.shiftClipboard) {
+            this.toastrService.error('No shift copied to clipboard');
+            return;
+        }
+
+        const iso = day.toISOString().split('T')[0];
+        const startTime = this.shiftClipboard.start_time.split('T')[1];
+        const endTime = this.shiftClipboard.end_time.split('T')[1];
+
+        this.shifts.push({
+            shift_id: 0,
+            organization_id: this.authService.getOrgId()!,
+            start_time: `${iso}T${startTime}`,
+            end_time: `${iso}T${endTime}`,
+            required_people: this.shiftClipboard.required_people,
+            place: this.shiftClipboard.place,
+            assignments: []
+        });
+
+        this.toastrService.success(`Shift pasted on ${day.getDate()}`);
     }
 
     generateDays(year: number, month: number): Date[] {
