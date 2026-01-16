@@ -53,9 +53,6 @@ export class Calendar implements OnInit {
     private readonly scheduleService = inject(Schedule);
     private readonly activatedRoute = inject(ActivatedRoute);
 
-    /**
-     * Wyciąga lokalną datę w formacie YYYY-MM-DD bez konwersji UTC
-     */
     private getLocalDateString(date: Date): string {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -63,9 +60,6 @@ export class Calendar implements OnInit {
         return `${year}-${month}-${day}`;
     }
 
-    /**
-     * Konwertuje datę lokalną + godzinę na ISO string w UTC
-     */
     private buildUtcISOString(day: Date, time: string): string {
         const [hours, minutes] = time.split(':').map(Number);
 
@@ -79,9 +73,7 @@ export class Calendar implements OnInit {
             0
         );
 
-        console.log(localDate.toISOString);
-        
-        return localDate.toISOString(); // <-- UTC, .000Z
+        return localDate.toISOString();
     }
 
     ngOnInit(): void {
@@ -232,24 +224,12 @@ export class Calendar implements OnInit {
     }
 
     getShiftsForDay(day: Date): ShiftModel[] {
-        console.log(day.toDateString());
-        console.log(day.toLocaleDateString());
-        console.log(day.toLocaleTimeString());
-        
         const iso = this.getLocalDateString(day);
-        console.log(iso);
-        console.log(this.shifts.filter(s => s.start_time.startsWith(iso)));
         
-        // const iso = this.buildUtcISOString(day).split('T')[0];
         return this.shifts.filter(s => s.start_time.startsWith(iso));
     }
 
     getAvailability(day: Date): AvailabilityModel | undefined {
-        // const iso = day.toISOString().split('T')[0];
-
-        // return this.availabilities.find(a => 
-        //     a.start_time.startsWith(iso)
-        // );
         return this.availabilities.find(a => {
             const d = new Date(a.start_time);
             return (
@@ -299,14 +279,8 @@ export class Calendar implements OnInit {
     }
 
     saveCustomHours(day: Date) {
-        // const iso = day.toISOString().split('T')[0];
-        // const start = `${iso}T${this.customStart}:00.000Z`;
-        // const end   = `${iso}T${this.customEnd}:00.000Z`;
-        console.log('data custom hours:', day);
-        
         const start = this.buildUtcISOString(day, this.customStart);
         const end   = this.buildUtcISOString(day, this.customEnd);
-
 
         const existing = this.getAvailability(day);
 
@@ -322,8 +296,6 @@ export class Calendar implements OnInit {
     }
 
     openShiftModal(day: Date | Date[], shift: ShiftModel | null = null): void {
-        console.log('otwarty dzien: ' + day);
-        
         const modalRef = this.modalService.openModal(SetShiftHoursModal, {
             data: {
                 day,
@@ -409,9 +381,6 @@ export class Calendar implements OnInit {
             user_id: userId,
         }));
 
-        console.log(payload);
-        
-        
         if (userId) {
             this.availabilityService.bulkCreateAvailability(payload).subscribe({
                 next: () => {
@@ -419,16 +388,12 @@ export class Calendar implements OnInit {
                 },
                 error: (err) => {
                     this.toastrService.error(err.statusText, 'Something went wrong!');
-                    console.log(err);
-                    
                 }
             });
         }
     }
 
     sendShifts(): void {
-        console.log(this.shifts);
-        
         this.shiftService.createBulk(this.shifts).subscribe({
             next: () => {
                 this.toastrService.success('Shifts have been created.');
@@ -463,10 +428,6 @@ export class Calendar implements OnInit {
 
         const start = av.start_time.split('T')[1];
         const end = av.end_time.split('T')[1];
-
-        console.log('DAY TYPE: ');
-        console.log(day, start, end);
-        
 
         if (start === "00:00:00.000Z" && end === "00:00:00.000Z") return 'cannot';
         if (start === "00:00:00.000Z" && end === "23:59:59.000Z") return 'all-day';
@@ -505,9 +466,6 @@ export class Calendar implements OnInit {
         const startTime = this.buildUtcISOString(day, data.start);
         const endTime = this.buildUtcISOString(day, data.end);
 
-        console.log('Po zamknieciu modala, przed build utc iso string:', data.start, data.end);
-        console.log('Po przebudowie:', startTime, endTime);
-        
         if (existingShift) {
             existingShift.start_time = startTime;
             existingShift.end_time = endTime;
