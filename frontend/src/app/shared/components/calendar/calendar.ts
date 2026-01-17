@@ -53,29 +53,6 @@ export class Calendar implements OnInit {
     private readonly scheduleService = inject(Schedule);
     private readonly activatedRoute = inject(ActivatedRoute);
 
-    private getLocalDateString(date: Date): string {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    private buildUtcISOString(day: Date, time: string): string {
-        const [hours, minutes] = time.split(':').map(Number);
-
-        const localDate = new Date(
-            day.getFullYear(),
-            day.getMonth(),
-            day.getDate(),
-            hours,
-            minutes,
-            0,
-            0
-        );
-
-        return localDate.toISOString();
-    }
-
     ngOnInit(): void {
         if (this.authService.hasRole('ORG_ADMIN')) {
             this.mode = 'admin';
@@ -103,6 +80,19 @@ export class Calendar implements OnInit {
             this.availabilities = res;
         });
         
+    }
+
+    generateSchedule(): void {
+        this.scheduleService.generateSchedule(this.scheduleId).subscribe({
+            next: (generatedSchedule) => {
+                console.log(generatedSchedule);
+                this.toastrService.success('Successfully generated new schedule.');
+            },
+            error: (err) => {
+                console.log(err);
+                this.toastrService.error('Error while generating schedule');
+            }
+        })
     }
 
     getSchedule(): void {
@@ -492,5 +482,28 @@ export class Calendar implements OnInit {
                 this.toastrService.error(err.statusText, 'Could not load availabilities');
             }
         });
+    }
+
+    private getLocalDateString(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    private buildUtcISOString(day: Date, time: string): string {
+        const [hours, minutes] = time.split(':').map(Number);
+
+        const localDate = new Date(
+            day.getFullYear(),
+            day.getMonth(),
+            day.getDate(),
+            hours,
+            minutes,
+            0,
+            0
+        );
+
+        return localDate.toISOString();
     }
 }

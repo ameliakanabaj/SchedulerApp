@@ -18,6 +18,7 @@
     @if (mode === 'admin') {
         <div class="admin-info">
             <h3> You can set closed days and manage shifts. </h3>
+            <button (click)="generateSchedule()" [disabled]="!isScheduleReadyToGenerate"> Generate Schedule </button>
             <div class="buttons">
                 @if (scheduleRange) {
                     <button class="select-all-days" (click)="applyShiftToScheduleRange()"> Select All Days </button>

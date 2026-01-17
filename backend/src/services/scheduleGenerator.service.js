@@ -8,13 +8,13 @@ async function send_notifications(shift_id) {
   }
   
 async function generateSchedule(schedule_id) {
-
     try {
+      const scheduleIdInt = parseInt(schedule_id, 10);
       const schedule = await prisma.schedule.findUnique({
-        where: { schedule_id },
+        where: { schedule_id: scheduleIdInt },
         include: { organization: true },
       });
-  
+    
       if (!schedule) {
         throw new Error("Schedule not found");
       }
@@ -93,7 +93,7 @@ async function generateSchedule(schedule_id) {
       for (const a of assignments) {
         await prisma.assignment.create({
           data: {
-            schedule_id,
+            schedule_id: scheduleIdInt,
             shift_id: a.shift_id,
             user_id: a.user_id,
             role_on_shift: a.role_on_shift,
@@ -102,7 +102,7 @@ async function generateSchedule(schedule_id) {
       }
   
       await prisma.schedule.update({
-        where: { schedule_id },
+        where: { schedule_id: scheduleIdInt },
         data: { 
           status: "GENERATED",
           generated_at: new Date(),
@@ -114,7 +114,7 @@ async function generateSchedule(schedule_id) {
       console.error("Schedule generation failed:", error);
   
       await prisma.schedule.update({
-        where: { schedule_id },
+        where: { schedule_id: scheduleIdInt },
         data: { 
           status: "FAILED",
           generated_at: new Date(), 
