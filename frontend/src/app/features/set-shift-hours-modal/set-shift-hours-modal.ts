@@ -30,6 +30,10 @@ export class SetShiftHoursModal implements OnInit {
         }
     }
 
+    isDisabled(): boolean {
+        return !this.startTime || !this.endTime || this.startTime >= this.endTime;
+    }
+
     save(): void {
         if (!this.startTime || !this.endTime) {
             this.modalRef.close({ error: 'missing_times' });
