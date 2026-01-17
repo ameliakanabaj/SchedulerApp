@@ -1,3 +1,122 @@
+// --- Responsive styles ---
+@media (max-width: 1200px) {
+    .dashboard-container .grid {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 18px;
+    }
+    .dashboard-container .calendar,
+    .dashboard-container .shifts,
+    .dashboard-container .notifications {
+        grid-column: span 1;
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 900px) {
+    .dashboard-container {
+        margin-top: 18px;
+        padding: 0 4vw;
+    }
+    .dashboard-container .header {
+        font-size: 1.1rem;
+        padding: 10px 8px 12px;
+    }
+    .dashboard-container .card {
+        padding: 12px 6px;
+    }
+}
+
+@media (max-width: 700px) {
+    .dashboard-container .grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .dashboard-container .calendar,
+    .dashboard-container .shifts,
+    .dashboard-container .notifications {
+        width: 100%;
+        min-width: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+    .dashboard-container .header {
+        font-size: 1rem;
+        padding: 8px 2px 8px;
+    }
+}
+
+@media (max-width: 500px) {
+    .dashboard-container {
+        margin-top: 8px;
+        padding: 0 2vw;
+    }
+    .dashboard-container .header {
+        font-size: 0.95rem;
+        padding: 6px 0 6px;
+    }
+    .dashboard-container .card {
+        padding: 6px 2px;
+        border-radius: 8px;
+    }
+}
+
+// --- Calendar component responsive tweaks ---
+@media (max-width: 1100px) {
+    .calendar {
+        .calendar-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+        .day, .fancy-day-bg {
+            width: 140px !important;
+            height: 120px !important;
+            min-width: 0;
+        }
+    }
+}
+
+@media (max-width: 800px) {
+    .calendar {
+        .calendar-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+        .day, .fancy-day-bg {
+            width: 110px !important;
+            height: 90px !important;
+            font-size: 0.85rem;
+        }
+        .fancy-date .date-number {
+            font-size: 1.2rem !important;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .calendar {
+        .calendar-header {
+            font-size: 1rem !important;
+            padding: 2px 8px !important;
+        }
+        .calendar-grid {
+            grid-template-columns: 1fr !important;
+            gap: 6px !important;
+        }
+        .day, .fancy-day-bg {
+            width: 98vw !important;
+            min-width: 0;
+            height: 70px !important;
+            font-size: 0.8rem;
+            padding: 2px 0 !important;
+        }
+        .fancy-date .date-number {
+            font-size: 1rem !important;
+        }
+        .days-list li {
+            font-size: 0.8rem !important;
+            padding: 4px 0 !important;
+        }
+    }
+}
 .dashboard-container {
     margin-top: 40px;
     color: var(--secondary-text);

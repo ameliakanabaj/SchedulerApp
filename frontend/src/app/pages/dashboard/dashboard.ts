@@ -5,10 +5,13 @@ import { RouterLink } from "@angular/router";
 import { Modal } from '@app/shared/services';
 import { PasswordReset } from '@app/features/password-reset/password-reset';
 import { Authentication } from '@app/core';
+import { Schedule } from '@app/shared/services/schedule/schedule';
+import { ScheduleModel } from '@app/models/schedule.model';
+import { ViewOnlyCalendar } from '@app/features/view-only-calendar/view-only-calendar';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [Calendar, DatePipe, RouterLink],
+  imports: [Calendar, ViewOnlyCalendar, DatePipe, RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -16,24 +19,18 @@ export class Dashboard implements OnInit {
     userHasOrganization = true;
     today = new Date();
     wasPasswordNotifDisplayed? = true;
-    schedule = null;
+    schedule?: number;
 
-    workdays = [];
+    mode: 'view' | 'availability' | 'admin'  = 'view';
 
-    // upcomingShifts = [
-    //     { date: new Date(), start: '08:00', end: '16:00' },
-    //     { date: new Date(Date.now() + 86400000), start: '12:00', end: '20:00' }
-    // ];
     upcomingShifts: { date: Date, start: string, end: string}[] = [];
 
     notifications: { message: string, date: Date }[] = [];
-    // notifications = [
-    //     { message: 'Zmieniono Twoją zmianę na 23.11', date: new Date() },
-    //     { message: 'Nowy komunikat od managera', date: new Date() }
-    // ]; // temp
+
 
     private readonly modalService = inject(Modal);
     private readonly authService = inject(Authentication);
+    private readonly scheduleService = inject(Schedule);
 
     // ng on init z pobraniem schedules i wtedy upcoming shifts dodanie
     ngOnInit(): void {
@@ -46,6 +43,23 @@ export class Dashboard implements OnInit {
 
         if (!this.authService.getOrgId()) {
             this.userHasOrganization = false;
+        }
+
+        this.loadSchedule();
+    }
+
+    loadSchedule(): void {
+        const orgId = this.authService.getOrgId();
+        if (orgId) {
+            this.scheduleService.getAllByOrganization(orgId).subscribe(schedules => {
+                if (schedules.length > 0) {
+                    // Find the latest schedule with status not FAILED or PENDING
+                    const valid = schedules.find(s => s.status !== 'FAILED' && s.status !== 'PENDING');
+                    this.schedule = valid?.schedule_id;
+                    console.log('schedule: ', valid, this.schedule);
+                    
+                }
+            });
         }
     }
 

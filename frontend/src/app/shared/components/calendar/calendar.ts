@@ -1,5 +1,5 @@
 import { DatePipe, NgClass, NgFor, NgTemplateOutlet } from '@angular/common';
-import { Component, inject, input, Input, OnInit } from '@angular/core';
+import { Component, inject, input, Input, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, SimpleChanges, OnChanges } from '@angular/core';
 import { Availability as AvailabilityService, Modal, Toastr } from '@app/shared/services';
 import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-modal';
 import { Authentication } from '@app/core';
@@ -17,7 +17,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })
-export class Calendar implements OnInit {
+export class Calendar implements OnInit, OnChanges {
     xs = input(false);
     @Input() mode: 'availability' | 'admin' | 'view' = 'availability';
     @Input() month: number = new Date().getMonth();
@@ -41,7 +41,7 @@ export class Calendar implements OnInit {
 
     // FULL SCHEDULE dane
 
-    scheduleId!: number;
+    @Input() scheduleId!: number;
     schedule?: ScheduleModel;
     isScheduleReadyToGenerate = false;
 
@@ -55,32 +55,51 @@ export class Calendar implements OnInit {
     private readonly activatedRoute = inject(ActivatedRoute);
 
     ngOnInit(): void {
-        if (this.authService.hasRole('ORG_ADMIN')) {
-            this.mode = 'admin';
+        console.log('ID Z KALENDARZA', this.scheduleId);
+        
+        if (!this.scheduleId) {
+            this.activatedRoute.params.subscribe((param) => {
+                this.scheduleId = param['id'];
+            });
         }
+        // if (this.authService.hasRole('ORG_ADMIN')) {
+        //     this.mode = 'admin';
+        // }
+
+        this.setMode('admin');
+        this.setMode('view');
 
         if (this.mode === 'admin') {
             this.getShifts();
         } else if (this.mode === 'availability') {
             this.getUserAvailabilities();
         } else if (this.mode === 'view') {
+            this.getShifts();
             this.getSchedule();
         }
 
-        this.activatedRoute.params.subscribe((param) => {
-            this.scheduleId = param['id'];
-        });
-        
-        this.scheduleService.canGenerate(this.scheduleId).subscribe((res) => {
-            this.isScheduleReadyToGenerate = res.canGenerate;
-        });
+        if (this.scheduleId !== undefined) {
+            this.scheduleService.canGenerate(this.scheduleId).subscribe((res) => {
+                this.isScheduleReadyToGenerate = res.canGenerate;
+            });
+        }
 
         const userId = this.authService.getUserId();
 
         this.availabilityService.getAvailabilityByUser(userId!).subscribe((res) => {
             this.availabilities = res;
         });
-        
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+
+        if (changes['scheduleId'] && this.scheduleId) {
+            this.onScheduleReady();
+        }
+
+        if (changes['mode'] && !changes['mode'].firstChange) {
+            this.onModeChanged();
+        }
     }
 
     generateSchedule(): void {
@@ -99,6 +118,10 @@ export class Calendar implements OnInit {
     getSchedule(): void {
         this.scheduleService.getById(this.scheduleId).subscribe(sched => {
             this.schedule = sched;
+            if (this.schedule?.assignments) {
+                this.schedule.assignments = [...this.schedule.assignments];
+            }
+            this.refreshCalendar();
         });
     }
 
@@ -566,5 +589,37 @@ export class Calendar implements OnInit {
         );
 
         return localDate.toISOString();
+    }
+
+    private onModeChanged(): void {
+        if (!this.scheduleId) return;
+
+        if (this.mode === 'view') {
+            this.getShifts();
+            this.getSchedule();
+        }
+
+        if (this.mode === 'admin') {
+            this.getShifts();
+        }
+    }
+
+    private onScheduleReady(): void {
+        if (this.mode === 'view') {
+            this.getShifts();
+            this.getSchedule();
+        }
+
+        if (this.mode === 'admin') {
+            this.getShifts();
+        }
+
+        if (this.mode === 'availability') {
+            this.getUserAvailabilities();
+        }
+
+        this.scheduleService.canGenerate(this.scheduleId).subscribe(res => {
+            this.isScheduleReadyToGenerate = res.canGenerate;
+        });
     }
 }

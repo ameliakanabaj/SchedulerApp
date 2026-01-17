@@ -1,4 +1,6 @@
 <div class="calendar" [ngClass]="{ 'calendar-xs' : xs() }">
+    {{ scheduleId }}
+
     @if (authService.hasRole('ORG_ADMIN') && !xs()) {
         <div class="mode-switcher">
             <button [ngClass]="mode === 'availability' ? 'active' : 'inactive'" (click)="setMode('availability')"> Availability Mode </button>
@@ -95,27 +97,27 @@
                             <span class="date-month">{{ day | date:'MMMM'}}</span>
                         </span>
                         <div class="shifts-list">
-                        @for (shift of getShiftsForDay(day); track $index) {
-                            <div class="custom fancy-shift-gradient">
-                                <div class="shift-header">
-                                    <span class="shift-time">⏰ {{ shift.start_time | date:'HH:mm' }} – {{ shift.end_time | date:'HH:mm' }}</span>
-                                    @if (shift.place) {
-                                        <span class="shift-place">📍 {{ shift.place }}</span>
-                                    }
+                            @for (shift of getShiftsForDay(day); track $index) {
+                                <div class="custom fancy-shift-gradient">
+                                    <div class="shift-header">
+                                        <span class="shift-time">⏰ {{ shift.start_time | date:'HH:mm' }} – {{ shift.end_time | date:'HH:mm' }}</span>
+                                        @if (shift.place) {
+                                            <span class="shift-place">📍 {{ shift.place }}</span>
+                                        }
+                                    </div>
+                                    <div class="line fancy-line"></div>
+                                    <div class="assignments fancy-assignments">
+                                        @for (a of getAssignmentsForShift(shift.shift_id); track $index) {
+                                            <div class="assignment fancy-assignment">
+                                                <span class="assignment-user">👤 {{ `${a.user?.first_name} ${a.user?.last_name}`  || a.user_id }}</span>
+                                                @if (a.role_on_shift) {
+                                                    <span class="assignment-role">({{ a.role_on_shift }})</span>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
-                                <div class="line fancy-line"></div>
-                                <div class="assignments fancy-assignments">
-                                    @for (a of getAssignmentsForShift(shift.shift_id); track $index) {
-                                        <div class="assignment fancy-assignment">
-                                            <span class="assignment-user">👤 {{ `${a.user?.first_name} ${a.user?.last_name}`  || a.user_id }}</span>
-                                            @if (a.role_on_shift) {
-                                                <span class="assignment-role">({{ a.role_on_shift }})</span>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        }
+                            }
                         </div>
                     </div>
                 }
