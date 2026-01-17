@@ -26,6 +26,8 @@ export class Calendar implements OnInit, OnChanges {
     @Input() scheduleRange: ScheduleModel | null = null;
     @Input() availabilities: AvailabilityModel[] = [];
 
+    isUserAdmin = false;
+
     daysInMonth = this.generateDays(this.year, this.month);
 
     // SHIFTS dane 
@@ -56,16 +58,13 @@ export class Calendar implements OnInit, OnChanges {
     private readonly activatedRoute = inject(ActivatedRoute);
 
     ngOnInit(): void {
-        console.log('ID Z KALENDARZA', this.scheduleId);
-        
+        this.isUserAdmin = this.authService.hasRole('ORG_ADMIN');
+
         if (!this.scheduleId) {
             this.activatedRoute.params.subscribe((param) => {
                 this.scheduleId = param['id'];
             });
         }
-        // if (this.authService.hasRole('ORG_ADMIN')) {
-        //     this.mode = 'admin';
-        // }
 
         this.setMode('admin');
         this.setMode('view');

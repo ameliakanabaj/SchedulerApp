@@ -1,12 +1,13 @@
 <div class="calendar" [ngClass]="{ 'calendar-xs' : xs() }">
-    {{ scheduleId }}
-
-    @if (authService.hasRole('ORG_ADMIN') && !xs()) {
+    @if (isUserAdmin && !xs()) {
         <div class="mode-switcher">
             <button [ngClass]="mode === 'availability' ? 'active' : 'inactive'" (click)="setMode('availability')"> Availability Mode </button>
             <button [ngClass]="mode === 'admin' ? 'active' : 'inactive'" (click)="setMode('admin')"> Admin Mode </button>
             <button [ngClass]="mode === 'view' ? 'active' : 'inactive'" (click)="setMode('view')"> View Mode </button>
         </div>
+    } @else {
+        <button [ngClass]="mode === 'availability' ? 'active' : 'inactive'" (click)="setMode('availability')"> Availability Mode </button>
+        <button [ngClass]="mode === 'view' ? 'active' : 'inactive'" (click)="setMode('view')"> View Mode </button>
     }
     <div class="calendar-header">
         <i class="fa-solid fa-backward" (click)="previousMonth()"></i>
@@ -114,9 +115,11 @@
                                                     <span class="assignment-role">({{ a.role_on_shift }})</span>
                                                 }
 
-                                                <button class="edit-assignment" title="Change Assignment" (click)="openChangeAssignmentModal(a)">
-                                                    <i class="fa-solid fa-pen-to-square"></i>
-                                                </button>
+                                                @if (isUserAdmin) {
+                                                    <button class="edit-assignment" title="Change Assignment" (click)="openChangeAssignmentModal(a)">
+                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                    </button>
+                                                }
                                             </div>
                                         }
                                     </div>
