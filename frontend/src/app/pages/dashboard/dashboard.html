@@ -9,19 +9,12 @@
             <h2>Hello, Employee!</h2>
             <div> Today's date: <b>{{ today | date:'fullDate' }}</b></div>
         </div>
-
         <div class="grid">
             <div class="card calendar">
-                @if (!schedule) {
+                @if (!schedule || typeof schedule !== 'number' || schedule <= 0) {
                     <h3> Your schedule will be displayed here, once it will be created </h3>
                 } @else {
-                    <div class="calendar-header">
-                        <h3>Schedule</h3>
-                        <a routerLink="/availability">
-                            <button class="btn-availability"> Update availability </button>
-                        </a>
-                    </div>
-                    <app-calendar [xs]="true" mode="view"/>
+                    <app-view-only-calendar [scheduleId]="schedule"/>
                 }
             </div>
 

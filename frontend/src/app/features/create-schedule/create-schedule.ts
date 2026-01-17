@@ -21,7 +21,7 @@ export class CreateSchedule implements OnInit {
     mode: 'create' | 'edit' = 'create';
     organizationId = this.modalRef.data.organizationId;
     scheduleId?: number = this.modalRef.data.scheduleId;
-    
+
     dateFrom: string = '';
     dateTo: string = '';
     deadline: string = '';
@@ -34,6 +34,10 @@ export class CreateSchedule implements OnInit {
             this.mode = 'edit';
             this.loadSchedule();
         }
+    }
+
+    isDisabled(): boolean {
+        return !this.dateFrom || !this.dateTo || !this.deadline || this.deadline > this.dateTo || this.dateFrom > this.dateTo;
     }
 
     private loadSchedule(): void {

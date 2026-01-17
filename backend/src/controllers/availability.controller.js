@@ -51,9 +51,18 @@ async function createAvailability(req, res, next) {
   }
 }
 
+
 async function createAvailabilitiesBulk(req, res, next) {
   try {
-    const items = req.body;
+    // Support both array and { days: [...] } for req.body
+    let items = Array.isArray(req.body) ? req.body : req.body.days;
+    if (!Array.isArray(items)) {
+      return next({
+        type: "BUSINESS_LOGIC",
+        message: "Invalid request body for bulk availability",
+        statusCode: 400
+      });
+    }
 
     if (req.user.role === "EMPLOYEE") {
       items.forEach(i => i.user_id = req.user.user_id);
@@ -107,6 +116,11 @@ async function createAvailabilitiesBulk(req, res, next) {
     });
 
   } catch (err) {
+    console.log('BŁĄD');
+    console.log(req.body);
+    
+    console.log(err);
+    
     next(err);
   }
 }
@@ -138,6 +152,8 @@ async function getAvailabilityByUser(req, res, next) {
     }
 
     const availabilities = await availabilityModel.getAvailabilityByUser(user_id);
+    console.log(availabilities);
+    
     res.json(availabilities);
 
   } catch (err) {

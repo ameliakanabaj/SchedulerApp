@@ -1,0 +1,105 @@
+// --- Light Modal Styles with Theme Colors ---
+.modal-body {
+	background: var(--primary-white);
+	border-radius: 0 0 1.2rem 1.2rem;
+	box-shadow: 0 8px 32px 0 var(--primary-shadow);
+	padding: 2.5rem 2rem 2rem 2rem;
+	color: var(--secondary-text);
+	position: relative;
+	overflow: hidden;
+}
+
+.form-group {
+	margin-bottom: 1.7rem;
+	display: flex;
+	flex-direction: column;
+}
+
+label {
+	font-size: 1.1rem;
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	color: var(--primary-color);
+	letter-spacing: 0.02em;
+}
+
+
+.form-control {
+	padding: 0.7rem 1.1rem;
+	border-radius: 0.7rem;
+	border: 1.5px solid var(--secondary-background);
+	background: var(--primary-white);
+	color: var(--secondary-text);
+	font-size: 1.08rem;
+	font-weight: 500;
+	box-shadow: 0 2px 8px var(--primary-shadow);
+	transition: box-shadow 0.2s, border 0.2s;
+	outline: none;
+}
+
+.form-control:focus {
+	box-shadow: 0 0 0 2px var(--primary-color), 0 2px 8px var(--primary-shadow);
+	border: 1.5px solid var(--primary-color);
+}
+
+select.form-control {
+	appearance: none;
+	background-image: url('data:image/svg+xml;utf8,<svg fill="%23A11F4A" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>');
+	background-repeat: no-repeat;
+	background-position: right 1rem center;
+	background-size: 1.2rem;
+}
+
+option {
+	background: var(--primary-white);
+	color: var(--secondary-text);
+	font-size: 1rem;
+	border-radius: 0.5rem;
+}
+
+.modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 1rem;
+	margin-top: 2.2rem;
+}
+
+.btn {
+	padding: 0.7rem 1.7rem;
+	border-radius: 0.7rem;
+	font-size: 1.08rem;
+	font-weight: 600;
+	border: none;
+	cursor: pointer;
+	transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+	box-shadow: 0 2px 8px var(--primary-shadow);
+}
+
+.btn-primary {
+	background: var(--primary-color);
+	color: var(--primary-white);
+}
+.btn-primary:hover {
+	background: var(--primary-hover-bg);
+	color: var(--primary-white);
+}
+.btn-secondary {
+	background: var(--secondary-background);
+	color: var(--primary-color);
+	border: 1.5px solid var(--primary-color);
+}
+.btn-secondary:hover {
+	background: var(--primary-color);
+	color: var(--primary-white);
+}
+
+// Responsive tweaks
+@media (max-width: 600px) {
+	.modal-body {
+		padding: 1.2rem 0.7rem 1rem 0.7rem;
+	}
+	.btn {
+		padding: 0.5rem 1.1rem;
+		font-size: 1rem;
+	}
+}

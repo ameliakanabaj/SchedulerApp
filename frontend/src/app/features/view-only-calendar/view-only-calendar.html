@@ -1,0 +1,51 @@
+<div class="calendar calendar-xs">
+	<div class="calendar-header">
+		<i class="fa-solid fa-backward" (click)="previousMonth()"></i>
+		<h3>{{ year }} / {{ month + 1 }}</h3>
+		<i class="fa-solid fa-forward" (click)="nextMonth()"></i>
+		<select *ngIf="schedules.length > 0" [(ngModel)]="selectedScheduleId" (change)="loadSchedule(selectedScheduleId)">
+			<option *ngFor="let sched of schedules" [value]="sched.schedule_id">
+				{{ sched.date_from | date:'yyyy-MM-dd' }} - {{ sched.date_to | date:'yyyy-MM-dd' }}
+			</option>
+		</select>
+		<div *ngIf="schedule">
+			<small>From: {{ schedule.date_from | date:'yyyy-MM-dd' }} To: {{ schedule.date_to | date:'yyyy-MM-dd' }}</small>
+		</div>
+	</div>
+	<div class="days-list">
+		<ul>
+			<li *ngFor="let day of weekDays">{{ day }}</li>
+		</ul>
+	</div>
+	<div class="calendar-grid">
+		<ng-container *ngFor="let day of daysInMonth">
+			<div class="day" *ngIf="day">
+				<span class="date fancy-date">{{ day?.getDate() }}, {{ day | date:'MMMM' }}</span>
+                <div class="shifts-list">
+                    @for (shift of getShiftsForDay(day); track $index) {
+                        <div class="custom fancy-shift-gradient">
+                            <div class="shift-header">
+                                <span class="shift-time">⏰ {{ shift.start_time | date:'HH:mm' }} – {{ shift.end_time | date:'HH:mm' }}</span>
+                                @if (shift.place) {
+                                    <span class="shift-place">📍 {{ shift.place }}</span>
+                                }
+                            </div>
+                            <div class="line fancy-line"></div>
+                            <div class="assignments fancy-assignments">
+                                @for (a of getAssignmentsForShift(shift.shift_id); track $index) {
+                                    <div class="assignment fancy-assignment">
+                                        <span class="assignment-user">👤 {{ `${a.user?.first_name} ${a.user?.last_name}`  || a.user_id }}</span>
+                                        @if (a.role_on_shift) {
+                                            <span class="assignment-role">({{ a.role_on_shift }})</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+			</div>
+			<div class="day-empty" *ngIf="!day"></div>
+		</ng-container>
+	</div>
+</div>

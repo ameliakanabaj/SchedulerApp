@@ -60,9 +60,42 @@ async function deleteAssignment(assignment_id) {
 }
 
 async function updateAssignment(assignment_id, data) {
+  const updateData = { ...data };
+    if (updateData.user_id !== undefined && updateData.user_id !== null && updateData.user_id !== '') {
+      const userIdNum = Number(updateData.user_id);
+      if (!isNaN(userIdNum)) {
+        updateData.user = { connect: { user_id: userIdNum } };
+      }
+      delete updateData.user_id;
+    }
+    if (updateData.shift_id !== undefined && updateData.shift_id !== null && updateData.shift_id !== '') {
+      const shiftIdNum = Number(updateData.shift_id);
+      if (!isNaN(shiftIdNum)) {
+        updateData.shift = { connect: { shift_id: shiftIdNum } };
+      }
+      delete updateData.shift_id;
+    }
+    if (updateData.schedule_id !== undefined && updateData.schedule_id !== null && updateData.schedule_id !== '') {
+      const scheduleIdNum = Number(updateData.schedule_id);
+      if (!isNaN(scheduleIdNum)) {
+        updateData.schedule = { connect: { schedule_id: scheduleIdNum } };
+      }
+      delete updateData.schedule_id;
+    }
+
   return prisma.assignment.update({
     where: { assignment_id: Number(assignment_id) },
-    data
+    data: updateData,
+    include: {
+      shift: {
+        select: {
+          shift_id: true,
+          organization_id: true,
+          start_time: true,
+          end_time: true
+        }
+      }
+    }
   });
 }
 

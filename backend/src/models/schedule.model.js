@@ -16,7 +16,12 @@ async function getScheduleById(id) {
   return await prisma.schedule.findUnique({
     where: { schedule_id: Number(id) },
     include: {
-      assignments: true,
+      assignments: {
+        include: {
+            shift: true,
+            user: true,
+        },
+      },
       organization: true,
     },
   });

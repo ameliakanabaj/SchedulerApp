@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class Availability {
-    API_URL = `${environment}/availability`;
+    API_URL = `${environment.apiUrl}/availabilities`;
 
     private readonly http = inject(HttpClient);
 
@@ -28,9 +28,8 @@ export class Availability {
         return this.http.delete(`${this.API_URL}/${id}`);
     }
 
-    bulkCreateAvailability(userId: string, days: AvailabilityModel[]) {
+    bulkCreateAvailability(days: any) {
         return this.http.post(`${this.API_URL}/bulk`, {
-            user_id: userId,
             days
         });
     }
