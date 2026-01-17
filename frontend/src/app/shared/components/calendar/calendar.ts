@@ -11,11 +11,9 @@ import { SetShiftHoursModal } from '@app/features/set-shift-hours-modal/set-shif
 import { Schedule } from '@app/shared/services/schedule/schedule';
 import { ActivatedRoute } from '@angular/router';
 
-type AssignmentsByDay = Map<string, AssignmentModel[]>;
-
 @Component({
   selector: 'app-calendar',
-  imports: [NgClass, NgTemplateOutlet, DatePipe, NgFor],
+  imports: [NgClass, NgTemplateOutlet, DatePipe],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })
@@ -101,8 +99,6 @@ export class Calendar implements OnInit {
     getSchedule(): void {
         this.scheduleService.getById(this.scheduleId).subscribe(sched => {
             this.schedule = sched;
-            console.log(this.schedule);
-            
         });
     }
 
@@ -449,13 +445,8 @@ export class Calendar implements OnInit {
     }
 
     sendShifts(): void {
-        console.log(this.shifts);
-        console.log(this.shiftsFromDB);
-        
         const shiftsNotFromDb = this.shifts.filter(s => !this.shiftsFromDB.includes(s));
 
-        console.log(shiftsNotFromDb);
-        
         this.shiftService.createBulk(shiftsNotFromDb).subscribe({
             next: () => {
                 this.toastrService.success('Shifts have been created.');
@@ -503,8 +494,6 @@ export class Calendar implements OnInit {
         const start = new Date(av.start_time);
         const end = new Date(av.end_time);
 
-        // const start = av.start_time.split('T')[1].substring(0,5);
-        // const end = av.end_time.split('T')[1].substring(0,5);
         return `${start} - ${end}`;
     }
     
@@ -578,22 +567,4 @@ export class Calendar implements OnInit {
 
         return localDate.toISOString();
     }
-
-    private assignmentsByDay = new Map<string, AssignmentModel[]>();
-
-    // private buildAssignmentsByDay(schedule: ScheduleModel): void {
-    //     this.assignmentsByDay.clear();
-
-    //     for (const a of schedule.assignments) {
-    //         const dateKey = this.getLocalDateString(
-    //             new Date(a.shift.start_time)
-    //         );
-
-    //         if (!this.assignmentsByDay.has(dateKey)) {
-    //             this.assignmentsByDay.set(dateKey, []);
-    //         }
-
-    //         this.assignmentsByDay.get(dateKey)!.push(a);
-    //     }
-    // }
 }
