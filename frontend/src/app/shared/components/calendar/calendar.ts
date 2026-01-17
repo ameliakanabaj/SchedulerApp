@@ -136,7 +136,23 @@ export class Calendar implements OnInit, OnChanges {
         this.shiftService.getAllShifts().subscribe({
             next: (shifts) => {
                 this.shiftsFromDB = shifts;
-                this.shifts = [...this.shiftsFromDB];
+                if (this.shiftsFromDB.length > 0) {
+                    // DB has shifts, use them and clear localStorage
+                    this.shifts = [...this.shiftsFromDB];
+                    localStorage.removeItem('calendar_shifts');
+                } else {
+                    // No DB shifts, try to load from localStorage
+                    const local = localStorage.getItem('calendar_shifts');
+                    if (local) {
+                        try {
+                            this.shifts = JSON.parse(local);
+                        } catch {
+                            this.shifts = [];
+                        }
+                    } else {
+                        this.shifts = [];
+                    }
+                }
             },
             error: (err) => {
                 this.toastrService.error(err.statusText, 'Could not load shifts');
@@ -146,8 +162,7 @@ export class Calendar implements OnInit, OnChanges {
 
     removeShift(shift: ShiftModel): void {
         this.shifts = this.shifts.filter(s => s.shift_id !== shift.shift_id);
-
-
+        this.saveShiftsToLocalStorage();
         if (this.shiftsFromDB.includes(shift)) {
             this.shiftService.deleteShift(shift.shift_id).subscribe();
         }
@@ -155,6 +170,7 @@ export class Calendar implements OnInit, OnChanges {
 
     removeAllShifts(): void {
         this.shifts = [];
+        this.saveShiftsToLocalStorage();
     }
 
     copyShift(shift: ShiftModel): void {
@@ -180,7 +196,7 @@ export class Calendar implements OnInit, OnChanges {
             place: this.shiftClipboard.place,
             assignments: []
         } as any);
-
+        this.saveShiftsToLocalStorage();
         this.toastrService.success(`Shift pasted on ${day.getDate()}`);
     }
 
@@ -541,6 +557,7 @@ export class Calendar implements OnInit, OnChanges {
                 assignments: []
             } as any);
         }
+        this.saveShiftsToLocalStorage();
     }
 
     private applyShiftToSingleDay(day: Date, data: any, existingShift: ShiftModel | null): void {
@@ -561,6 +578,12 @@ export class Calendar implements OnInit, OnChanges {
                 place: data.place,
                 assignments: []
             } as any);
+        }
+        this.saveShiftsToLocalStorage();
+    }
+    private saveShiftsToLocalStorage(): void {
+        if (this.shiftsFromDB.length === 0) {
+            localStorage.setItem('calendar_shifts', JSON.stringify(this.shifts));
         }
     }
 
