@@ -745,6 +745,7 @@ button:focus {
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #f093fb #fff;
+
 }
 
 .fancy-assignment {
@@ -756,15 +757,16 @@ button:focus {
     font-weight: 500;
     box-shadow: 0 2px 8px 0 rgba(240, 147, 251, 0.12);
     display: flex;
-    align-items: center;
+    justify-content: space-between;
     gap: 6px;
     .assignment-user {
         font-weight: 700;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 90px;
+        // overflow: hidden;
+        // text-overflow: ellipsis;
+        // max-width: 90px;
         display: inline-block;
+        overflow: auto;
     }
     .assignment-role {
         font-size: 0.92rem;
