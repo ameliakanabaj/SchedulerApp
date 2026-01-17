@@ -12,9 +12,12 @@
             <input type="time" name="endTime" [(ngModel)]="endTime">
         </div>
     </div>
+    @if (isDisabled()) {
+        <p class="error-message"> Please ensure that both start and end times are set correctly. </p>
+    }
 
     <div class="buttons">
-        <button class="save-button" (click)="saveHours()" [disabled]="!endTime || !startTime"> Save </button>
+        <button class="save-button" (click)="saveHours()" [disabled]="isDisabled()"> Save </button>
         <button class="cancel-button" (click)="closeModal()"> Cancel </button>
     </div>
 </div>

@@ -2,11 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { DialogRef } from '@ngneat/dialog';
 import { FormsModule } from '@angular/forms';
 import { ModalHeader } from "@app/shared/components/modal-header/modal-header/modal-header";
-import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-set-shift-hours-modal',
-  imports: [FormsModule, ModalHeader, DatePipe],
+  imports: [FormsModule, ModalHeader],
   templateUrl: './set-shift-hours-modal.html',
   styleUrl: './set-shift-hours-modal.scss',
 })
@@ -29,6 +28,10 @@ export class SetShiftHoursModal implements OnInit {
             if (s.required_people) this.required_people = s.required_people;
             if (s.place) this.place = s.place;
         }
+    }
+
+    isDisabled(): boolean {
+        return !this.startTime || !this.endTime || this.startTime >= this.endTime;
     }
 
     save(): void {

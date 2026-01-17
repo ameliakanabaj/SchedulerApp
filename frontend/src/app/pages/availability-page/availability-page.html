@@ -36,11 +36,10 @@
                                     </div>
                                 </div>
 
-                                <div class="meta">
-                                    <div class="generated">Generated: <strong>{{ schedule.generatedAt }}</strong></div>
-                                    <div class="deadline">Deadline: <strong>{{ schedule.deadline_generate_date }}</strong></div>
-                                    <div class="assignments">{{ schedule.assignments?.length ?? 0 }} assignments</div>
-                                </div>
+                            <div class="meta">
+                                <div class="generated">Generated: <strong>{{ schedule.generatedAt }}</strong></div>
+                                <div class="deadline">Deadline: <strong>{{ schedule.deadline_generate_date | date:'short' }}</strong></div>
+                                <div class="assignments">{{ schedule.assignments?.length ?? 0 }} assignments</div>
                             </div>
 
                             <footer class="card-foot">

@@ -148,9 +148,16 @@ describe("User Controller", () => {
       req.body = { first_name: "Anna", last_name: "Bell", email: "test@gmail.com", password: "Password123", role: "EMPLOYEE" };
     });
 
-    it("should create user and return 201 + token", async () => {
+    it("should create user with password_must_be_reset: true and return 201 + token", async () => {
       req.user.role = "GLOBAL_ADMIN";
-      const newUser = { user_id: 1, email: "test@gmail.com", password: "hashed", role: "EMPLOYEE", organization_id: null };
+      const newUser = { 
+        user_id: 1, 
+        email: "test@gmail.com", 
+        password: "hashed", 
+        role: "EMPLOYEE", 
+        organization_id: null, 
+        password_must_be_reset: true
+      };
       userModel.getUserByEmail.mockResolvedValue(null);
       userModel.createUser.mockResolvedValue(newUser);
       authService.generateToken.mockReturnValue("token123");
@@ -158,10 +165,16 @@ describe("User Controller", () => {
 
       await userController.createUser(req, res, next);
 
+      expect(userModel.createUser).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: "test@gmail.com",
+        })
+      );
+
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({
         message: "User created successfully",
-        user: { user_id: 1, email: "test@gmail.com", role: "EMPLOYEE", organization_id: null },
+        user: { user_id: 1, email: "test@gmail.com", role: "EMPLOYEE", organization_id: null, password_must_be_reset: true },
         token: "token123",
       });
     });
@@ -366,7 +379,7 @@ describe("User Controller", () => {
   });
 
   describe("changePassword", () => {
-    it("should change password successfully", async () => {
+    it("should change password successfully and set password_must_be_reset to false", async () => {
       req.user.user_id = 1;
       req.body = { current_password: "old", new_password: "new" };
       const user = { user_id: 1, password: "hashed" };
@@ -376,7 +389,10 @@ describe("User Controller", () => {
 
       await userController.changePassword(req, res, next);
 
-      expect(userModel.updateUser).toHaveBeenCalledWith(1, { password: "newHashed" });
+      expect(userModel.updateUser).toHaveBeenCalledWith(1, { 
+        password: "newHashed",
+        password_must_be_reset: false,
+      });
       expect(res.json).toHaveBeenCalledWith({ message: "Password updated successfully" });
     });
 
@@ -426,7 +442,7 @@ describe("User Controller", () => {
   });
 
   describe("resetPassword", () => {
-    it("should reset password for GLOBAL_ADMIN", async () => {
+    it("should reset password for GLOBAL_ADMIN and set password_must_be_reset to true", async () => {
       req.user.role = "GLOBAL_ADMIN";
       req.params.id = 1;
       req.body = { new_password: "new" };
@@ -436,7 +452,10 @@ describe("User Controller", () => {
 
       await userController.resetPassword(req, res, next);
 
-      expect(userModel.updateUser).toHaveBeenCalledWith(1, { password: "hashed" });
+      expect(userModel.updateUser).toHaveBeenCalledWith(1, { 
+        password: "hashed",
+        password_must_be_reset: true,
+      });
       expect(res.json).toHaveBeenCalledWith({ message: `Password reset successfully for user ${targetUser.email}` });
     });
 

@@ -35,5 +35,9 @@ export const routes: Routes = [
         path: 'calendar/:id',
         component: CalendarPage,
         canActivate: [AuthGuard],
+    },
+    {
+        path: 'dashboard/:id',
+        component: Dashboard,
     }
 ];

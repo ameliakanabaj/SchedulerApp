@@ -1,10 +1,13 @@
 <div class="calendar" [ngClass]="{ 'calendar-xs' : xs() }">
-    @if (authService.hasRole('ORG_ADMIN') && !xs()) {
+    @if (isUserAdmin && !xs()) {
         <div class="mode-switcher">
             <button [ngClass]="mode === 'availability' ? 'active' : 'inactive'" (click)="setMode('availability')"> Availability Mode </button>
             <button [ngClass]="mode === 'admin' ? 'active' : 'inactive'" (click)="setMode('admin')"> Admin Mode </button>
             <button [ngClass]="mode === 'view' ? 'active' : 'inactive'" (click)="setMode('view')"> View Mode </button>
         </div>
+    } @else {
+        <button [ngClass]="mode === 'availability' ? 'active' : 'inactive'" (click)="setMode('availability')"> Availability Mode </button>
+        <button [ngClass]="mode === 'view' ? 'active' : 'inactive'" (click)="setMode('view')"> View Mode </button>
     }
     <div class="calendar-header">
         <i class="fa-solid fa-backward" (click)="previousMonth()"></i>
@@ -14,15 +17,15 @@
     @if (mode === 'admin') {
         <div class="admin-info">
             <h3> You can set closed days and manage shifts. </h3>
+            <button class="generate-schedule-btn" (click)="generateSchedule()" [disabled]="!isScheduleReadyToGenerate"> 
+                <span class="btn-glow"></span>
+                <span class="btn-text">Generate Schedule</span>
+            </button>
             <div class="buttons">
                 @if (scheduleRange) {
                     <button class="select-all-days" (click)="applyShiftToScheduleRange()"> Select All Days </button>
                     <button class="select-all-days" [disabled]="shifts.length === 0" (click)="removeAllShifts()"> Remove all shifts </button>
                 }
-                <!-- <button (click)="isSelectMultipleDaysMode = !isSelectMultipleDaysMode"> Activate Bulk Select </button> -->
-                <!-- @if (customDays.length > 0) {
-                    <button (click)="openShiftModal(customDays)"> Create shifts to selected days. </button>
-                } -->
             </div>
         </div>
     } @else if (mode === 'availability') {
@@ -53,8 +56,7 @@
                 @let isDayInScheduleRange = (isInScheduleRange(day) && scheduleRange ? true : false);
                 @if (mode === 'availability') {
                     <div (click)="activeMode !== 'custom' ? setAvailability(day, activeMode) : saveCustomHours(day)" class="day">
-                        <!-- <span class="date">{{ day.toISOString() | date:'fullDate' }} </span> -->
-                        <span class="date">
+                        <span class="date fancy-date">
                             {{ day.getDate() }}, {{ day | date:'MMMM'}}
                             @if (mode === 'availability') {
                                 <button class="add-notes" [ngClass]="hasComments(day) ? 'with-notes' : 'without-notes'" (click)="openAddNoteModal(day);"> <i class="fa-regular fa-message"></i> </button>
@@ -70,13 +72,12 @@
                     </div>
                 } @else if (mode === 'admin') {
                     <div class="day">
-                        <!-- <span class="date">{{ day.toISOString() | date:'fullDate' }} </span> -->
-                        <span class="date">
+                        <span class="date fancy-date">
                             {{ day.getDate() }}, {{ day | date:'MMMM'}}
                         </span>
                         <div class="open-day" [ngClass]="{'range-day': isDayInScheduleRange}">
                             @for (shift of getShiftsForDay(day); track $index) {
-                                <div class="shift-entry">
+                                <div class="shift-entry" (click)="copyShift(shift)">
                                     <span> <i class="fa-solid fa-clock"></i>: {{ shift.start_time | date:'h:mm a' }} - {{ shift.end_time | date:'h:mm a' }} </span>
                                     <span> <i class="fa-solid fa-person"></i>: {{ shift.required_people }}</span>
                                     <button class="remove-shift" (click)="removeShift(shift)"><i class="fa-solid fa-xmark"></i></button>
@@ -90,6 +91,42 @@
                             }"/>
                         </div>
                     </div>
+                } @else if (mode === 'view') {
+                    <div class="day">
+                        <span class="date fancy-date">
+                            <span class="date-number">{{ day.getDate() }}</span>
+                            <span class="date-month">{{ day | date:'MMMM'}}</span>
+                        </span>
+                        <div class="shifts-list">
+                            @for (shift of getShiftsForDay(day); track $index) {
+                                <div class="custom fancy-shift-gradient">
+                                    <div class="shift-header">
+                                        <span class="shift-time">⏰ {{ shift.start_time | date:'HH:mm' }} – {{ shift.end_time | date:'HH:mm' }}</span>
+                                        @if (shift.place) {
+                                            <span class="shift-place">📍 {{ shift.place }}</span>
+                                        }
+                                    </div>
+                                    <div class="line fancy-line"></div>
+                                    <div class="assignments fancy-assignments">
+                                        @for (a of getAssignmentsForShift(shift.shift_id); track $index) {
+                                            <div class="assignment fancy-assignment">
+                                                <span class="assignment-user">👤 {{ `${a.user?.first_name} ${a.user?.last_name}`  || a.user_id }}</span>
+                                                @if (a.role_on_shift) {
+                                                    <span class="assignment-role">({{ a.role_on_shift }})</span>
+                                                }
+
+                                                @if (isUserAdmin) {
+                                                    <button class="edit-assignment" title="Change Assignment" (click)="openChangeAssignmentModal(a)">
+                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 }
             } @else {
                 <div class="day-empty"></div>
@@ -101,7 +138,7 @@
         <button class="availability-send" (click)="sendAvailability()"> Send your availability </button>
     } @else if (mode === 'admin') {
         <div class="admin-buttons">
-            <button class="shifts-send"> Send shifts </button>
+            <button class="shifts-send" (click)="sendShifts()"> Send shifts </button>
         </div>
     }
 </div>
@@ -114,21 +151,26 @@
                     <div class="whole"> Whole day </div>
                 }
                 @case ('custom') {
-                    <div class="custom"> Custom hours <i class="fa-solid fa-circle-info" title="{{ getDaySelectedHours(day) }}"></i></div>
+                    <div class="custom"> Custom hours
+                        <p> {{ getDaySelectedHours(day) }} </p>
+                    </div>
                 }
                 @case ('cannot') {
                     <div class="cannot"> Cannot work </div>
                 }
             }
-            <!-- <button class="whole" [ngClass]="getDayType(day) === 'all-day' ? 'active' : 'inactive'" (click)="setAvailability(day, 'all-day')"> Whole day </button> -->
-            <!-- <button class="custom" [ngClass]="getDayType(day) === 'custom' ? 'active' : 'inactive'" (click)="openCustomHoursModal(day, '7', '20')"> Custom hours </button> -->
-            <!-- <button class="cannot" [ngClass]="getDayType(day) === 'cannot' ? 'active' : 'inactive'" (click)="setAvailability(day, 'cannot')"> Cannot work </button> -->
         </div>
     } @else if (mode === 'admin') {
         <div class="admin-buttons-day">
             <button class="add-shift" (click)="openShiftModal(day)" [disabled]="!isDayInScheduleRange"> Add Shift </button>
+            
+            @if (isDayInScheduleRange) {
+                <span class="paste-hint" (click)="pasteShift(day)" [ngClass]="{'has-clipboard': shiftClipboard}">
+                    @if (shiftClipboard) {
+                        Click to paste
+                    }
+                </span>
+            }
         </div>
-    } @else {
-
     }
 </ng-template>

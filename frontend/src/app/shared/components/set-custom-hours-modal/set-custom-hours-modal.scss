@@ -12,6 +12,14 @@
         justify-content: space-between;
     }
 
+    p {
+        align-self: center;
+        opacity: 0.8;
+        border: 2px solid rgba(255, 0, 0, 0.514);
+        padding: 10px;
+        border-radius: 10px;
+    }
+
     .buttons {
         display: flex;
         gap: 10px;

@@ -1,51 +1,93 @@
 <div class="register-container">
     <div class="register-inside-container">
-        <h2>Register</h2>
-        <form>
-            <div class="form-group">
-                <label for="username"> Email: </label>
-                <input type="email" id="email" name="email" [(ngModel)]="email" required />
-            </div>
-            <div class="form-group">
-                <label for="username"> First name: </label>
-                <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    [(ngModel)]="firstName"
-                    required
-                />
-            </div>
-            <div class="form-group">
-                <label for="username"> Last name: </label>
-                <input type="text" id="lastName" name="lastName" [(ngModel)]="lastName" required />
-            </div>
-            <div class="form-group password-group">
-                <label for="username"> Password: </label>
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    [(ngModel)]="password"
-                    required
-                />
-                <i title="Password needs to be at least 8 characters long, contain at least one uppercase letter and one number" class="fa-solid fa-circle-info"></i>
-            </div>
-            <div class="form-group">
-                <label for="password"> Enter password again: </label>
-                <input
-                    type="password"
-                    id="password"
-                    name="confirmPassword"
-                    [(ngModel)]="confirmPassword"
-                    required
-                />
-            </div>
-            <li class="divider"></li>
-            <div class="bottom-group">
-                <span> already have an account? <a routerLink="/login"> Login </a></span>
-                <button type="submit" (click)="onRegister()">Register</button>
-            </div>
-        </form>
+      <h2>Register</h2>
+  
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+        <div class="form-group">
+          <label>Email:</label>
+          <input type="email" formControlName="email" />
+          @if (emailControl.touched && emailControl.errors) {
+            @if (emailControl.errors['required']) {
+                <p class="error">Email is required</p>
+            }
+            @if (emailControl.errors['email']) {
+                <p class="error">This is not an email</p>
+            }
+          }
+        </div>
+  
+        <div class="form-group">
+          <label>First name:</label>
+          <input type="text" formControlName="firstName" />
+          @if (firstNameControl.touched && firstNameControl.errors) {
+            @if (firstNameControl.errors['required']) {
+                <p class="error">First Name is required</p>
+            }
+          }
+        </div>
+  
+        <div class="form-group">
+          <label>Last name:</label>
+          <input type="text" formControlName="lastName" />
+          @if (lastNameControl.touched && lastNameControl.errors) {
+            @if (lastNameControl.errors['required']) {
+                <p class="error">Last Name is required</p>
+            }
+          }
+        </div>
+  
+        <div class="form-group password-group">
+          <label>Password:</label>
+          <input type="password" formControlName="password" />
+          @if (passwordControl.touched && passwordControl.errors) {
+
+            @if (passwordControl.errors['required']) {
+            <p class="error">Password is required</p>
+            }
+
+            @if (passwordControl.errors['passwordStrength']) {
+
+                @if (!passwordControl.errors['passwordStrength'].minLength) {
+                    <p class="error">Password needs to have at least 8 signs</p>
+                }
+
+                @if (!passwordControl.errors['passwordStrength'].upperCase) {
+                    <p class="error">Password needs at least one uppercase letter</p>
+                }
+
+                @if (!passwordControl.errors['passwordStrength'].number) {
+                    <p class="error">Password needs at least one number</p>
+                }
+
+            }
+
+        }
+        </div>
+  
+        <div class="form-group">
+          <label>Enter password again:</label>
+          <input type="password" formControlName="confirmPassword" />
+          @if (confirmPasswordControl.touched && confirmPasswordControl.errors) {
+
+            @if (confirmPasswordControl.errors['required']) {
+                <p class="error">Confirming your password is required</p>
+            }
+          }
+        </div>
+  
+        <li class="divider"></li>
+  
+        <div class="bottom-group">
+          <span>
+            already have an account?
+            <a routerLink="/login"> Login </a>
+          </span>
+  
+          <button type="submit" [disabled]="registerForm.invalid">
+            Register
+          </button>
+        </div>
+      </form>
     </div>
-</div>
+  </div>
+  

@@ -11,9 +11,13 @@
         <label for="deadline"> Deadline Date: </label>
         <input type="date" id="deadline" name="deadline" [(ngModel)]="deadline" required />
 
+        @if (isDisabled()) {
+            <p class="error-message"> Please ensure all fields are filled correctly. Deadline must be on or before Date To. </p>
+        }
+
         <div class="form-actions">
             <button type="button" (click)="close(false)"> Cancel </button>
-            <button type="submit" [disabled]="!dateFrom || !dateTo || !deadline">
+            <button type="submit" [disabled]="isDisabled()">
                 {{ mode === 'create' ? 'Create Schedule' : 'Update Schedule' }}
             </button>
         </div>

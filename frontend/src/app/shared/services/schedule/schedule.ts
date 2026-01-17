@@ -39,4 +39,14 @@ export class Schedule {
     delete(scheduleId: number): Observable<{ message: string }> {
         return this.http.delete<{ message: string }>(`${this.baseUrl}/${scheduleId}`);
     }
+
+    canGenerate(scheduleId: number): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}/${scheduleId}/can-generate`);
+    }
+
+    generateSchedule(scheduleId: number): Observable<ScheduleModel> {
+        return this.http.post<ScheduleModel>(`${this.baseUrl}/generate`, {
+            scheduleId
+        })
+    }
 }

@@ -100,6 +100,16 @@ describe("Assignment Model", () => {
     expect(prisma.assignment.update).toHaveBeenCalledWith({
       where: { assignment_id: 9 },
       data: { role_on_shift: "LEADER" },
+      include: {
+        shift: {
+          select: {
+            shift_id: true,
+            organization_id: true,
+            start_time: true,
+            end_time: true
+          }
+        }
+      }
     });
   });
 });

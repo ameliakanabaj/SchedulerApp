@@ -13,6 +13,32 @@ async function createShift({ organization_id, start_time, end_time, place, requi
   });
 }
 
+async function createShiftsBulk(items = []) {
+  if (!Array.isArray(items) || items.length === 0) return [];
+
+  return await prisma.$transaction(async (tx) => {
+    const created = [];
+
+    for (const i of items) {
+      const record = await tx.shift.create({
+        data: {
+          organization: i.organization_id
+            ? { connect: { organization_id: Number(i.organization_id) } }
+            : undefined,
+          start_time: new Date(i.start_time),
+          end_time: new Date(i.end_time),
+          place: i.place,
+          required_people: i.required_people ?? undefined,
+        },
+      });
+
+      created.push(record);
+    }
+
+    return created;
+  });
+}
+
 async function getAllShifts() {
   return await prisma.shift.findMany({
     orderBy: [{ start_time: "asc" }],
@@ -65,6 +91,7 @@ async function deleteShift(shift_id) {
 
 module.exports = {
   createShift,
+  createShiftsBulk,
   getAllShifts,
   getAllShiftsByOrganizations,
   getShiftById,

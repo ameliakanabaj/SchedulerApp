@@ -1,51 +1,66 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { Calendar } from "@app/shared/components";
 import { RouterLink } from "@angular/router";
-import { Modal } from '@app/shared/services';
+import { Modal, User } from '@app/shared/services';
 import { PasswordReset } from '@app/features/password-reset/password-reset';
 import { Authentication } from '@app/core';
+import { Schedule } from '@app/shared/services/schedule/schedule';
+import { ViewOnlyCalendar } from '@app/features/view-only-calendar/view-only-calendar';
+import { UserModel } from '@app/models';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [Calendar, DatePipe, RouterLink],
+  imports: [ViewOnlyCalendar, DatePipe, RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
     userHasOrganization = true;
     today = new Date();
-    wasPasswordNotifDisplayed? = true;
-    schedule = null;
+    schedule?: number;
 
-    workdays = [];
+    mode: 'view' | 'availability' | 'admin'  = 'view';
 
-    // upcomingShifts = [
-    //     { date: new Date(), start: '08:00', end: '16:00' },
-    //     { date: new Date(Date.now() + 86400000), start: '12:00', end: '20:00' }
-    // ];
     upcomingShifts: { date: Date, start: string, end: string}[] = [];
 
     notifications: { message: string, date: Date }[] = [];
-    // notifications = [
-    //     { message: 'Zmieniono Twoją zmianę na 23.11', date: new Date() },
-    //     { message: 'Nowy komunikat od managera', date: new Date() }
-    // ]; // temp
+
+    user: UserModel | null = null;
 
     private readonly modalService = inject(Modal);
     private readonly authService = inject(Authentication);
+    private readonly scheduleService = inject(Schedule);
+    private readonly userService = inject(User);
 
     // ng on init z pobraniem schedules i wtedy upcoming shifts dodanie
     ngOnInit(): void {
-        const val = localStorage.getItem('wasPasswordNotifDisplayed');
-        this.wasPasswordNotifDisplayed = val === 'true';
+        const userId = this.authService.getUserId();
 
-        if (!this.wasPasswordNotifDisplayed) {
-            this.openPasswordChangeModal();
-        }
+        this.userService.getById(Number(userId)).subscribe(user => {
+            console.log(user);
+        });
 
         if (!this.authService.getOrgId()) {
             this.userHasOrganization = false;
+        }
+
+        if (this.user?.password_must_be_reset) {
+            this.openPasswordChangeModal();
+        }
+
+        this.loadSchedule();
+    }
+
+    loadSchedule(): void {
+        const orgId = this.authService.getOrgId();
+        if (orgId) {
+            this.scheduleService.getAllByOrganization(orgId).subscribe(schedules => {
+                if (schedules.length > 0) {
+                    const valid = schedules.find(s => s.status !== 'FAILED' && s.status !== 'PENDING');
+                    this.schedule = valid?.schedule_id;
+                    
+                }
+            });
         }
     }
 

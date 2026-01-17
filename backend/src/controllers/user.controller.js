@@ -199,7 +199,10 @@ async function changePassword(req, res, next) {
 
     const hashed = await bcrypt.hash(new_password, 10);
 
-    await userModel.updateUser(user_id, { password: hashed });
+    await userModel.updateUser(user_id, { 
+      password: hashed,
+      password_must_be_reset: false,
+    });
 
     res.json({ message: "Password updated successfully" });
   } catch (err) {
@@ -236,7 +239,10 @@ async function resetPassword(req, res, next) {
     }
 
     const hashed = await bcrypt.hash(new_password, 10);
-    await userModel.updateUser(targetUserId, { password: hashed });
+    await userModel.updateUser(targetUserId, { 
+      password: hashed,
+      password_must_be_reset: true,
+    });
 
     res.json({ message: `Password reset successfully for user ${targetUser.email}` });
   } catch (err) {
