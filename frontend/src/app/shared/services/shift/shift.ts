@@ -33,8 +33,6 @@ export class Shift {
     }
 
     deleteShift(id: number): Observable<any> {
-        console.log(id);
-        
         return this.http.delete(`${this.API_URL}/${id}`);
     }
 }

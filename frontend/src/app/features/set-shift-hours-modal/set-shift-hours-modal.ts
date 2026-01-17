@@ -36,9 +36,6 @@ export class SetShiftHoursModal implements OnInit {
             return;
         }
 
-        console.log('Zamkniecie modala: ', this.startTime, this.endTime);
-        
-
         this.modalRef.close({
             start: this.startTime,
             end: this.endTime,

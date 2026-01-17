@@ -124,7 +124,6 @@ export class ViewOnlyCalendar implements OnInit {
 
     getAssignmentsForShift(shiftId: number): AssignmentModel[] {
         if (!this.schedule?.assignments) return [];
-        console.log('ok');
         
         return this.schedule.assignments.filter(
             a => a.shift_id === shiftId

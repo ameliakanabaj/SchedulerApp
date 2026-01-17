@@ -29,14 +29,10 @@ export class ChangeAssignmentModal implements OnInit {
 
         this.userService.getByOrganization(this.orgId ?? 0).subscribe(users => {
             this.users = users;
-            console.log(users);
-            
         });
     }
 
     updateAssignment(): void {
-        console.log(this.assignment);
-        
         this.assignementService.updateAssignment(this.assignment.assignment_id, {
             user_id: this.assignment.user_id
         }).subscribe({
@@ -46,8 +42,6 @@ export class ChangeAssignmentModal implements OnInit {
             },
             error: (err) => {
                 this.toastrService.error('Failed to update assignment: ' + err.message);
-                console.log(err);
-                
             }
         });
     }

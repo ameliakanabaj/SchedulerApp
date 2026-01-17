@@ -105,11 +105,9 @@ export class Calendar implements OnInit, OnChanges {
     generateSchedule(): void {
         this.scheduleService.generateSchedule(this.scheduleId).subscribe({
             next: (generatedSchedule) => {
-                console.log(generatedSchedule);
                 this.toastrService.success('Successfully generated new schedule.');
             },
             error: (err) => {
-                console.log(err);
                 this.toastrService.error('Error while generating schedule');
             }
         })
@@ -251,11 +249,6 @@ export class Calendar implements OnInit, OnChanges {
             shift: ShiftModel;
             assignments: AssignmentModel[];
         }[] {
-            console.log(this.getShiftsForDay(day).map(shift => ({
-            shift,
-            assignments: shift.assignments || []
-        })));
-            
         return this.getShiftsForDay(day).map(shift => ({
             shift,
             assignments: shift.assignments || []

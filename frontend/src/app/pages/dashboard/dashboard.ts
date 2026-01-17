@@ -1,17 +1,15 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { Calendar } from "@app/shared/components";
 import { RouterLink } from "@angular/router";
 import { Modal } from '@app/shared/services';
 import { PasswordReset } from '@app/features/password-reset/password-reset';
 import { Authentication } from '@app/core';
 import { Schedule } from '@app/shared/services/schedule/schedule';
-import { ScheduleModel } from '@app/models/schedule.model';
 import { ViewOnlyCalendar } from '@app/features/view-only-calendar/view-only-calendar';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [Calendar, ViewOnlyCalendar, DatePipe, RouterLink],
+  imports: [ViewOnlyCalendar, DatePipe, RouterLink],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -53,10 +51,8 @@ export class Dashboard implements OnInit {
         if (orgId) {
             this.scheduleService.getAllByOrganization(orgId).subscribe(schedules => {
                 if (schedules.length > 0) {
-                    // Find the latest schedule with status not FAILED or PENDING
                     const valid = schedules.find(s => s.status !== 'FAILED' && s.status !== 'PENDING');
                     this.schedule = valid?.schedule_id;
-                    console.log('schedule: ', valid, this.schedule);
                     
                 }
             });
