@@ -137,11 +137,9 @@ export class Calendar implements OnInit, OnChanges {
             next: (shifts) => {
                 this.shiftsFromDB = shifts;
                 if (this.shiftsFromDB.length > 0) {
-                    // DB has shifts, use them and clear localStorage
                     this.shifts = [...this.shiftsFromDB];
                     localStorage.removeItem('calendar_shifts');
                 } else {
-                    // No DB shifts, try to load from localStorage
                     const local = localStorage.getItem('calendar_shifts');
                     if (local) {
                         try {
