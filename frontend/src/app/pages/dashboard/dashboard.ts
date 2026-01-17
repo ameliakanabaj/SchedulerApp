@@ -1,11 +1,12 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from "@angular/router";
-import { Modal } from '@app/shared/services';
+import { Modal, User } from '@app/shared/services';
 import { PasswordReset } from '@app/features/password-reset/password-reset';
 import { Authentication } from '@app/core';
 import { Schedule } from '@app/shared/services/schedule/schedule';
 import { ViewOnlyCalendar } from '@app/features/view-only-calendar/view-only-calendar';
+import { UserModel } from '@app/models';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +17,6 @@ import { ViewOnlyCalendar } from '@app/features/view-only-calendar/view-only-cal
 export class Dashboard implements OnInit {
     userHasOrganization = true;
     today = new Date();
-    wasPasswordNotifDisplayed? = true;
     schedule?: number;
 
     mode: 'view' | 'availability' | 'admin'  = 'view';
@@ -25,22 +25,27 @@ export class Dashboard implements OnInit {
 
     notifications: { message: string, date: Date }[] = [];
 
+    user: UserModel | null = null;
 
     private readonly modalService = inject(Modal);
     private readonly authService = inject(Authentication);
     private readonly scheduleService = inject(Schedule);
+    private readonly userService = inject(User);
 
     // ng on init z pobraniem schedules i wtedy upcoming shifts dodanie
     ngOnInit(): void {
-        const val = localStorage.getItem('wasPasswordNotifDisplayed');
-        this.wasPasswordNotifDisplayed = val === 'true';
+        const userId = this.authService.getUserId();
 
-        if (!this.wasPasswordNotifDisplayed) {
-            this.openPasswordChangeModal();
-        }
+        this.userService.getById(Number(userId)).subscribe(user => {
+            console.log(user);
+        });
 
         if (!this.authService.getOrgId()) {
             this.userHasOrganization = false;
+        }
+
+        if (this.user?.password_must_be_reset) {
+            this.openPasswordChangeModal();
         }
 
         this.loadSchedule();
