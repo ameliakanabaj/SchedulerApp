@@ -631,11 +631,47 @@ button:focus {
     box-shadow: 0 1px 4px rgba(67, 233, 123, 0.18);
 }
 
+
 .fancy-assignments {
     display: flex;
     flex-direction: column;
     gap: 4px;
     margin-top: 2px;
+    max-height: 70px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #f093fb #fff;
+}
+
+.fancy-assignment {
+    background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+    color: #fff;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 0.98rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px 0 rgba(240, 147, 251, 0.12);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    .assignment-user {
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 90px;
+        display: inline-block;
+    }
+    .assignment-role {
+        font-size: 0.92rem;
+        opacity: 0.85;
+        margin-left: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 60px;
+        display: inline-block;
+    }
 }
 
 .fancy-assignment {
@@ -663,4 +699,8 @@ button:focus {
     background-color: black;
     height: 1px;
     margin: 4px 0;
+}
+
+.day {
+    overflow: auto;
 }

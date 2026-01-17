@@ -119,7 +119,7 @@ export class Calendar implements OnInit {
         this.shiftService.getAllShifts().subscribe({
             next: (shifts) => {
                 this.shiftsFromDB = shifts;
-                this.shifts = this.shiftsFromDB;
+                this.shifts = [...this.shiftsFromDB];
             },
             error: (err) => {
                 this.toastrService.error(err.statusText, 'Could not load shifts');
@@ -221,8 +221,10 @@ export class Calendar implements OnInit {
     }
 
     getShiftsForDay(day: Date): ShiftModel[] {
+        if (!this.isInScheduleRange(day)) {
+            return [];
+        }
         const iso = this.getLocalDateString(day);
-        
         return this.shifts.filter(s => s.start_time.startsWith(iso));
     }
 
@@ -447,7 +449,14 @@ export class Calendar implements OnInit {
     }
 
     sendShifts(): void {
-        this.shiftService.createBulk(this.shifts).subscribe({
+        console.log(this.shifts);
+        console.log(this.shiftsFromDB);
+        
+        const shiftsNotFromDb = this.shifts.filter(s => !this.shiftsFromDB.includes(s));
+
+        console.log(shiftsNotFromDb);
+        
+        this.shiftService.createBulk(shiftsNotFromDb).subscribe({
             next: () => {
                 this.toastrService.success('Shifts have been created.');
             },
