@@ -131,3 +131,10 @@
 .create-schedule-container {
   animation: floatIn .28s cubic-bezier(.2,.9,.2,1) both;
 }
+
+.error-message {
+  grid-column: 1 / -1;
+  color: var(--error-color);
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}
