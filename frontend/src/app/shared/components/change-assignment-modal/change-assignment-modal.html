@@ -1,0 +1,26 @@
+<app-modal-header title="Change Assignment"></app-modal-header>
+
+<div class="modal-body">
+    <p> Change assignment details here. </p>
+    <form>
+        <div class="form-group">
+            <label for="userId"> Employees: </label>
+            <select id="userId" [(ngModel)]="assignment.user_id" name="userId" class="form-control" (ngModelChange)="assignment.user_id = $event && +$event">
+                @for (user of users; track $index) {
+                    <option [value]="user.user_id">
+                        {{ user.first_name }} {{ user.last_name }} {{ user.user_id}}
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="roleOnShift">Role on Shift: (optional) </label>
+            <input type="text" id="roleOnShift" [(ngModel)]="assignment.role_on_shift" name="roleOnShift" class="form-control"/>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
+            <button type="submit" class="btn btn-primary" (click)="updateAssignment()">Save Changes</button>
+        </div>
+    </form>
+</div>

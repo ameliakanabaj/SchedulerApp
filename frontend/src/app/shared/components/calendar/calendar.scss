@@ -808,3 +808,16 @@ button:focus {
 .day {
     overflow: auto;
 }
+
+.edit-assignment {
+    background: transparent;
+    border: none;
+    color: var(--primary-white);
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 8px;
+
+    &:hover {
+        color: var(--primary-yellow);
+    }
+}

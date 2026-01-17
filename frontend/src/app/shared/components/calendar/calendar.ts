@@ -10,6 +10,7 @@ import { Shift } from '@app/shared/services/shift/shift';
 import { SetShiftHoursModal } from '@app/features/set-shift-hours-modal/set-shift-hours-modal';
 import { Schedule } from '@app/shared/services/schedule/schedule';
 import { ActivatedRoute } from '@angular/router';
+import { ChangeAssignmentModal } from '../change-assignment-modal/change-assignment-modal';
 
 @Component({
   selector: 'app-calendar',
@@ -367,6 +368,20 @@ export class Calendar implements OnInit, OnChanges {
                 end_time: end,
             });
         }
+    }
+
+    openChangeAssignmentModal(assignment: AssignmentModel): void {
+        const modalRef = this.modalService.openModal(ChangeAssignmentModal, {
+            data: {
+                orgId: this.authService.getOrgId(),
+                assignment
+            }
+        });
+        modalRef.afterClosed$.subscribe((res: any) => {
+            if (res) {
+                this.getSchedule();
+            }
+        });
     }
 
     openShiftModal(day: Date | Date[], shift: ShiftModel | null = null): void {

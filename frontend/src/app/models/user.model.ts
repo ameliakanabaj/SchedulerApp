@@ -2,7 +2,7 @@ import { AssignmentModel } from "./assignment.model";
 import { AvailabilityModel } from "./availability.model";
 
 export interface UserModel {
-    id: number,
+    user_id: number,
     organization_id?: number,
     first_name: string,
     last_name: string,

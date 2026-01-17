@@ -113,6 +113,10 @@
                                                 @if (a.role_on_shift) {
                                                     <span class="assignment-role">({{ a.role_on_shift }})</span>
                                                 }
+
+                                                <button class="edit-assignment" title="Change Assignment" (click)="openChangeAssignmentModal(a)">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </button>
                                             </div>
                                         }
                                     </div>
