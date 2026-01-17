@@ -1,9 +1,9 @@
-import { DatePipe, NgClass, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgTemplateOutlet } from '@angular/common';
 import { Component, inject, input, Input, OnInit } from '@angular/core';
 import { Availability as AvailabilityService, Modal, Toastr } from '@app/shared/services';
 import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-modal';
 import { Authentication } from '@app/core';
-import { AvailabilityModel, ShiftModel } from '@app/models';
+import { AssignmentModel, AvailabilityModel, ShiftModel } from '@app/models';
 import { AddNotesModal } from '../add-notes-modal/add-notes-modal';
 import { ScheduleModel } from '@app/models/schedule.model';
 import { Shift } from '@app/shared/services/shift/shift';
@@ -11,9 +11,11 @@ import { SetShiftHoursModal } from '@app/features/set-shift-hours-modal/set-shif
 import { Schedule } from '@app/shared/services/schedule/schedule';
 import { ActivatedRoute } from '@angular/router';
 
+type AssignmentsByDay = Map<string, AssignmentModel[]>;
+
 @Component({
   selector: 'app-calendar',
-  imports: [NgClass, NgTemplateOutlet, DatePipe],
+  imports: [NgClass, NgTemplateOutlet, DatePipe, NgFor],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })
@@ -39,6 +41,7 @@ export class Calendar implements OnInit {
     customStart = '';
     customEnd = '';
 
+    // FULL SCHEDULE dane
 
     scheduleId!: number;
     schedule?: ScheduleModel;
@@ -98,6 +101,8 @@ export class Calendar implements OnInit {
     getSchedule(): void {
         this.scheduleService.getById(this.scheduleId).subscribe(sched => {
             this.schedule = sched;
+            console.log(this.schedule);
+            
         });
     }
 
@@ -105,6 +110,8 @@ export class Calendar implements OnInit {
         this.mode = newMode;
         if (this.mode === 'admin') {
             this.getShifts();            
+        } else if (this.mode === 'view') {
+            this.getSchedule();
         }
     }
 
@@ -217,6 +224,62 @@ export class Calendar implements OnInit {
         const iso = this.getLocalDateString(day);
         
         return this.shifts.filter(s => s.start_time.startsWith(iso));
+    }
+
+    getAssignmentsByShiftForDay(day: Date): {
+            shift: ShiftModel;
+            assignments: AssignmentModel[];
+        }[] {
+            console.log(this.getShiftsForDay(day).map(shift => ({
+            shift,
+            assignments: shift.assignments || []
+        })));
+            
+        return this.getShiftsForDay(day).map(shift => ({
+            shift,
+            assignments: shift.assignments || []
+        }));
+    }
+
+    getAssignmentsGroupedByShift(day: Date): {
+        shift: ShiftModel;
+        assignments: AssignmentModel[];
+    }[] {
+
+        return this.getShiftsForDay(day)
+            .filter(s => s.assignments?.length)
+            .map(shift => ({
+                shift,
+                assignments: shift.assignments!
+            }));
+    }
+
+    hasAssignmentsForDay(day: Date): boolean {
+        if (!this.schedule?.assignments) return false;
+
+        const iso = this.getLocalDateString(day);
+
+        return this.schedule.assignments.some(a =>
+            a.shift.start_time.startsWith(iso)
+        );
+    }
+
+    getAssignmentsForDay(day: Date): AssignmentModel[] {
+        if (!this.schedule?.assignments?.length) return [];
+
+        const iso = this.getLocalDateString(day);
+
+        return this.schedule.assignments.filter(a =>
+            a.shift.start_time.startsWith(iso)
+        );
+    }
+
+    getAssignmentsForShift(shiftId: number): AssignmentModel[] {
+        if (!this.schedule?.assignments) return [];
+
+        return this.schedule.assignments.filter(
+            a => a.shift_id === shiftId
+        );
     }
 
     getAvailability(day: Date): AvailabilityModel | undefined {
@@ -506,4 +569,22 @@ export class Calendar implements OnInit {
 
         return localDate.toISOString();
     }
+
+    private assignmentsByDay = new Map<string, AssignmentModel[]>();
+
+    // private buildAssignmentsByDay(schedule: ScheduleModel): void {
+    //     this.assignmentsByDay.clear();
+
+    //     for (const a of schedule.assignments) {
+    //         const dateKey = this.getLocalDateString(
+    //             new Date(a.shift.start_time)
+    //         );
+
+    //         if (!this.assignmentsByDay.has(dateKey)) {
+    //             this.assignmentsByDay.set(dateKey, []);
+    //         }
+
+    //         this.assignmentsByDay.get(dateKey)!.push(a);
+    //     }
+    // }
 }

@@ -7,5 +7,5 @@ export interface ShiftModel {
     end_time: string,
     required_people?: number,
     place?: string,
-    assignments: AssignmentModel[],
+    assignments?: AssignmentModel[],
 }
