@@ -53,6 +53,52 @@ function mapTypeToSubject(type) {
   }
 }
 
+async function getUserNotifications(userId) {
+  try {
+    const notifications = await prisma.notification.findMany({
+      where: { 
+        user_id: Number(userId) 
+      },
+      orderBy: { 
+        sent_at: 'desc'
+      },
+      take: 20
+    });
+
+    return notifications;
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    throw error;
+  }
+}
+
+async function markNotificationAsRead(notificationId, userId) {
+  try {
+    const notification = await prisma.notification.findFirst({
+        where: {
+            notification_id: Number(notificationId),
+            user_id: Number(userId)
+        }
+    });
+
+    if (!notification) {
+        throw new Error("Notification not found or access denied");
+    }
+
+    const updated = await prisma.notification.update({
+      where: { notification_id: Number(notificationId) },
+      data: { is_read: true },
+    });
+
+    return updated;
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+    throw error;
+  }
+}
+
 module.exports = {
   sendNotification,
+  getUserNotifications,
+  markNotificationAsRead,
 };
