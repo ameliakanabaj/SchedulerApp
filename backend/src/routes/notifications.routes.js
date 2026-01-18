@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const notificationController = require("../controllers/notification.controller");
+const notificationController = require("../controllers/notifications.controller");
 const auth = require("../middlewares/auth.middleware");
 
 router.get("/", auth(["EMPLOYEE", "ORG_ADMIN", "GLOBAL_ADMIN"]), notificationController.getMyNotifications);
