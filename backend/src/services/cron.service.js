@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 const CHECK_INTERVAL = 60 * 1000; 
+const CLEANUP_INTERVAL = 60 * 60 * 1000;
 const REMINDERS_FILE = path.join(__dirname, "sent_reminders.json");
 
 let sentReminders = new Map();
@@ -110,9 +111,51 @@ async function checkDeadlinesAndNotify() {
     }
 }
 
+async function deleteOldNotificationsFromDB() {
+    try {
+        const now = new Date();
+
+        const shortTermLimit = new Date();
+        shortTermLimit.setDate(now.getDate() - 3);
+
+        const longTermLimit = new Date();
+        longTermLimit.setDate(now.getDate() - 30);
+
+        const deletedShort = await prisma.notification.deleteMany({
+            where: {
+                type: { in: ["REMINDER_24H", "MISSING_AVAILABILITY"] },
+                sent_at: {
+                    lt: shortTermLimit
+                }
+            }
+        });
+
+        const deletedLong = await prisma.notification.deleteMany({
+            where: {
+                sent_at: {
+                    lt: longTermLimit
+                }
+            }
+        });
+
+        const totalDeleted = deletedShort.count + deletedLong.count;
+        if (totalDeleted > 0) {
+            console.log(`[CRON] Cleanup: Removed ${deletedShort.count} old reminders and ${deletedLong.count} archived notifications.`);
+        }
+    } catch (error) {
+        console.error("[CRON] Error cleaning DB notifications:", error);
+    }
+}
+
 function init() {
     checkDeadlinesAndNotify();
+    deleteOldNotificationsFromDB();
+    
     setInterval(checkDeadlinesAndNotify, CHECK_INTERVAL);
+
+    setInterval(deleteOldNotificationsFromDB, CLEANUP_INTERVAL);
+    
+    console.log(`[CRON] Service started. Checks: every ${CHECK_INTERVAL/1000}s, Cleanup: every ${CLEANUP_INTERVAL/1000/60}m.`);
 }
 
 module.exports = { init, checkDeadlinesAndNotify };
