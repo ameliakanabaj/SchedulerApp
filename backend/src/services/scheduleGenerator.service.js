@@ -5,7 +5,7 @@ async function send_notifications(shift_id) {
     console.log(
       `Powiadomienie: brak wystarczającej liczby pracowników dla shift ${shift_id}`
     );
-  }
+}
   
 async function generateSchedule(schedule_id) {
     try {
@@ -19,11 +19,15 @@ async function generateSchedule(schedule_id) {
         throw new Error("Schedule not found");
       }
   
+      const dateToEnd = new Date(schedule.date_to);
+      dateToEnd.setDate(dateToEnd.getDate() + 1);
+      dateToEnd.setHours(0, 0, 0, 0);
+
       const shifts = await prisma.shift.findMany({
         where: {
           organization_id: schedule.organization_id,
           start_time: { gte: schedule.date_from },
-          end_time: { lte: schedule.date_to },
+          end_time: { lt: dateToEnd },
         },
       });
 
