@@ -27,7 +27,6 @@ model User {
   password_must_be_reset Boolean @default(true)
   role            UserRole  @default(EMPLOYEE)
   position        String?    @db.VarChar(255)
-  password_must_be_reset Boolean      @default(false)
   assignments     Assignment[]
   availabilities  Availability[]
   notifications   Notification[]
