@@ -304,11 +304,11 @@
 
     .custom {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
-        background-size: 400% 400%;
-        color: var(--primary-text);
-        animation: gradientShift 8s ease infinite;
-        font-size: 0.95rem;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    background-size: 400% 400%;
+    color: var(--primary-text);
+    animation: gradientShift 8s ease infinite;
+    font-size: 0.95rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 
         .fa-circle-info {
             color: #ffffff;
@@ -818,5 +818,49 @@ button:focus {
 
     &:hover {
         color: var(--primary-yellow);
+    }
+}
+
+.custom.requested {
+    display: flex;
+    flex-direction: column;
+    gap: 0;;
+    background: linear-gradient(120deg, #c53399 0%, #d47549 100%);
+    box-shadow: 0 2px 12px 0 rgba(240, 147, 251, 0.18), 0 4px 24px 0 rgba(67, 233, 123, 0.10);
+    padding: 12px 16px 10px 16px;
+    color: #222;
+    position: relative;
+    border: 2px solid rgba(240, 147, 251, 0.18);
+    transition: background 0.3s, box-shadow 0.3s, transform 0.18s;
+    cursor: pointer;
+    &:hover {
+        box-shadow: 0 8px 32px 0 rgba(67, 233, 123, 0.22), 0 2px 12px 0 rgba(240, 147, 251, 0.22);
+        transform: translateY(-5px);
+    }
+    .shift-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.08rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        .shift-time {
+            color: #1a472a;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+        .shift-place {
+            color: #764ba2;
+            font-size: 0.98rem;
+            margin-left: 10px;
+            font-weight: 600;
+        }
+    }
+    .line.fancy-line-requested {
+        background: linear-gradient(90deg, #f093fb 0%, #43e97b 100%);
+        height: 2px;
+        border-radius: 2px;
+        margin: 6px 0 8px 0;
+        box-shadow: 0 1px 4px rgba(240, 147, 251, 0.18);
     }
 }

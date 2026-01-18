@@ -81,12 +81,8 @@ async function getAllShifts(req, res, next) {
       shifts = await shiftModel.getAllShifts();
     } 
     
-    else if (req.user.role === "ORG_ADMIN") {
+    else if (req.user.role === "ORG_ADMIN" || req.user.role === "EMPLOYEE") {
       shifts = await shiftModel.getAllShiftsByOrganizations([req.user.organization_id]);
-    }
-
-    else if (req.user.role === "EMPLOYEE") {
-      shifts = await shiftModel.getShiftsByUser(req.user.user_id);
     }
 
     else {

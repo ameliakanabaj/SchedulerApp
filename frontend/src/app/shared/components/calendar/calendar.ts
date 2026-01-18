@@ -78,7 +78,7 @@ export class Calendar implements OnInit, OnChanges {
             this.getSchedule();
         }
 
-        if (this.scheduleId !== undefined) {
+        if (this.scheduleId !== undefined && this.isUserAdmin) {
             this.scheduleService.canGenerate(this.scheduleId).subscribe((res) => {
                 this.isScheduleReadyToGenerate = res.canGenerate;
             });
@@ -531,16 +531,25 @@ export class Calendar implements OnInit, OnChanges {
         return 'custom';
     }
 
-    getDaySelectedHours(day: Date): string {
+    getDaySelectedHours(day: Date): { start: string; end: string } | '' {
         const av = this.getAvailability(day);
         if (!av) return '';
 
         const start = new Date(av.start_time);
         const end = new Date(av.end_time);
 
-        return `${start} - ${end}`;
+        return { start: start, end: end } as any;
     }
     
+    getDaySelectedHoursAsDate(day: any, type: 'start' | 'end'): Date | null {
+      const hours = this.getDaySelectedHours(day);
+      if (!hours || !hours[type]) return null;
+      const [h, m] = hours[type].split(':');
+      const date = new Date(day);
+      date.setHours(+h, +m, 0, 0);
+      return date;
+    }
+
     private applyShiftToMultipleDays(days: Date[], data: any): void {
         for (const day of days) {
             const startTime = this.buildUtcISOString(day, data.start);

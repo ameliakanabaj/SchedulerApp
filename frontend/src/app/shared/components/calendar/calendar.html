@@ -6,8 +6,10 @@
             <button [ngClass]="mode === 'view' ? 'active' : 'inactive'" (click)="setMode('view')"> View Mode </button>
         </div>
     } @else {
-        <button [ngClass]="mode === 'availability' ? 'active' : 'inactive'" (click)="setMode('availability')"> Availability Mode </button>
-        <button [ngClass]="mode === 'view' ? 'active' : 'inactive'" (click)="setMode('view')"> View Mode </button>
+        <div class="mode-switcher">
+            <button [ngClass]="mode === 'availability' ? 'active' : 'inactive'" (click)="setMode('availability')"> Availability Mode </button>
+            <button [ngClass]="mode === 'view' ? 'active' : 'inactive'" (click)="setMode('view')"> View Mode </button>
+        </div>
     }
     <div class="calendar-header">
         <i class="fa-solid fa-backward" (click)="previousMonth()"></i>
@@ -17,7 +19,7 @@
     @if (mode === 'admin') {
         <div class="admin-info">
             <h3> You can set closed days and manage shifts. </h3>
-            <button class="generate-schedule-btn" (click)="generateSchedule()" [disabled]="!isScheduleReadyToGenerate"> 
+            <button class="generate-schedule-btn" (click)="generateSchedule()" [disabled]="!isScheduleReadyToGenerate || schedule?.status === 'GENERATED'" title="If disabled: Schedule not ready to be generated or was generated already"> 
                 <span class="btn-glow"></span>
                 <span class="btn-text">Generate Schedule</span>
             </button>
@@ -62,6 +64,18 @@
                                 <button class="add-notes" [ngClass]="hasComments(day) ? 'with-notes' : 'without-notes'" (click)="openAddNoteModal(day);"> <i class="fa-regular fa-message"></i> </button>
                             }
                         </span>
+                            @for (shift of getShiftsForDay(day); track $index) {
+                                <div class="custom requested">
+                                    <small> Requested: </small>
+                                    <div class="shift-header">
+                                        <span class="shift-time">⏰ {{ shift.start_time | date:'HH:mm' }} – {{ shift.end_time | date:'HH:mm' }}</span>
+                                        @if (shift.place) {
+                                            <span class="shift-place">📍 {{ shift.place }}</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
 
                         <div class="open-day">
                             <ng-container *ngTemplateOutlet="calendarMode, context: {
@@ -152,7 +166,9 @@
                 }
                 @case ('custom') {
                     <div class="custom"> Custom hours
-                        <p> {{ getDaySelectedHours(day) }} </p>
+                        @if (getDaySelectedHours(day) && getDaySelectedHours(day) !== '') {
+                          {{ getDaySelectedHoursAsDate(day, 'start') | date:'HH:mm' }} - {{ getDaySelectedHoursAsDate(day, 'end') | date:'HH:mm' }}
+                        }
                     </div>
                 }
                 @case ('cannot') {

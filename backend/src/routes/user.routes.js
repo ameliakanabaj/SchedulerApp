@@ -6,7 +6,7 @@ const { createUserValidation, changePasswordValidation, resetPasswordValidation 
 const router = express.Router();
 
 router.get("/me", auth(), userController.getMe);
-router.get("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), userController.getUserById);
+router.get("/:id", auth(), userController.getUserById);
 router.get("/", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), userController.getAllUsers);
 router.post("/", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), createUserValidation, userController.createUser);
 router.get("/organization/:organization_id", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), userController.getUsersByOrganization);
