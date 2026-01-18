@@ -1,15 +1,16 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Authentication } from '@app/core';
 import { CreateSchedule } from '@app/features/create-schedule/create-schedule';
 import { ScheduleModel } from '@app/models/schedule.model';
+import { Loading } from '@app/shared/components/loading/loading';
 import { Modal } from '@app/shared/services';
 import { Schedule } from '@app/shared/services/schedule/schedule';
 
 @Component({
   selector: 'app-availability-page',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, Loading],
   templateUrl: './availability-page.html',
   styleUrl: './availability-page.scss',
 })
@@ -19,17 +20,21 @@ export class AvailabilityPage implements OnInit {
 
     schedules: ScheduleModel[] = [];
     orgId: number | null = -1;   
+
+    isLoading = signal(true);
     
     private readonly modalService = inject(Modal);
     private readonly scheduleService = inject(Schedule);
     private readonly authService = inject(Authentication);
 
     ngOnInit(): void {
+        this.isLoading.set(true);
         this.orgId = this.authService.getOrgId();
 
         if (this.orgId) {
             this.scheduleService.getAllByOrganization(this.orgId).subscribe((res) => {
                 this.schedules = this.sortSchedulesByDateTo(res);
+                this.isLoading.set(false);
             });
         } else {
             this.userHasOrganization = false;
@@ -46,9 +51,11 @@ export class AvailabilityPage implements OnInit {
         });
 
         modalRef.afterClosed$.subscribe((res: any) => {
+            this.isLoading.set(true);
             if (res && this.orgId) {
                 this.scheduleService.getAllByOrganization(this.orgId).subscribe((res) => {
                     this.schedules = this.sortSchedulesByDateTo(res);
+                    this.isLoading.set(false);
                 });
             }
         })

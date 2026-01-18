@@ -1,5 +1,5 @@
 import { DatePipe, NgClass, NgFor, NgTemplateOutlet } from '@angular/common';
-import { Component, inject, input, Input, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, inject, input, Input, OnInit, ChangeDetectorRef, ChangeDetectionStrategy, SimpleChanges, OnChanges, signal } from '@angular/core';
 import { Availability as AvailabilityService, Modal, Toastr } from '@app/shared/services';
 import { SetCustomHoursModal } from '../set-custom-hours-modal/set-custom-hours-modal';
 import { Authentication } from '@app/core';
@@ -11,10 +11,11 @@ import { SetShiftHoursModal } from '@app/features/set-shift-hours-modal/set-shif
 import { Schedule } from '@app/shared/services/schedule/schedule';
 import { ActivatedRoute } from '@angular/router';
 import { ChangeAssignmentModal } from '../change-assignment-modal/change-assignment-modal';
+import { Loading } from '../loading/loading';
 
 @Component({
   selector: 'app-calendar',
-  imports: [NgClass, NgTemplateOutlet, DatePipe],
+  imports: [NgClass, NgTemplateOutlet, DatePipe, Loading],
   templateUrl: './calendar.html',
   styleUrl: './calendar.scss',
 })
@@ -25,6 +26,8 @@ export class Calendar implements OnInit, OnChanges {
     @Input() year: number = new Date().getFullYear();
     @Input() scheduleRange: ScheduleModel | null = null;
     @Input() availabilities: AvailabilityModel[] = [];
+
+    isLoading = signal(true);
 
     isUserAdmin = false;
 
@@ -78,7 +81,7 @@ export class Calendar implements OnInit, OnChanges {
             this.getSchedule();
         }
 
-        if (this.scheduleId !== undefined) {
+        if (this.scheduleId !== undefined && this.isUserAdmin) {
             this.scheduleService.canGenerate(this.scheduleId).subscribe((res) => {
                 this.isScheduleReadyToGenerate = res.canGenerate;
             });
@@ -92,7 +95,6 @@ export class Calendar implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-
         if (changes['scheduleId'] && this.scheduleId) {
             this.onScheduleReady();
         }
@@ -103,18 +105,24 @@ export class Calendar implements OnInit, OnChanges {
     }
 
     generateSchedule(): void {
+        this.isLoading.set(true);
         this.scheduleService.generateSchedule(this.scheduleId).subscribe({
             next: (generatedSchedule) => {
+                this.isLoading.set(false);
                 this.toastrService.success('Successfully generated new schedule.');
+                
             },
             error: (err) => {
                 this.toastrService.error('Error while generating schedule');
+                this.isLoading.set(false);
             }
         })
     }
 
     getSchedule(): void {
+        this.isLoading.set(true);
         this.scheduleService.getById(this.scheduleId).subscribe(sched => {
+            this.isLoading.set(false);
             this.schedule = sched;
             if (this.schedule?.assignments) {
                 this.schedule.assignments = [...this.schedule.assignments];
@@ -133,6 +141,7 @@ export class Calendar implements OnInit, OnChanges {
     }
 
     getShifts(): void {
+        this.isLoading.set(true);
         this.shiftService.getAllShifts().subscribe({
             next: (shifts) => {
                 this.shiftsFromDB = shifts;
@@ -151,9 +160,11 @@ export class Calendar implements OnInit, OnChanges {
                         this.shifts = [];
                     }
                 }
+                this.isLoading.set(false);
             },
             error: (err) => {
                 this.toastrService.error(err.statusText, 'Could not load shifts');
+                this.isLoading.set(false);
             }
         });
     }
@@ -218,7 +229,9 @@ export class Calendar implements OnInit, OnChanges {
     }
 
     refreshCalendar(): void {
+        this.isLoading.set(true);
         this.daysInMonth = this.generateDays(this.year, this.month);
+        this.isLoading.set(false);
     }
 
     previousMonth(): void {
@@ -531,16 +544,25 @@ export class Calendar implements OnInit, OnChanges {
         return 'custom';
     }
 
-    getDaySelectedHours(day: Date): string {
+    getDaySelectedHours(day: Date): { start: string; end: string } | '' {
         const av = this.getAvailability(day);
         if (!av) return '';
 
         const start = new Date(av.start_time);
         const end = new Date(av.end_time);
 
-        return `${start} - ${end}`;
+        return { start: start, end: end } as any;
     }
     
+    getDaySelectedHoursAsDate(day: any, type: 'start' | 'end'): Date | null {
+      const hours = this.getDaySelectedHours(day);
+      if (!hours || !hours[type]) return null;
+      const [h, m] = hours[type].split(':');
+      const date = new Date(day);
+      date.setHours(+h, +m, 0, 0);
+      return date;
+    }
+
     private applyShiftToMultipleDays(days: Date[], data: any): void {
         for (const day of days) {
             const startTime = this.buildUtcISOString(day, data.start);
@@ -586,12 +608,15 @@ export class Calendar implements OnInit, OnChanges {
     }
 
     private getUserAvailabilities(): void {
+        this.isLoading.set(true);
         this.availabilityService.getAvailabilityByUser(this.authService.getUserId()!).subscribe({
             next: (availabilities) => {
                 this.availabilities = availabilities;
+                this.isLoading.set(false);
             },
             error: (err) => {
                 this.toastrService.error(err.statusText, 'Could not load availabilities');
+                this.isLoading.set(false);
             }
         });
     }

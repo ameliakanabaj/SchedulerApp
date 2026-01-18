@@ -9,48 +9,54 @@
             <h2>Hello, Employee!</h2>
             <div> Today's date: <b>{{ today | date:'fullDate' }}</b></div>
         </div>
-        <div class="grid">
-            <div class="card calendar">
-                @if (!schedule || typeof schedule !== 'number' || schedule <= 0) {
-                    <h3> Your schedule will be displayed here, once it will be created </h3>
-                } @else {
-                    <app-view-only-calendar [scheduleId]="schedule"/>
-                }
-            </div>
-
-            <div class="card shifts">
-                <h3>Upcoming shifts</h3>
-                
-                <div class="shifts-list">
-                    @for (shift of upcomingShifts; track $index) {
-                        @if (shift) {
-                            <div class="shift">
-                                <strong>{{ shift.date | date:'EEEE, dd MMM' }}</strong>
-                                <p>{{ shift.start }} - {{ shift.end }}</p>
-                            </div>
-                        }
-                    } @empty {
-                        <p> No shifts assigned for now </p>
+        @if (isLoading()) {
+            <app-loading size="small"></app-loading>
+        } @else {
+            <div class="grid">
+                <div class="card calendar">
+                    @if (!schedule || typeof schedule !== 'number') {
+                        <h3> Your schedule will be displayed here, once it will be created </h3>
+                    } @else {
+                        <app-view-only-calendar [scheduleId]="schedule!"/>
                     }
                 </div>
-            </div>
 
-            <div class="card notifications">
-                <h3>Notifications</h3>
-
-                <div class="notifications-list">
-                    @for (n of notifications; track $index) {
-                        @if (n) {
-                            <div class="notif">
-                                {{ n.message }}
-                                <span class="date">{{ n.date | date:'shortDate' }}</span>
-                            </div>
+                <div class="card shifts">
+                    <h3>Upcoming shifts</h3>
+                    
+                    <div class="shifts-list">
+                        @for (shift of upcomingShifts; track $index) {
+                            @if (shift) {
+                                <div class="shift">
+                                    <strong>{{ shift.start | date:'EEEE, dd MMM' }}</strong>
+                                    <p>{{ shift.start | date:'HH:mm' }} - {{ shift.end | date:'HH:mm' }}</p>
+                                </div>
+                            }
+                        } @empty {
+                            <p> No shifts assigned for now </p>
                         }
-                    } @empty {
-                        <p> No new notifications to display </p>
-                    }
+                    </div>
                 </div>
+
+                <!-- POWIADOMIENIA NA RAZIE USUWAM, NIE MAMY -->
+
+                <!-- <div class="card notifications">
+                    <h3>Notifications</h3>
+
+                    <div class="notifications-list">
+                        @for (n of notifications; track $index) {
+                            @if (n) {
+                                <div class="notif">
+                                    {{ n.message }}
+                                    <span class="date">{{ n.date | date:'shortDate' }}</span>
+                                </div>
+                            }
+                        } @empty {
+                            <p> No new notifications to display </p>
+                        }
+                    </div>
+                </div> -->
             </div>
-        </div>
+        }
     </div>
 }

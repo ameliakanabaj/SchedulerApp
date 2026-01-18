@@ -3,6 +3,8 @@
         <h2 class="no-org-alert"> <i class="fa-solid fa-triangle-exclamation"></i> You do not belong to any organization <i class="fa-solid fa-triangle-exclamation"></i></h2>
         <a routerLink="/organizations" class="classic-button"> Create one now! </a>
     </div>
+} @else if (isLoading()) {
+    <app-loading size="large"/>
 } @else {
     <div class="availability-page-container">
         @if (isUserOrgAdmin) {
@@ -41,7 +43,7 @@
                         </div>
 
                         <footer class="card-foot">
-                            <a class="view-calendar" [routerLink]="['/calendar', schedule.schedule_id]"> Send Availability </a>
+                            <a class="view-calendar" [routerLink]="['/calendar', schedule.schedule_id]"> Send Availability | Create shifts </a>
                             @if (isUserOrgAdmin) {
                                 <button class="btn-edit" type="button" (click)="openEditScheduleModal(schedule)">Edit</button>
                             }

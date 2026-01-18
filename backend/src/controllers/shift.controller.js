@@ -73,6 +73,18 @@ async function createShiftsBulk(req, res, next) {
   }
 }
 
+async function getMyShifts(req, res, next) {
+  try {
+    console.log(req.user.user_id);
+    
+    const shifts = await shiftModel.getShiftsByUser(req.user.user_id);
+
+    res.json(shifts);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function getAllShifts(req, res, next) {
   try {
     let shifts;
@@ -81,12 +93,8 @@ async function getAllShifts(req, res, next) {
       shifts = await shiftModel.getAllShifts();
     } 
     
-    else if (req.user.role === "ORG_ADMIN") {
+    else if (req.user.role === "ORG_ADMIN" || req.user.role === "EMPLOYEE") {
       shifts = await shiftModel.getAllShiftsByOrganizations([req.user.organization_id]);
-    }
-
-    else if (req.user.role === "EMPLOYEE") {
-      shifts = await shiftModel.getShiftsByUser(req.user.user_id);
     }
 
     else {
@@ -194,6 +202,7 @@ module.exports = {
     createShift,
     createShiftsBulk, 
     getAllShifts, 
+    getMyShifts,
     getShiftById, 
     updateShift, 
     deleteShift,

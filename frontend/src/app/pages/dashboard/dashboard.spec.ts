@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Toastr } from '../../shared/services/toastr/toastr';
 import { User } from '../../shared/services/user/user';
 import { of } from 'rxjs';
+import { Shift } from '../../shared/services/shift/shift';
 
 describe('Dashboard', () => {
     let sp: Spectator<Dashboard>;
@@ -18,6 +19,9 @@ describe('Dashboard', () => {
     const mockUserService = {
         getById: jest.fn().mockReturnValue(of({ user_id: 1, first_name: 'Test', last_name: 'User' })),
     };
+    const mockShiftService = {
+        getMyShifts: jest.fn().mockReturnValue(of([])),
+    };
     const createComponent = createComponentFactory({
         component: Dashboard,
         providers: [
@@ -25,6 +29,7 @@ describe('Dashboard', () => {
             { provide: HttpClient, useValue: mockHttpClient},
             { provide: Toastr, useValue: {}},
             { provide: User, useValue: mockUserService },
+            { provide: Shift, useValue: mockShiftService },
         ]
     });
 

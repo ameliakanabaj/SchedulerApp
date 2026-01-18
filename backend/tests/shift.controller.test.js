@@ -105,13 +105,13 @@ describe("Shift Controller", () => {
 
     it("should return user shifts for EMPLOYEE", async () => {
       req.user.role = "EMPLOYEE";
-      req.user.user_id = 5;
+      req.user.organization_id = 2;
       const mockShifts = [{ shift_id: 3 }];
-      shiftModel.getShiftsByUser.mockResolvedValue(mockShifts);
+      shiftModel.getAllShiftsByOrganizations.mockResolvedValue(mockShifts);
 
       await shiftController.getAllShifts(req, res, next);
 
-      expect(shiftModel.getShiftsByUser).toHaveBeenCalledWith(5);
+      expect(shiftModel.getAllShiftsByOrganizations).toHaveBeenCalledWith([2]);
       expect(res.json).toHaveBeenCalledWith(mockShifts);
     });
 
