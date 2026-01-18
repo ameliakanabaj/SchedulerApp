@@ -3,6 +3,8 @@
         <h2 class="no-org-alert"> <i class="fa-solid fa-triangle-exclamation"></i> You do not belong to any organization <i class="fa-solid fa-triangle-exclamation"></i></h2>
         <a routerLink="/organizations" class="classic-button"> Create one now! </a>
     </div>
+} @else if (isLoading()) {
+    <app-loading size="large"/>
 } @else {
     <div class="availability-page-container">
         @if (isUserOrgAdmin) {

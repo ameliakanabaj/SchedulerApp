@@ -1,17 +1,19 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { Modal, Toastr } from '@app/shared/services';
+import { Modal } from '@app/shared/services';
 import { AddNewMemberModal, OrganizationCreationModal, UserCard } from '@app/shared/components';
 import { Organization } from '@app/shared/services/organization/organization';
 import { OrganizationModel } from '@app/models';
+import { Loading } from '@app/shared/components/loading/loading';
 
 @Component({
   selector: 'app-organizations-page',
-  imports: [UserCard],
+  imports: [UserCard, Loading],
   templateUrl: './organizations-page.html',
   styleUrl: './organizations-page.scss'
 })
 export class OrganizationsPage implements OnInit {
     organization = signal<OrganizationModel | null>(null);
+    isLoading = signal(true);
 
     private readonly modalService = inject(Modal);
     private readonly organizationService = inject(Organization)
@@ -26,11 +28,12 @@ export class OrganizationsPage implements OnInit {
         modalRef.afterClosed$.subscribe((res: any) => {
             if (res) {
                 this.organization.set(res.organization);
+                this.organization()?.users.push(...res.organization.users);
             }
         });
     }
 
-openAddNewMemberModal(): void {
+    openAddNewMemberModal(): void {
         const modalRef = this.modalService.openModal(AddNewMemberModal, { data: {
             organization: this.organization(),
         }});
@@ -43,10 +46,12 @@ openAddNewMemberModal(): void {
     }
 
     private getOrganization(): void {
+        this.isLoading.set(true);
         this.organizationService.getAll().subscribe((res) => {
             if (res.length > 0) {
                 this.organization.set(res[0]);
             }
+            this.isLoading.set(false);
         });
     }
 }

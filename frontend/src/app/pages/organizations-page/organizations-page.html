@@ -1,19 +1,23 @@
-<div class="organizations-page-container">
-    @if (!organization()) {
-            <h2> You are not a member of any organization yet. </h2>
-            <p> To get started, you can create a new organization. </p>
-            <button class="classic-button" (click)="openCreateOrganizationModal();"> Create Organization </button>
-    } @else {
-        <div class="organization-card">
-            <div class="organization-card-header">
-                <h2> {{ organization()!.name }}'s members </h2>
-                <button class="add-new-button" (click)="openAddNewMemberModal()"> Add new member </button>
+@if (isLoading()) {
+    <app-loading [fullscreen]="true" />
+} @else {
+    <div class="organizations-page-container">
+        @if (!organization()) {
+                <h2> You are not a member of any organization yet. </h2>
+                <p> To get started, you can create a new organization. </p>
+                <button class="classic-button" (click)="openCreateOrganizationModal();"> Create Organization </button>
+        } @else {
+            <div class="organization-card">
+                <div class="organization-card-header">
+                    <h2> {{ organization()!.name }}'s members </h2>
+                    <button class="add-new-button" (click)="openAddNewMemberModal()"> Add new member </button>
+                </div>
+                <div class="organization-card-body">
+                    @for (user of organization()!.users; track $index) {
+                        <app-user-card [user]="user" />
+                    }
+                </div>
             </div>
-            <div class="organization-card-body">
-                @for (user of organization()!.users; track $index) {
-                    <app-user-card [user]="user" />
-                }
-            </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}
