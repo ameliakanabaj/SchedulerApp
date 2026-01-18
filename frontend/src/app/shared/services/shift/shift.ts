@@ -24,6 +24,10 @@ export class Shift {
         return this.http.get<ShiftModel[]>(`${this.API_URL}`);
     }
 
+    getMyShifts(): Observable<ShiftModel[]> {
+        return this.http.get<ShiftModel[]>(`${this.API_URL}/mine`);
+    }
+
     getShiftById(id: number): Observable<ShiftModel> {
         return this.http.get<ShiftModel>(`${this.API_URL}/${id}`);
     }

@@ -7,6 +7,7 @@ const { createShiftValidation, updateShiftValidation, createShiftsBulkValidation
 router.post("/", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), createShiftValidation, controller.createShift);
 router.post("/bulk", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), createShiftsBulkValidation, controller.createShiftsBulk);
 router.get("/", auth(["ORG_ADMIN", "GLOBAL_ADMIN", "EMPLOYEE"]), controller.getAllShifts);
+router.get("/mine", auth(["ORG_ADMIN", "GLOBAL_ADMIN", "EMPLOYEE"]), controller.getMyShifts);
 router.get("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN", "EMPLOYEE"]), controller.getShiftById);
 router.patch("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), updateShiftValidation, controller.updateShift);
 router.delete("/:id", auth(["ORG_ADMIN", "GLOBAL_ADMIN"]), controller.deleteShift);

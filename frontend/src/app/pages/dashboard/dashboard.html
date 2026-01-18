@@ -28,8 +28,8 @@
                         @for (shift of upcomingShifts; track $index) {
                             @if (shift) {
                                 <div class="shift">
-                                    <strong>{{ shift.date | date:'EEEE, dd MMM' }}</strong>
-                                    <p>{{ shift.start }} - {{ shift.end }}</p>
+                                    <strong>{{ shift.start | date:'EEEE, dd MMM' }}</strong>
+                                    <p>{{ shift.start | date:'HH:mm' }} - {{ shift.end | date:'HH:mm' }}</p>
                                 </div>
                             }
                         } @empty {
@@ -38,7 +38,9 @@
                     </div>
                 </div>
 
-                <div class="card notifications">
+                <!-- POWIADOMIENIA NA RAZIE USUWAM, NIE MAMY -->
+
+                <!-- <div class="card notifications">
                     <h3>Notifications</h3>
 
                     <div class="notifications-list">
@@ -53,7 +55,7 @@
                             <p> No new notifications to display </p>
                         }
                     </div>
-                </div>
+                </div> -->
             </div>
         }
     </div>

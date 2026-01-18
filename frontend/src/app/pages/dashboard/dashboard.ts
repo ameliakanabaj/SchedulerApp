@@ -8,6 +8,7 @@ import { Schedule } from '@app/shared/services/schedule/schedule';
 import { ViewOnlyCalendar } from '@app/features/view-only-calendar/view-only-calendar';
 import { UserModel } from '@app/models';
 import { Loading } from '@app/shared/components/loading/loading';
+import { Shift } from '@app/shared/services/shift/shift';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,7 +24,7 @@ export class Dashboard implements OnInit {
 
     mode: 'view' | 'availability' | 'admin'  = 'view';
 
-    upcomingShifts: { date: Date, start: string, end: string}[] = [];
+    upcomingShifts: { start: string, end: string}[] = [];
 
     notifications: { message: string, date: Date }[] = [];
 
@@ -32,6 +33,7 @@ export class Dashboard implements OnInit {
     private readonly modalService = inject(Modal);
     private readonly authService = inject(Authentication);
     private readonly scheduleService = inject(Schedule);
+    private readonly shiftService = inject(Shift);
     private readonly userService = inject(User);
 
     // ng on init z pobraniem schedules i wtedy upcoming shifts dodanie
@@ -49,6 +51,14 @@ export class Dashboard implements OnInit {
         if (this.user?.password_must_be_reset) {
             this.openPasswordChangeModal();
         }
+
+        this.shiftService.getMyShifts().subscribe(shifts => {
+            const upcoming = shifts.filter(s => new Date(s.start_time) >= this.today);
+            this.upcomingShifts = upcoming.slice(0, 5).map(s => ({
+                start: s.start_time,
+                end: s.end_time
+            }));
+        });
 
         this.loadSchedule();
     }

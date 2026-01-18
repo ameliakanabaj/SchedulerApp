@@ -73,6 +73,18 @@ async function createShiftsBulk(req, res, next) {
   }
 }
 
+async function getMyShifts(req, res, next) {
+  try {
+    console.log(req.user.user_id);
+    
+    const shifts = await shiftModel.getShiftsByUser(req.user.user_id);
+
+    res.json(shifts);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function getAllShifts(req, res, next) {
   try {
     let shifts;
@@ -190,6 +202,7 @@ module.exports = {
     createShift,
     createShiftsBulk, 
     getAllShifts, 
+    getMyShifts,
     getShiftById, 
     updateShift, 
     deleteShift,
