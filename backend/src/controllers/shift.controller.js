@@ -31,6 +31,60 @@ async function createShift(req, res, next) {
   }
 }
 
+async function createShiftsBulk(req, res, next) {
+  try {
+    const items = req.body;
+
+    if (req.user.role === "ORG_ADMIN") {
+      for (const i of items) {
+        if (Number(i.organization_id) !== Number(req.user.organization_id)) {
+          return next({
+            type: "BUSINESS_LOGIC",
+            message: `You can only create shifts for your organization (${req.user.organization_id})`,
+            statusCode: 403
+          });
+        }
+      }
+    }
+
+    const now = new Date();
+
+    for (const i of items) {
+      const start = new Date(i.start_time);
+
+      if (start < now) {
+        return next({
+          type: "BUSINESS_LOGIC",
+          message: `Shift start_time cannot be in the past (${i.start_time})`,
+          statusCode: 400
+        });
+      }
+    }
+
+    const created = await shiftModel.createShiftsBulk(items);
+
+    res.status(201).json({
+      inserted: created.length,
+      records: created
+    });
+
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getMyShifts(req, res, next) {
+  try {
+    console.log(req.user.user_id);
+    
+    const shifts = await shiftModel.getShiftsByUser(req.user.user_id);
+
+    res.json(shifts);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function getAllShifts(req, res, next) {
   try {
     let shifts;
@@ -39,12 +93,8 @@ async function getAllShifts(req, res, next) {
       shifts = await shiftModel.getAllShifts();
     } 
     
-    else if (req.user.role === "ORG_ADMIN") {
+    else if (req.user.role === "ORG_ADMIN" || req.user.role === "EMPLOYEE") {
       shifts = await shiftModel.getAllShiftsByOrganizations([req.user.organization_id]);
-    }
-
-    else if (req.user.role === "EMPLOYEE") {
-      shifts = await shiftModel.getShiftsByUser(req.user.user_id);
     }
 
     else {
@@ -149,8 +199,10 @@ async function deleteShift(req, res, next) {
 }
 
 module.exports = { 
-    createShift, 
+    createShift,
+    createShiftsBulk, 
     getAllShifts, 
+    getMyShifts,
     getShiftById, 
     updateShift, 
     deleteShift,

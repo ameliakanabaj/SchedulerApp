@@ -1,0 +1,9 @@
+<div
+  class="loading-wrapper"
+  [class.fullscreen]="fullscreen"
+>
+  <div class="spinner" [ngClass]="size"></div>
+  @if (text) {
+      <div class="text">{{ text }}</div>
+  }
+</div>

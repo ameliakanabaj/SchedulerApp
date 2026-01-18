@@ -21,10 +21,12 @@ export class CreateSchedule implements OnInit {
     mode: 'create' | 'edit' = 'create';
     organizationId = this.modalRef.data.organizationId;
     scheduleId?: number = this.modalRef.data.scheduleId;
-    
+
     dateFrom: string = '';
     dateTo: string = '';
     deadline: string = '';
+
+    currentDate = new Date().toISOString().split('T')[0];
 
     ngOnInit(): void {
         this.scheduleId = this.modalRef.data.scheduleId;
@@ -34,6 +36,10 @@ export class CreateSchedule implements OnInit {
             this.mode = 'edit';
             this.loadSchedule();
         }
+    }
+
+    isDisabled(): boolean {
+        return !this.dateFrom || !this.dateTo || !this.deadline || this.deadline > this.dateTo || this.dateFrom > this.dateTo || this.dateFrom < this.currentDate || this.deadline < this.currentDate;
     }
 
     private loadSchedule(): void {

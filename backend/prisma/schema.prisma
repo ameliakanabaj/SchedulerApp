@@ -24,6 +24,7 @@ model User {
   last_name       String     @db.VarChar(255)
   email           String     @unique @db.VarChar(255)
   password        String     @db.VarChar(255)
+  password_must_be_reset Boolean @default(true)
   role            UserRole  @default(EMPLOYEE)
   position        String?    @db.VarChar(255)
   password_must_be_reset Boolean      @default(false)

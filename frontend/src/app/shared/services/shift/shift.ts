@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class Shift {
-    private readonly API_URL = `${environment}/shifts`;
+    private readonly API_URL = `${environment.apiUrl}/shifts`;
 
     private readonly http = inject(HttpClient);
 
@@ -16,8 +16,16 @@ export class Shift {
         return this.http.post(`${this.API_URL}`, shift);
     }
 
+    createBulk(shifts: ShiftModel[]): Observable<any> {
+        return this.http.post(`${this.API_URL}/bulk`, shifts);
+    }
+
     getAllShifts(): Observable<ShiftModel[]> {
         return this.http.get<ShiftModel[]>(`${this.API_URL}`);
+    }
+
+    getMyShifts(): Observable<ShiftModel[]> {
+        return this.http.get<ShiftModel[]>(`${this.API_URL}/mine`);
     }
 
     getShiftById(id: number): Observable<ShiftModel> {

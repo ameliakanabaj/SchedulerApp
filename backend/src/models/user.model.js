@@ -10,6 +10,14 @@ async function getUserById(user_id) {
   });
 }
 
+async function getUsersByIds(ids = []) {
+  if (!Array.isArray(ids) || ids.length === 0) return [];
+  return await prisma.user.findMany({
+    where: { user_id: { in: ids.map(Number) } },
+    include: { organization: true },
+  });
+}
+
 async function getUserByEmail(email) {
   return await prisma.user.findUnique({
     where: { email },
@@ -42,6 +50,7 @@ async function createUser({
   password_hash,
   role = "EMPLOYEE",
   position,
+  password_must_be_reset = true,
 }) {
   return await prisma.user.create({
     data: {
@@ -52,6 +61,7 @@ async function createUser({
       role,
       position,
       organization_id: organization_id ? Number(organization_id) : null,
+      password_must_be_reset,
     },
     include: {
       organization: true,
@@ -68,9 +78,15 @@ async function deleteUser(user_id) {
 async function updateUser(user_id, data) {
   const { organization_id, password, ...rest } = data;
 
+  const { password_must_be_reset, ...restWithoutPasswordReset } = rest;
+
   let updateData = {
-    ...rest,
+    ...restWithoutPasswordReset,
   };
+  
+  if (password_must_be_reset !== undefined) {
+    updateData.password_must_be_reset = password_must_be_reset;
+  }
 
   if (organization_id !== undefined) {
     updateData.organization = organization_id ? { connect: { organization_id: Number(organization_id) } } : { disconnect: true };
@@ -93,6 +109,7 @@ module.exports = {
   createUser,
   getUserByEmail,
   getUserById,
+  getUsersByIds,
   getAllUsers,
   getUsersByOrganization,
   deleteUser,

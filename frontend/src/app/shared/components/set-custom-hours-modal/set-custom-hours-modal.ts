@@ -13,6 +13,10 @@ export class SetCustomHoursModal {
     startTime = '';
     endTime = '';
 
+    isDisabled(): boolean {
+        return !this.startTime || !this.endTime || this.startTime >= this.endTime;
+    }
+
     private readonly modalRef = inject(DialogRef);
 
     saveHours(): void {

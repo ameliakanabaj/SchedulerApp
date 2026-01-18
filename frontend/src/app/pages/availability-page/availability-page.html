@@ -3,6 +3,8 @@
         <h2 class="no-org-alert"> <i class="fa-solid fa-triangle-exclamation"></i> You do not belong to any organization <i class="fa-solid fa-triangle-exclamation"></i></h2>
         <a routerLink="/organizations" class="classic-button"> Create one now! </a>
     </div>
+} @else if (isLoading()) {
+    <app-loading size="large"/>
 } @else {
     <div class="availability-page-container">
         @if (isUserOrgAdmin) {
@@ -17,7 +19,7 @@
                         <div class="card-accent" aria-hidden="true"></div>
 
                         <header class="card-head">
-                            <h3 class="title">Schedule #{{ $index }} </h3>
+                            <h3 class="title">Schedule #{{ schedule.schedule_id}} </h3>
                             <span class="status" [attr.data-status]="schedule.status">{{ schedule.status }}</span>
                         </header>
 
@@ -35,13 +37,13 @@
 
                             <div class="meta">
                                 <div class="generated">Generated: <strong>{{ schedule.generatedAt }}</strong></div>
-                                <div class="deadline">Deadline: <strong>{{ schedule.deadline_generate_date }}</strong></div>
+                                <div class="deadline">Deadline: <strong>{{ schedule.deadline_generate_date | date:'short' }}</strong></div>
                                 <div class="assignments">{{ schedule.assignments?.length ?? 0 }} assignments</div>
                             </div>
                         </div>
 
                         <footer class="card-foot">
-                            <a class="view-calendar" [routerLink]="['/calendar', schedule.schedule_id]"> Send Availability </a>
+                            <a class="view-calendar" [routerLink]="['/calendar', schedule.schedule_id]"> Send Availability | Create shifts </a>
                             @if (isUserOrgAdmin) {
                                 <button class="btn-edit" type="button" (click)="openEditScheduleModal(schedule)">Edit</button>
                             }

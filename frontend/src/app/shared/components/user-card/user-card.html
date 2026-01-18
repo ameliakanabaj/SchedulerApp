@@ -4,12 +4,14 @@
             {{ user()?.first_name }}
             <span class="last-name">{{ user()?.last_name }}</span>
         </h3>
-        <div class="email">{{ user()?.email }}</div>
+            <div class="email">{{ user()?.email }}</div>
         </div>
 
         <div class="user-actions">
-        <button type="button" class="btn remove-btn" aria-label="Remove user">
-            Remove
-        </button>
+            @if (isUserAdmin && isNotCurrentUser(user()!)) {
+                <button type="button" class="btn remove-btn" aria-label="Remove user" (click)="removeUser(user()?.user_id!)">
+                    Remove
+                </button>
+            }
     </div>
 </div>

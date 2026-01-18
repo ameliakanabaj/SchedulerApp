@@ -339,4 +339,43 @@ describe("Schedule Controller", () => {
       expect(next).toHaveBeenCalledWith(error);
     });
   });
+
+  describe("generateSchedule", () => {
+    it("should generate schedule for GLOBAL_ADMIN", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      req.body.scheduleId = 1;
+  
+      scheduleModel.getScheduleById.mockResolvedValue({
+        schedule_id: 1,
+        organization_id: 1,
+      });
+  
+      const mockAssignments = [{ shift_id: 1, user_id: 2 }];
+      const scheduleGenerator = require("../src/services/scheduleGenerator.service");
+      jest.spyOn(scheduleGenerator, "generateSchedule").mockResolvedValue(mockAssignments);
+  
+      await scheduleController.generateSchedule(req, res, next);
+  
+      expect(scheduleGenerator.generateSchedule).toHaveBeenCalledWith(1);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Schedule generated",
+        assignments: mockAssignments,
+      });
+    });
+  
+    it("should return 404 if schedule not found", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      req.body.scheduleId = 99;
+  
+      scheduleModel.getScheduleById.mockResolvedValue(null);
+  
+      await scheduleController.generateSchedule(req, res, next);
+  
+      expect(next).toHaveBeenCalledWith({
+        type: "BUSINESS_LOGIC",
+        message: "Schedule not found",
+        statusCode: 404,
+      });
+    });
+  });  
 });
