@@ -27,8 +27,7 @@ export class OrganizationsPage implements OnInit {
 
         modalRef.afterClosed$.subscribe((res: any) => {
             if (res) {
-                this.organization.set(res.organization);
-                this.organization()?.users.push(...res.organization.users);
+                this.getOrganization();
             }
         });
     }

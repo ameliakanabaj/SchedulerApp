@@ -43,7 +43,7 @@
                         </div>
 
                         <footer class="card-foot">
-                            <a class="view-calendar" [routerLink]="['/calendar', schedule.schedule_id]"> Send Availability </a>
+                            <a class="view-calendar" [routerLink]="['/calendar', schedule.schedule_id]"> Send Availability | Create shifts </a>
                             @if (isUserOrgAdmin) {
                                 <button class="btn-edit" type="button" (click)="openEditScheduleModal(schedule)">Edit</button>
                             }
