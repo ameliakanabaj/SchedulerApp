@@ -18,6 +18,7 @@ const shiftRoutes = require("./src/routes/shift.routes");
 const availabilityRoutes = require("./src/routes/availability.routes");
 const assignmentRoutes = require("./src/routes/assignment.routes");
 const scheduleRoutes = require("./src/routes/schedule.routes");
+const notificationsRoutes = require("./src/routes/notifications.routes");
 
 const app = express();
 const PORT = process.env.PORT || 8083;
@@ -44,6 +45,7 @@ app.use("/api/shifts", shiftRoutes);
 app.use("/api/availabilities", availabilityRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/schedules", scheduleRoutes);
+app.use("/api/notifications", notificationsRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).send("Scheduler API is running.");
