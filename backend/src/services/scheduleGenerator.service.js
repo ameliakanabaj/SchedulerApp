@@ -20,8 +20,7 @@ async function generateSchedule(schedule_id) {
       }
   
       const dateToEnd = new Date(schedule.date_to);
-      dateToEnd.setDate(dateToEnd.getDate() + 1);
-      dateToEnd.setHours(0, 0, 0, 0);
+      dateToEnd.setHours(23, 59, 59, 999);
 
       const shifts = await prisma.shift.findMany({
         where: {
