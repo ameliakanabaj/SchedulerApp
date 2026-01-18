@@ -44,7 +44,7 @@ export class OrganizationsPage implements OnInit {
         })
     }
 
-    private getOrganization(): void {
+    getOrganization(): void {
         this.isLoading.set(true);
         this.organizationService.getAll().subscribe((res) => {
             if (res.length > 0) {

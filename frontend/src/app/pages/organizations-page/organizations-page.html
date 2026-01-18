@@ -14,7 +14,7 @@
                 </div>
                 <div class="organization-card-body">
                     @for (user of organization()!.users; track $index) {
-                        <app-user-card [user]="user" />
+                        <app-user-card [user]="user" (removed)="getOrganization()"  />
                     }
                 </div>
             </div>
