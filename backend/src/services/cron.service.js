@@ -49,9 +49,7 @@ function cleanupOldReminders() {
 
 async function checkDeadlinesAndNotify() {
     console.log("[CRON] Checking deadlines...");
-    
-    cleanupOldReminders();
-    
+        
     try {
         const now = new Date();
         const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
@@ -63,8 +61,7 @@ async function checkDeadlinesAndNotify() {
                     lte: tomorrow
                 },
                 status: { not: "GENERATED" }
-            },
-            include: { organization: true }
+            }
         });
 
         for (const schedule of schedulesEndingSoon) {
@@ -77,18 +74,25 @@ async function checkDeadlinesAndNotify() {
             });
 
             for (const user of users) {
-                const reminderKey = `${schedule.schedule_id}-${user.user_id}`;
-
-                if (sentReminders.has(reminderKey)) {
-                    continue; 
-                }
-
                 const hasAvailability = user.availabilities.some(a => {
                     const availStart = new Date(a.start_time);
                     return availStart >= schedule.date_from && availStart <= schedule.date_to;
                 });
 
                 if (!hasAvailability) {
+                    
+                    const alreadySent = await prisma.notification.findFirst({
+                        where: {
+                            user_id: user.user_id,
+                            schedule_id: schedule.schedule_id,
+                            type: "REMINDER_24H"
+                        }
+                    });
+
+                    if (alreadySent) {
+                        continue; 
+                    }
+
                     console.log(`[CRON] Sending reminder to user ${user.user_id}`);
                     
                     const deadlineStr = new Date(schedule.deadline_generate_date).toLocaleDateString("en-GB");
@@ -99,9 +103,6 @@ async function checkDeadlinesAndNotify() {
                         type: "REMINDER_24H",
                         message: `Reminder: Less than 24h left to submit availability (deadline: ${deadlineStr}). Please submit now!`
                     }).catch(err => console.error("Cron notification error:", err));
-
-                    sentReminders.set(reminderKey, Date.now());
-                    saveRemindersToDisk();
                 }
             }
         }

@@ -204,10 +204,8 @@ describe("Notification System Tests", () => {
 
   
   describe("3. Cron Job (24h Reminder)", () => {
-    it("should send REMINDER_24H if deadline is tomorrow and user has no availability", async () => {
-      if (typeof cronService.checkDeadlinesAndNotify !== 'function') {
-        return;
-      }
+    it("should send REMINDER_24H if deadline is tomorrow, user has no availability AND notification not sent yet", async () => {
+      if (typeof cronService.checkDeadlinesAndNotify !== 'function') return;
 
       const now = new Date();
       const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
@@ -231,7 +229,19 @@ describe("Notification System Tests", () => {
         }
       ]);
 
+      prisma.notification.findFirst.mockResolvedValue(null);
+
       await cronService.checkDeadlinesAndNotify();
+
+      expect(prisma.notification.findFirst).toHaveBeenCalledWith(
+          expect.objectContaining({
+              where: {
+                  user_id: 5,
+                  schedule_id: 72,
+                  type: "REMINDER_24H"
+              }
+          })
+      );
 
       expect(notificationService.sendNotification).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -272,6 +282,45 @@ describe("Notification System Tests", () => {
       await cronService.checkDeadlinesAndNotify();
 
       expect(notificationService.sendNotification).not.toHaveBeenCalled();
+    });
+
+    it("should NOT send notification if reminder already exists in DB (Restart protection)", async () => {
+        if (typeof cronService.checkDeadlinesAndNotify !== 'function') return;
+  
+        const now = new Date();
+        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  
+        prisma.schedule.findMany.mockResolvedValue([
+          { 
+            schedule_id: 99, 
+            organization_id: 2, 
+            deadline_generate_date: tomorrow,
+            date_from: new Date("2026-06-01"),
+            date_to: new Date("2026-06-30"),
+            status: "OPEN"
+          }
+        ]);
+  
+        prisma.user.findMany.mockResolvedValue([
+          { 
+            user_id: 7, 
+            role: "EMPLOYEE", 
+            availabilities: []
+          }
+        ]);
+
+        prisma.notification.findFirst.mockResolvedValue({
+            notification_id: 500,
+            user_id: 7,
+            schedule_id: 99,
+            type: "REMINDER_24H"
+        });
+  
+        await cronService.checkDeadlinesAndNotify();
+  
+        expect(prisma.notification.findFirst).toHaveBeenCalled();
+
+        expect(notificationService.sendNotification).not.toHaveBeenCalled();
     });
   });
 
