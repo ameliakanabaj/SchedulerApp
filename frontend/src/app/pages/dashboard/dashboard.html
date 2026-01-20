@@ -17,7 +17,9 @@
                     @if (!schedule || typeof schedule !== 'number') {
                         <h3> Your schedule will be displayed here, once it will be created </h3>
                     } @else {
-                        <app-view-only-calendar [scheduleId]="schedule!"/>
+                        <div class="card calendar dashboard-calendar">
+                            <app-view-only-calendar [scheduleId]="schedule!" />
+                        </div>                          
                     }
                 </div>
 

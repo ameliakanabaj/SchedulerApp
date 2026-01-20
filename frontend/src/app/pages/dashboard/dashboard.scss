@@ -19,7 +19,9 @@
         grid-template-columns: repeat(12, 1fr);
         gap: 20px;
         width: 100%;
-        box-sizing: border-box;
+        box-sizing: border-box;    
+        overflow-x: visible;
+        padding-right: 12px;
     }
 
     .card {
@@ -45,12 +47,37 @@
     }
 
     .calendar {
+        .dashboard-calendar {
+            overflow: hidden;
+            display: block;
+          
+            app-view-only-calendar {
+              display: block;
+              width: 100%;
+              max-width: 100%;
+              overflow-x: hidden;
+            }
+          
+            .calendar-grid {
+              width: 100%;
+              max-width: 100%;
+            }
+          
+            .day,
+            .fancy-day-bg {
+              width: 100% !important;
+              max-width: 100%;
+              min-width: 0;
+            }
+        }
+
         grid-column: span 8;
         grid-row: span 2;
+        padding: 16px 18px 18px;
         box-shadow: 0 6px 18px var(--primary-shadow);
         display: flex;
-        justify-content: center;
-        align-items: center;
+        justify-content: flex-start;
+        align-items: stretch;
 
         h3 {
             padding: 30px;
@@ -151,37 +178,41 @@
     }
 }
 
-@media (max-width: 1200px) {
-    .dashboard-container .grid {
-        grid-template-columns: 1fr;
-        grid-auto-flow: row;
-        gap: 20px;
-    }
-
-    .dashboard-container .calendar,
-    .dashboard-container .shifts,
-    .dashboard-container .notifications {
-        grid-column: 1 / -1;
-        grid-row: auto;
-        width: 100%;
-    }
+.dashboard-container {
 
     .calendar {
+      overflow: visible; 
+    }
+  
+    .calendar app-view-only-calendar {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      overflow: visible;
+    }
+  
+    .calendar .calendar-grid {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box;
+    }
+  
+    .calendar .day,
+    .calendar .day-empty,
+    .calendar .fancy-day-bg {
+      width: auto !important;    
+      min-width: 0 !important;   
+      max-width: 100% !important;
+    }
+  }
+  
+
+@media (max-width: 1200px) {
+    .dashboard-container .calendar {
         display: block;
-        align-items: stretch;
-        justify-content: flex-start;
-    }
-
-    .shifts {
-        max-height: none;
-        overflow: visible;
-    }
-
-    .shifts-list {
-        max-height: none;
-        overflow: visible;
     }
 }
+
 
 @media (max-width: 900px) {
     .dashboard-container {
@@ -218,6 +249,9 @@
         padding: 0;
         box-shadow: none;
     }
+    .dashboard-container {
+        overflow-x: hidden;
+    }
     .dashboard-container .header {
         font-size: 0.95rem;
         padding: 6px 2px 6px;
@@ -246,78 +280,8 @@
     }
 }
 
-@media (max-width: 1100px) {
-    .calendar {
-        .calendar-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
-        }
-        .day, .fancy-day-bg {
-            width: 140px !important;
-            height: 120px !important;
-            min-width: 0;
-        }
-    }
-}
-
-@media (max-width: 800px) {
-    .calendar {
-        .calendar-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-        }
-        .day, .fancy-day-bg {
-            width: 110px !important;
-            height: 90px !important;
-            font-size: 0.85rem;
-        }
-        .fancy-date .date-number {
-            font-size: 1.2rem !important;
-        }
-    }
-}
-
-@media (max-width: 600px) {
-    .calendar {
-        overflow-x: hidden;
-        
-        .calendar-header {
-            font-size: 1rem !important;
-            padding: 2px 8px !important;
-        }
-        .calendar-grid {
-            grid-template-columns: 1fr !important;
-            gap: 6px !important;
-        }
-        .day, .fancy-day-bg {
-            width: 100% !important;
-            min-width: 0;
-            height: 70px !important;
-            font-size: 0.8rem;
-            padding: 2px 0 !important;
-        }
-        .fancy-date .date-number {
-            font-size: 1rem !important;
-        }
-        .days-list li {
-            font-size: 0.8rem !important;
-            padding: 4px 0 !important;
-        }
-    }
-
-    .no-org-alert-container {
-        padding: 20px 10px;
-        text-align: center;
-    }
-
-    .no-org-alert {
-        font-size: 20px;
-        line-height: 1.3;
-    }
-
-    .no-org-alert-container .classic-button {
-        width: 100%;
-        max-width: 280px;
-        margin-top: 15px;
-    }
+.dashboard-container {
+    overflow-x: hidden;
 }
 
 .mark {
