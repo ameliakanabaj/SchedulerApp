@@ -12,6 +12,8 @@
         padding: 20px;
         border-radius: 10px;
         box-shadow: 4px 4px 10px 2px var(--primary-shadow);
+        width: 100%;
+        max-width: 500px;
 
         h2 {
             text-align: center;
@@ -38,6 +40,8 @@
             border: none;
             border-radius: 5px;
             padding-right: 40px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .error {
@@ -83,6 +87,7 @@
                 font-size: 16px;
                 font-weight: bolder;
                 letter-spacing: 1px;
+                width: 100%;
             }
         }
 
@@ -111,5 +116,70 @@
                 background-color: #bdbdbd;
               }
         }
+    }
+}
+
+@media (max-width: 768px) {
+    .register-container {
+        margin-top: 20px;
+        padding: 0 15px;
+    }
+
+    .register-inside-container {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 42px !important;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        padding: 8px;
+
+        label {
+            font-size: 16px;
+        }
+
+        input {
+            font-size: 14px;
+            padding: 8px;
+            padding-right: 35px;
+        }
+
+        .error {
+            font-size: 0.7rem;
+        }
+    }
+
+    .password-group i {
+        top: 36px;
+        font-size: 13px;
+    }
+
+    .bottom-group {
+        span {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px;
+        }
+    }
+}
+
+@media (max-width: 400px) {
+    h2 {
+        font-size: 32px !important;
+    }
+
+    .form-group label {
+        font-size: 14px;
+    }
+
+    .bottom-group button {
+        font-size: 16px;
     }
 }
