@@ -103,6 +103,7 @@
     }
 }
 .calendar {
+    max-width: 1400px;
     color: var(--primary-dark);
     display: flex;
     flex-direction: column;
@@ -119,7 +120,7 @@
 
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: stretch;
         box-shadow: 2px 2px 5px var(--primary-shadow);
 
         .fa-solid {
@@ -148,15 +149,18 @@
 
     .calendar-grid {
         display: grid;
-        grid-template-columns: repeat(7, 1fr);
+        grid-template-columns: repeat(7, minmax(0, 1fr)); // ⬅️ KLUCZ
         gap: 10px;
         margin-top: 10px;
+        width: 100%;
+        box-sizing: border-box;
 
         .day {
             background-color: var(--secondary-white);
-            height: 180px;
-            width: 200px;
             border-radius: 10px;
+            width: 100%;
+            min-height: 160px;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             box-shadow: 2px 2px 5px var(--primary-shadow);
@@ -383,7 +387,6 @@
     }
     
     .calendar-grid * {
-        max-width: 135px !important;
         max-height: 150px !important;
     }
 
@@ -547,23 +550,6 @@
         border-radius: 20px;
         box-shadow: 2px 2px 10px var(--primary-shadow);
     }
-}
-
-@media (max-width: 720px) {
-  .calendar .calendar-grid .day,
-  .calendar .calendar-grid .day-empty {
-    height: 110px;
-    min-height: 110px;
-  }
-
-  .availability-send {
-    font-size: 1.4rem;
-    padding: 8px;
-  }
-
-  .availability-buttons {
-    button { width: 120px; font-size: 0.82rem; padding: 0.4rem; }
-  }
 }
 
 .day :focus,
@@ -865,4 +851,91 @@ button:focus {
         margin: 6px 0 8px 0;
         box-shadow: 0 1px 4px rgba(240, 147, 251, 0.18);
     }
+}
+
+@media (max-width: 1024px) {
+    .calendar-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 720px) {
+    .calendar {
+      display: block !important;
+      padding: 0 8px !important;
+      box-sizing: border-box !important;
+      align-items: stretch !important;
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+    }
+  
+    .days-list {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  
+    .calendar-grid {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      grid-template-columns: none !important;
+      margin-top: 8px !important;
+    }
+    
+    .calendar-grid .day,
+    .calendar-grid .day-empty {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      height: auto !important;
+      min-height: auto !important;
+      padding: 12px !important;
+      box-sizing: border-box !important;
+      display: block !important;
+      border-radius: 10px !important;
+    }
+  
+    .fancy-date,
+    .date,
+    .fancy-date .date-number,
+    .fancy-date .date-month {
+      display: block !important;
+      width: 100% !important;
+      text-align: left !important;
+      font-size: 1rem !important;
+      margin-bottom: 8px !important;
+    }
+  
+    .calendar-grid .open-day,
+    .calendar-grid .shifts-list,
+    .calendar-grid .open-day > * {
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+    }
+  
+    .availability-send,
+    .admin-buttons .select-all-days,
+    .admin-buttons .select-all-days[disabled],
+    .generate-schedule-btn {
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+  
+    .calendar-xs,
+    .calendar-xs * {
+      max-width: none !important;
+      max-height: none !important;
+    }
+}
+  
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
