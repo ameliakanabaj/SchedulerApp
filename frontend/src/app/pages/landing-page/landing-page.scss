@@ -36,7 +36,7 @@
 
     .middle-panel {
         margin-top: 150px;
-        width: 100vw;
+        width: 100%;
         background-color: var(--secondary-background);
         display: flex;
         justify-content: center;
@@ -48,6 +48,10 @@
             display: flex;
             margin-top: 20px;
             gap: 40px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 20px;
+            box-sizing: border-box;
 
             .card-1 {
                 display: grid;
@@ -180,4 +184,166 @@
     background-color: var(--secondary-background);
     margin: 0;
     border: 1px solid black;
+}
+
+
+@media (max-width: 1024px) {
+    .top-panel h2 {
+        font-size: 52px;
+    }
+
+    .top-panel span {
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .middle-panel {
+        margin-top: 80px;
+    }
+
+    .cards {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .card-1 {
+        grid-template-columns: 1fr;
+        text-align: center;
+
+        .card-title-1 {
+            font-size: 32px;
+            text-align: center;
+        }
+
+        .text-block {
+            font-size: 20px;
+        }
+    }
+
+    .card-2 {
+        width: 100%;
+
+        .fa-clock {
+            font-size: 140px;
+        }
+
+        span {
+            font-size: 24px;
+        }
+
+        .join-button {
+            font-size: 28px;
+        }
+    }
+
+    .card-3 {
+        width: 90%;
+    }
+}
+
+@media (max-width: 768px) {
+    .top-panel {
+        padding: 0 15px;
+    }
+
+    .top-panel h2 {
+        font-size: 38px;
+    }
+
+    .top-panel span {
+        font-size: 16px;
+    }
+
+    .auth-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+
+        button {
+            width: 100%;
+        }
+    }
+
+    .middle-panel {
+        padding-bottom: 30px;
+    }
+
+    .card-1 {
+        padding: 15px;
+
+        .card-title-1 {
+            font-size: 26px;
+        }
+
+        .text-block {
+            font-size: 18px;
+        }
+    }
+
+    .card-2 {
+        padding: 15px;
+
+        .fa-clock {
+            font-size: 110px;
+        }
+
+        span {
+            font-size: 20px;
+        }
+
+        .join-button {
+            font-size: 22px;
+            width: 100%;
+        }
+    }
+
+    .bottom-panel {
+        padding: 30px 15px;
+    }
+
+    .card-3 {
+        width: 100%;
+
+        .top-bar {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .main-text {
+            font-size: 22px;
+        }
+
+        .small-text {
+            font-size: 18px;
+        }
+
+        .list {
+            font-size: 18px;
+            gap: 20px;
+
+            .fa-circle-check {
+                font-size: 28px;
+            }
+        }
+    }
+}
+
+@media (max-width: 420px) {
+    .top-panel h2 {
+        font-size: 30px;
+    }
+
+    .card-1 .card-title-1 {
+        font-size: 22px;
+    }
+
+    .text-block {
+        font-size: 16px;
+    }
+
+    .join-button {
+        font-size: 18px !important;
+    }
 }
