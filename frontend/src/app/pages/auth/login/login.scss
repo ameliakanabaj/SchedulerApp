@@ -11,6 +11,8 @@
         padding: 20px;
         border-radius: 10px;
         box-shadow: 4px 4px 10px 2px var(--primary-shadow);
+        width: 100%;
+        max-width: 420px;
 
         h2 {
             text-align: center;
@@ -36,6 +38,9 @@
             font-size: 18px;
             border: none;
             border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            
         }
     }
 
@@ -56,6 +61,7 @@
                 font-size: 16px;
                 font-weight: bolder;
                 letter-spacing: 1px;
+                width: 100%;
             }
         }
 
@@ -73,5 +79,56 @@
                 background-color: var(--secondary-white);
             }
         }
+    }
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        margin-top: 20px;
+        padding: 0 15px;
+    }
+
+    .login-inside-container {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 42px !important;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        padding: 10px;
+
+        label {
+            font-size: 16px;
+        }
+
+        input {
+            font-size: 16px;
+            padding: 8px;
+        }
+    }
+
+    .bottom-group {
+        span {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px;
+        }
+    }
+}
+
+@media (max-width: 400px) {
+    h2 {
+        font-size: 32px !important;
+    }
+
+    .bottom-group button {
+        font-size: 16px;
     }
 }
