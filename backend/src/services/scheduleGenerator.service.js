@@ -1,27 +1,23 @@
-const prisma = require("./prisma");
+const { PrismaClient } = require("../generated/prisma");
+const prisma = new PrismaClient();
+const notificationService = require("./notifications.service");
 
-//pomocnicza funkcja tymczasowa
-async function send_notifications(shift_id) {
-    console.log(
-      `Powiadomienie: brak wystarczającej liczby pracowników dla shift ${shift_id}`
-    );
-}
-  
 async function generateSchedule(schedule_id) {
+
     try {
       const scheduleIdInt = parseInt(schedule_id, 10);
       const schedule = await prisma.schedule.findUnique({
         where: { schedule_id: scheduleIdInt },
         include: { organization: true },
       });
-    
+  
       if (!schedule) {
         throw new Error("Schedule not found");
       }
-  
+
       const dateToEnd = new Date(schedule.date_to);
       dateToEnd.setHours(23, 59, 59, 999);
-
+  
       const shifts = await prisma.shift.findMany({
         where: {
           organization_id: schedule.organization_id,
@@ -61,17 +57,15 @@ async function generateSchedule(schedule_id) {
   
         if (candidates.length < requiredPeople) {
             console.warn(
-                `Shift ${shift.shift_id}: wymagane ${requiredPeople}, dostępne ${candidates.length}`
+                `Shift ${shift.shift_id}: required ${requiredPeople}, available ${candidates.length}`
             );
-    
-            await send_notifications(shift.shift_id);
+            
+            await prisma.schedule.update({
+                where: { schedule_id: scheduleIdInt },
+                data: { status: "FAILED" },
+            });
   
-          await prisma.schedule.update({
-            where: { schedule_id },
-            data: { status: "FAILED" },
-          });
-  
-          return [];
+            return [];
         }
   
         candidates.sort((a, b) => a.assigned_hours - b.assigned_hours);
@@ -111,8 +105,26 @@ async function generateSchedule(schedule_id) {
           generated_at: new Date(),
         },
       });
+
+      const admins = await prisma.user.findMany({
+          where: { 
+            organization_id: schedule.organization_id,
+            role: "ORG_ADMIN" 
+          }
+      });
+
+      for (const admin of admins) {
+          notificationService.sendNotification({
+            userId: admin.user_id,
+            scheduleId: schedule_id,
+            type: "SCHEDULE_GENERATED",
+            message: `Schedule #${schedule_id} has been successfully generated.`
+          }).catch(err => console.error("Notification error:", err));
+      }
+
       console.log(assignments);
       return assignments;
+
     } catch (error) {
       console.error("Schedule generation failed:", error);
   

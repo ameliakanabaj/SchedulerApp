@@ -1,5 +1,7 @@
 const scheduleModel = require("../models/schedule.model");
 const scheduleGenerator = require("../services/scheduleGenerator.service");
+const notificationService = require("../services/notifications.service");
+const userModel = require("../models/user.model");
 
 async function createSchedule(req, res, next) {
   try {
@@ -22,6 +24,24 @@ async function createSchedule(req, res, next) {
       date_to,
       deadline_generate_date,
     });
+
+    if (schedule) {
+        const users = await userModel.getUsersByOrganization(organization_id);
+        const employees = users.filter(u => u.role === "EMPLOYEE");
+
+        employees.forEach(user => {
+            const startStr = new Date(date_from).toLocaleDateString("pl-PL");
+            const endStr = new Date(date_to).toLocaleDateString("pl-PL");
+            const deadlineStr = new Date(deadline_generate_date).toLocaleDateString("pl-PL");
+
+            notificationService.sendNotification({
+                userId: user.user_id,
+                scheduleId: schedule.schedule_id,
+                type: "AVAILABILITY_OPEN",
+                message: `Availability is open for period: ${startStr} to ${endStr}. Please submit before ${deadlineStr}.`
+            }).catch(err => console.error("Notification error:", err));
+        });
+    }
 
     res.status(201).json(schedule);
   } catch (err) {
@@ -64,13 +84,6 @@ async function getSchedulesForUser(req, res, next) {
         message: "Access denied",
         statusCode: 403,
       });
-    } else if (req.user.role !== "GLOBAL_ADMIN" &&
-      Number(req.user.organization_id) !== Number(organizationId)) {
-        return next({
-          type: "BUSINESS_LOGIC",
-          message: "Access denied",
-          statusCode: 403,
-        });
     }
 
     const schedules = await scheduleModel.getSchedulesForUser(userId);
@@ -83,28 +96,48 @@ async function getSchedulesForUser(req, res, next) {
 async function updateSchedule(req, res, next) {
   try {
     const { scheduleId } = req.params;
+    
+    const { deadline_generate_date } = req.body; 
 
     const existing = await scheduleModel.getScheduleById(scheduleId);
     if (!existing) {
-      return next({
-        type: "BUSINESS_LOGIC",
-        message: "Schedule not found",
-        statusCode: 404,
-      });
+      return next({ type: "BUSINESS_LOGIC", message: "Schedule not found", statusCode: 404 });
     }
 
     if (
       req.user.role !== "GLOBAL_ADMIN" &&
       Number(req.user.organization_id) !== Number(existing.organization_id)
     ) {
-      return next({
-        type: "BUSINESS_LOGIC",
-        message: "Access denied",
-        statusCode: 403,
-      });
+      return next({ type: "BUSINESS_LOGIC", message: "Access denied", statusCode: 403 });
     }
 
     const updated = await scheduleModel.updateSchedule(scheduleId, req.body);
+
+    if (deadline_generate_date) {
+        const oldDeadline = new Date(existing.deadline_generate_date);
+        const newDeadline = new Date(deadline_generate_date);
+
+        if (newDeadline > oldDeadline) {
+            console.log(`[UPDATE] Deadline extended to ${newDeadline}. Sending notifications...`);
+            
+            const users = await userModel.getUsersByOrganization(existing.organization_id);
+            const employees = users.filter(u => u.role === "EMPLOYEE");
+
+            const deadlineStr = newDeadline.toLocaleDateString("en-GB");
+            const startStr = new Date(existing.date_from).toLocaleDateString("en-GB");
+            const endStr = new Date(existing.date_to).toLocaleDateString("en-GB");
+
+            employees.forEach(user => {
+                notificationService.sendNotification({
+                    userId: user.user_id,
+                    scheduleId: scheduleId,
+                    type: "AVAILABILITY_OPEN", 
+                    message: `Attention! The availability submission deadline for the schedule (${startStr} - ${endStr}) has been extended to ${deadlineStr}. Please submit your missing availability!`
+                }).catch(err => console.error("Notification update error:", err));
+            });
+        }
+    }
+
     res.json(updated);
   } catch (err) {
     next(err);
@@ -248,7 +281,6 @@ async function checkIfScheduleReady(req, res, next) {
     next(err);
   }
 }
-
 
 module.exports = {
   createSchedule,

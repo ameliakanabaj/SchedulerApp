@@ -1,7 +1,11 @@
 const scheduleController = require("../src/controllers/schedule.controller");
 const scheduleModel = require("../src/models/schedule.model");
+const userModel = require("../src/models/user.model");
+const notificationService = require("../src/services/notifications.service");
 
 jest.mock("../src/models/schedule.model");
+jest.mock("../src/models/user.model");
+jest.mock("../src/services/notifications.service");
 
 describe("Schedule Controller", () => {
   let req, res, next;
@@ -20,6 +24,10 @@ describe("Schedule Controller", () => {
     next = jest.fn();
 
     jest.clearAllMocks();
+    
+    if (notificationService.sendNotification) {
+        notificationService.sendNotification.mockResolvedValue(true);
+    }
   });
 
   describe("createSchedule", () => {
@@ -34,6 +42,7 @@ describe("Schedule Controller", () => {
 
       const created = { schedule_id: 1, ...req.body };
       scheduleModel.createSchedule.mockResolvedValue(created);
+      userModel.getUsersByOrganization.mockResolvedValue([]); 
 
       await scheduleController.createSchedule(req, res, next);
 
@@ -71,46 +80,45 @@ describe("Schedule Controller", () => {
     });
   });
 
-    describe("getScheduleById", () => {
-        it("should return a schedule by id", async () => {
-            req.user.role = "GLOBAL_ADMIN";
-            req.params.scheduleId = 5;
-          
-            const schedule = { schedule_id: 5, organization_id: 1 };
-            scheduleModel.getScheduleById.mockResolvedValue(schedule);
-          
-            await scheduleController.getScheduleById(req, res, next);
-          
-            expect(scheduleModel.getScheduleById).toHaveBeenCalledWith(5);
-            expect(res.json).toHaveBeenCalledWith(schedule);
-        });
-          
-        it("should return 404 if schedule not found", async () => {
-            req.params.scheduleId = 99;
-        
-            scheduleModel.getScheduleById.mockResolvedValue(null);
-        
-            await scheduleController.getScheduleById(req, res, next);
-        
-            expect(next).toHaveBeenCalledWith({
-                type: "BUSINESS_LOGIC",
-                message: "Schedule not found",
-                statusCode: 404,
-            });
-        });
-    
-        it("should call next(error) on DB error", async () => {
-            req.params.scheduleId = 5;
-        
-            const error = new Error("DB error");
-            scheduleModel.getScheduleById.mockRejectedValue(error);
-        
-            await scheduleController.getScheduleById(req, res, next);
-        
-            expect(next).toHaveBeenCalledWith(error);
-        });
+  describe("getScheduleById", () => {
+    it("should return a schedule by id", async () => {
+      req.user.role = "GLOBAL_ADMIN";
+      req.params.scheduleId = 5;
+
+      const schedule = { schedule_id: 5, organization_id: 1 };
+      scheduleModel.getScheduleById.mockResolvedValue(schedule);
+
+      await scheduleController.getScheduleById(req, res, next);
+
+      expect(scheduleModel.getScheduleById).toHaveBeenCalledWith(5);
+      expect(res.json).toHaveBeenCalledWith(schedule);
     });
-  
+
+    it("should return 404 if schedule not found", async () => {
+      req.params.scheduleId = 99;
+
+      scheduleModel.getScheduleById.mockResolvedValue(null);
+
+      await scheduleController.getScheduleById(req, res, next);
+
+      expect(next).toHaveBeenCalledWith({
+        type: "BUSINESS_LOGIC",
+        message: "Schedule not found",
+        statusCode: 404,
+      });
+    });
+
+    it("should call next(error) on DB error", async () => {
+      req.params.scheduleId = 5;
+
+      const error = new Error("DB error");
+      scheduleModel.getScheduleById.mockRejectedValue(error);
+
+      await scheduleController.getScheduleById(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
 
   describe("getSchedulesByOrganization", () => {
     it("should return schedules for GLOBAL_ADMIN", async () => {
@@ -202,10 +210,18 @@ describe("Schedule Controller", () => {
       req.user.role = "GLOBAL_ADMIN";
       req.params.scheduleId = 5;
 
-      scheduleModel.getScheduleById.mockResolvedValue({ schedule_id: 5, organization_id: 1 });
+      scheduleModel.getScheduleById.mockResolvedValue({ 
+        schedule_id: 5, 
+        organization_id: 1,
+        deadline_generate_date: new Date("2025-01-01"),
+        date_from: new Date("2025-02-01"),
+        date_to: new Date("2025-02-07")
+      });
 
       const updated = { schedule_id: 5, status: "APPROVED" };
       scheduleModel.updateSchedule.mockResolvedValue(updated);
+      
+      userModel.getUsersByOrganization.mockResolvedValue([]);
 
       req.body = { status: "APPROVED" };
 
@@ -251,7 +267,7 @@ describe("Schedule Controller", () => {
       req.user.role = "GLOBAL_ADMIN";
       req.params.scheduleId = 1;
 
-      scheduleModel.getScheduleById.mockResolvedValue({ schedule_id: 1 });
+      scheduleModel.getScheduleById.mockResolvedValue({ schedule_id: 1, organization_id: 1 });
       const error = new Error("DB error");
       scheduleModel.updateSchedule.mockRejectedValue(error);
 
