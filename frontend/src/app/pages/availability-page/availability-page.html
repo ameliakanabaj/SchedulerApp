@@ -43,8 +43,9 @@
                         </div>
 
                         <footer class="card-foot">
-                            <a class="view-calendar" [routerLink]="['/calendar', schedule.schedule_id]"> Send Availability | Create shifts </a>
+                            <a class="view-calendar" [routerLink]="['/calendar', schedule.schedule_id]"> {{ isUserOrgAdmin ? 'Send Availability | Create shifts' : 'Send Availability' }} </a>
                             @if (isUserOrgAdmin) {
+                                <button class="btn-delete" (click)="deleteSchedule(schedule.schedule_id)"> Delete </button>
                                 <button class="btn-edit" type="button" (click)="openEditScheduleModal(schedule)">Edit</button>
                             }
                         </footer>

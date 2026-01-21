@@ -5,7 +5,7 @@ import { Authentication } from '@app/core';
 import { CreateSchedule } from '@app/features/create-schedule/create-schedule';
 import { ScheduleModel } from '@app/models/schedule.model';
 import { Loading } from '@app/shared/components/loading/loading';
-import { Modal } from '@app/shared/services';
+import { Modal, Toastr } from '@app/shared/services';
 import { Schedule } from '@app/shared/services/schedule/schedule';
 
 @Component({
@@ -25,6 +25,7 @@ export class AvailabilityPage implements OnInit {
     
     private readonly modalService = inject(Modal);
     private readonly scheduleService = inject(Schedule);
+    private readonly toastrService = inject(Toastr);
     private readonly authService = inject(Authentication);
 
     ngOnInit(): void {
@@ -77,6 +78,26 @@ export class AvailabilityPage implements OnInit {
             }
         })
     }
+
+    deleteSchedule(scheduleId: number): void {
+        this.isLoading.set(true);
+        this.scheduleService.delete(scheduleId).subscribe(() => {
+            if (this.orgId) {
+                this.scheduleService.getAllByOrganization(this.orgId).subscribe({
+                    next: (res) => {
+                        this.schedules = this.sortSchedulesByDateTo(res);
+                        this.isLoading.set(false);
+                        this.toastrService.success('Schedule deleted successfully');
+                    },
+                    error: () => {
+                        this.isLoading.set(false);
+                        this.toastrService.error('Failed to delete schedule');
+                    }
+                });
+            }
+        });
+    }
+        
 
     private sortSchedulesByDateTo(schedules: ScheduleModel[]): ScheduleModel[] {
         return [...schedules].sort((a, b) => {

@@ -7,6 +7,7 @@ import { Toastr } from '../../shared/services/toastr/toastr';
 import { User } from '../../shared/services/user/user';
 import { of } from 'rxjs';
 import { Shift } from '../../shared/services/shift/shift';
+import { Notification } from '../../shared/services/notification/notification';
 
 describe('Dashboard', () => {
     let sp: Spectator<Dashboard>;
@@ -22,6 +23,10 @@ describe('Dashboard', () => {
     const mockShiftService = {
         getMyShifts: jest.fn().mockReturnValue(of([])),
     };
+    const mockNotificationService = {
+        getMyNotifications: jest.fn().mockReturnValue(of([])),
+        markAsRead: jest.fn().mockReturnValue(of(null)),
+    };
     const createComponent = createComponentFactory({
         component: Dashboard,
         providers: [
@@ -30,6 +35,7 @@ describe('Dashboard', () => {
             { provide: Toastr, useValue: {}},
             { provide: User, useValue: mockUserService },
             { provide: Shift, useValue: mockShiftService },
+            { provide: Notification, useValue: mockNotificationService },
         ]
     });
 

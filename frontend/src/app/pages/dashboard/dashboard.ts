@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { Modal, User } from '@app/shared/services';
@@ -9,12 +9,26 @@ import { ViewOnlyCalendar } from '@app/features/view-only-calendar/view-only-cal
 import { UserModel } from '@app/models';
 import { Loading } from '@app/shared/components/loading/loading';
 import { Shift } from '@app/shared/services/shift/shift';
+import { NotificationModel } from '@app/models/notification.model';
+import { Notification } from '@app/shared/services/notification/notification';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ViewOnlyCalendar, DatePipe, RouterLink, Loading],
+  imports: [ViewOnlyCalendar, DatePipe, RouterLink, Loading, NgClass],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateX(-20px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateX(0)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ opacity: 0, transform: 'translateX(20px)' }))
+      ])
+    ])
+  ]
 })
 export class Dashboard implements OnInit {
     userHasOrganization = true;
@@ -26,7 +40,11 @@ export class Dashboard implements OnInit {
 
     upcomingShifts: { start: string, end: string}[] = [];
 
-    notifications: { message: string, date: Date }[] = [];
+    notifications: NotificationModel[] = [];
+    
+    get unreadNotifications(): NotificationModel[] {
+        return this.notifications.filter(n => !n.is_read);
+    }
 
     user: UserModel | null = null;
 
@@ -35,12 +53,14 @@ export class Dashboard implements OnInit {
     private readonly scheduleService = inject(Schedule);
     private readonly shiftService = inject(Shift);
     private readonly userService = inject(User);
+    private readonly notificationService = inject(Notification);
 
     // ng on init z pobraniem schedules i wtedy upcoming shifts dodanie
     ngOnInit(): void {
         const userId = this.authService.getUserId();
 
         this.userService.getById(Number(userId)).subscribe(user => {
+            this.user = user;
             this.isLoading.set(false);
         });
 
@@ -61,6 +81,34 @@ export class Dashboard implements OnInit {
         });
 
         this.loadSchedule();
+        this.getMyNotifications();
+    }
+
+    getMyNotifications(): void {
+        this.notificationService.getMyNotifications().subscribe(notifications => {
+            this.notifications = notifications;
+            console.log(notifications);
+            
+        });
+    }
+
+    markAsRead(notificationId: number): void {
+        this.notificationService.markAsRead(notificationId).subscribe(() => {
+            const notif = this.notifications.find(n => n.notification_id === notificationId);
+            if (notif) {
+                notif.is_read = true;
+            }
+        });
+    }
+
+    getNotificationIcon(type: string): string {
+        const iconMap: { [key: string]: string } = {
+            'SCHEDULE_GENERATED': 'fa-calendar-check',
+            'AVAILABILITY_OPEN': 'fa-calendar-days',
+            'MISSING_AVAILABILITY': 'fa-triangle-exclamation',
+            'REMINDER_24H': 'fa-clock'
+        };
+        return `fa-solid ${iconMap[type] || 'fa-bell'}`;
     }
 
     loadSchedule(): void {

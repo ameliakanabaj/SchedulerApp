@@ -4,6 +4,7 @@ import { AddNewMemberModal, OrganizationCreationModal, UserCard } from '@app/sha
 import { Organization } from '@app/shared/services/organization/organization';
 import { OrganizationModel } from '@app/models';
 import { Loading } from '@app/shared/components/loading/loading';
+import { Authentication } from '@app/core';
 
 @Component({
   selector: 'app-organizations-page',
@@ -14,12 +15,20 @@ import { Loading } from '@app/shared/components/loading/loading';
 export class OrganizationsPage implements OnInit {
     organization = signal<OrganizationModel | null>(null);
     isLoading = signal(true);
+    isUserAdmin = false;
 
     private readonly modalService = inject(Modal);
-    private readonly organizationService = inject(Organization)
+    private readonly organizationService = inject(Organization);
+    private readonly authService = inject(Authentication);
 
     ngOnInit(): void {
         this.getOrganization();
+
+        if (this.authService.hasRole('ORG_ADMIN')) {
+            console.log(this.isUserAdmin);
+            
+            this.isUserAdmin = true;
+        }
     }
 
     openCreateOrganizationModal(): void {

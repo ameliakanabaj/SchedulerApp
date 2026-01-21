@@ -6,7 +6,7 @@
 } @else {
     <div class="dashboard-container">
         <div class="header">
-            <h2>Hello, Employee!</h2>
+            <h2>Hello, {{ user?.role === 'ORG_ADMIN' ? 'organization admin' : 'employee' }} {{ user?.first_name }}!</h2>
             <div> Today's date: <b>{{ today | date:'fullDate' }}</b></div>
         </div>
         @if (isLoading()) {
@@ -38,24 +38,32 @@
                     </div>
                 </div>
 
-                <!-- POWIADOMIENIA NA RAZIE USUWAM, NIE MAMY -->
-
-                <!-- <div class="card notifications">
-                    <h3>Notifications</h3>
+                <div class="card notifications">
+                    <h3>Notifications <span class="notif-badge">{{ unreadNotifications.length }}</span></h3>
 
                     <div class="notifications-list">
-                        @for (n of notifications; track $index) {
-                            @if (n) {
-                                <div class="notif">
-                                    {{ n.message }}
-                                    <span class="date">{{ n.date | date:'shortDate' }}</span>
+                        @if (unreadNotifications.length === 0) {
+                            <p class="empty-state"> <i class="fa-solid fa-bell-slash"></i> No new notifications </p>
+                        } @else {
+                            @for (n of unreadNotifications; track n.notification_id) {
+                                <div class="notif unread" [@fadeInOut]>
+                                    <div class="notif-content">
+                                        <div class="notif-icon">
+                                            <i [ngClass]="getNotificationIcon(n.type)"></i>
+                                        </div>
+                                        <div class="notif-text">
+                                            <p class="notif-message">{{ n.message }}</p>
+                                            <span class="notif-date">{{ n.created_at | date:'short' }}</span>
+                                        </div>
+                                    </div>
+                                    <button (click)="markAsRead(n.notification_id)" class="notif-btn-close" title="Mark as read">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
                                 </div>
                             }
-                        } @empty {
-                            <p> No new notifications to display </p>
                         }
                     </div>
-                </div> -->
+                </div>
             </div>
         }
     </div>

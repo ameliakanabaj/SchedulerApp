@@ -551,7 +551,12 @@ export class Calendar implements OnInit, OnChanges {
         const start = new Date(av.start_time);
         const end = new Date(av.end_time);
 
-        return { start: start, end: end } as any;
+        const startHours = String(start.getHours()).padStart(2, '0');
+        const startMins = String(start.getMinutes()).padStart(2, '0');
+        const endHours = String(end.getHours()).padStart(2, '0');
+        const endMins = String(end.getMinutes()).padStart(2, '0');
+
+        return { start: `${startHours}:${startMins}`, end: `${endHours}:${endMins}` };
     }
     
     getDaySelectedHoursAsDate(day: any, type: 'start' | 'end'): Date | null {

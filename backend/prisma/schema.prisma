@@ -67,7 +67,7 @@ model Assignment {
 
   shift         Shift   @relation(fields: [shift_id], references: [shift_id], onDelete: Cascade, onUpdate: NoAction)
   user          User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
-  schedule      Schedule  @relation(fields: [schedule_id], references: [schedule_id])
+  schedule      Schedule  @relation(fields: [schedule_id], references: [schedule_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([shift_id, user_id], map: "uq_shift_user")
   @@index([shift_id], map: "idx_assignment_shift_id")

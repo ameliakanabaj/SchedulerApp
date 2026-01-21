@@ -170,7 +170,7 @@
                     @case ('custom') {
                         <div class="custom"> Custom hours
                             @if (getDaySelectedHours(day) && getDaySelectedHours(day) !== '') {
-                            {{ getDaySelectedHoursAsDate(day, 'start') | date:'HH:mm' }} - {{ getDaySelectedHoursAsDate(day, 'end') | date:'HH:mm' }}
+                            <p> {{ getDaySelectedHoursAsDate(day, 'start') | date:'HH:mm' }} - {{ getDaySelectedHoursAsDate(day, 'end') | date:'HH:mm' }} </p>
                             }
                         </div>
                     }

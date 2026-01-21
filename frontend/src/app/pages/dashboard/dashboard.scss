@@ -210,6 +210,26 @@
         box-shadow: 0 6px 18px var(--primary-shadow);
         max-height: 300px;
         overflow: hidden;
+        position: relative;
+
+        h3 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .notif-badge {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
 
         .notifications-list {
             max-height: 260px;
@@ -217,7 +237,119 @@
         }
     }
 
-    .shift, .notif {
+    .notif {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--secondary-background);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        transition: all 0.3s ease;
+
+        &.unread {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
+            padding: 12px 8px;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+
+            &:hover {
+                background: linear-gradient(90deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.04) 100%);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            }
+        }
+
+        .notif-content {
+            flex: 1;
+            display: flex;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .notif-icon {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        .notif-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notif-message {
+            margin: 0;
+            padding: 0;
+            font-weight: 500;
+            color: var(--secondary-color);
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .notif-date {
+            display: block;
+            font-size: 11px;
+            color: var(--secondary-text);
+            margin-top: 4px;
+        }
+
+        .notif-btn-close {
+            flex-shrink: 0;
+            background: transparent;
+            border: none;
+            color: var(--secondary-text);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+                background: rgba(59, 130, 246, 0.1);
+                color: var(--primary-color);
+                transform: scale(1.1);
+            }
+
+            &:active {
+                transform: scale(0.95);
+            }
+        }
+
+        &:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 30px 10px;
+        color: var(--secondary-text);
+        font-size: 13px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+
+        i {
+            font-size: 28px;
+            opacity: 0.5;
+        }
+    }
+
+    .shift {
         padding: 12px 0;
         border-bottom: 1px solid var(--secondary-background);
         font-size: 14px;
@@ -271,5 +403,15 @@
     &:active {
         transform: translateY(0px) scale(0.97);
         box-shadow: 0 6px 18px var(--primary-shadow);
+    }
+}
+
+.mark {
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
     }
 }
