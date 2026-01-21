@@ -9,18 +9,9 @@
                 Availability
             </button></a>
             <a routerLink="/organizations"><button [ngClass]="{ 'active-button': route() === 'organizations' }">
-                Organizations
+                Organization
             </button></a>
-            <!-- <button> additional/wip </button> -->
         </div>
-            <!-- TEMP OFF -->
-            <!-- <button class="dark-mode-button" (click)="toggleDarkMode()">
-                @if (isDarkMode()) {
-                    <i class="fa-regular fa-moon"></i>
-                } @else {
-                    <i class="fa-regular fa-sun"></i>
-                }
-            </button> -->
         <button class="logout-button" (click)="logout()">Logout</button>
     } @else {
         <div>

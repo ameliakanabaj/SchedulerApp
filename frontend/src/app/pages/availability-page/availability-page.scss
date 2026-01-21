@@ -207,3 +207,19 @@
         }
     }
 }
+
+.btn-delete {
+    background: transparent;
+    border: 1px solid var(--primary-red);
+    color: var(--primary-red);
+    padding: 0.45rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .12s ease;
+    font-weight: 600;
+
+    &:hover {
+        background: var(--primary-red);
+        color: var(--primary-white);
+    }
+}
