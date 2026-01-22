@@ -1,14 +1,35 @@
 -- CreateEnum
-CREATE TYPE "ScheduleStatus" AS ENUM ('PENDING', 'GENERATED', 'FAILED', 'APPROVED', 'NOT_APPROVED');
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'ScheduleStatus') THEN
+    CREATE TYPE "ScheduleStatus" AS ENUM ('PENDING', 'GENERATED', 'FAILED', 'APPROVED', 'NOT_APPROVED');
+  END IF;
+END$$;
+
 
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('GLOBAL_ADMIN', 'ORG_ADMIN', 'EMPLOYEE');
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'UserRole') THEN
+    CREATE TYPE "UserRole" AS ENUM ('GLOBAL_ADMIN', 'ORG_ADMIN', 'EMPLOYEE');
+  END IF;
+END$$;
 
 -- CreateEnum
-CREATE TYPE "NotificationType" AS ENUM ('SCHEDULE_GENERATED', 'AVAILABILITY_OPEN', 'MISSING_AVAILABILITY', 'REMINDER_24H');
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'NotificationType') THEN
+    CREATE TYPE "NotificationType" AS ENUM ('SCHEDULE_GENERATED', 'AVAILABILITY_OPEN', 'MISSING_AVAILABILITY', 'REMINDER_24H');
+  END IF;
+END$$;
 
 -- CreateEnum
-CREATE TYPE "NotificationStatus" AS ENUM ('PENDING', 'SENT', 'FAILED');
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'NotificationStatus') THEN
+    CREATE TYPE "NotificationStatus" AS ENUM ('PENDING', 'SENT', 'FAILED');
+  END IF;
+END$$;
 
 -- CreateTable
 CREATE TABLE "Organization" (
