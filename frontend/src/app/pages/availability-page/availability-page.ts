@@ -62,23 +62,6 @@ export class AvailabilityPage implements OnInit {
         })
     }
 
-    openEditScheduleModal(schedule: ScheduleModel): void {
-        const modalRef = this.modalService.openModal(CreateSchedule, {
-            data: { 
-                organizationId: this.orgId,
-                scheduleId: schedule.schedule_id
-            }
-        });
-
-        modalRef.afterClosed$.subscribe((res: any) => {
-            if (res && this.orgId) {
-                this.scheduleService.getAllByOrganization(this.orgId).subscribe((res) => {
-                    this.schedules = this.sortSchedulesByDateTo(res);
-                });
-            }
-        })
-    }
-
     deleteSchedule(scheduleId: number): void {
         this.isLoading.set(true);
         this.scheduleService.delete(scheduleId).subscribe(() => {

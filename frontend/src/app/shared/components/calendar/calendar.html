@@ -21,15 +21,24 @@
         </div>
         @if (mode === 'admin') {
             <div class="admin-info">
-                <h3> You can set closed days and manage shifts. </h3>
+                <h3> You can set closed days and manage shifts.
+                    <small> <i class="fa fa-info"></i> Click a shift to copy </small>
+                </h3>
                 <button class="generate-schedule-btn" (click)="generateSchedule()" [disabled]="!isScheduleReadyToGenerate || schedule?.status === 'GENERATED'" title="If disabled: Schedule not ready to be generated or was generated already"> 
                     <span class="btn-glow"></span>
-                    <span class="btn-text">Generate Schedule</span>
+                    <span class="btn-text">Generate Schedule
+                        @if (!isScheduleReadyToGenerate) {
+                            <small class="small-info"> Schedule cannot be generated yet. </small>
+                        } @else if (schedule?.status === 'GENERATED') {
+                            <small class="small-info"> Schedule has already been generated. </small>
+                        }
+                        <small class="small-info"> Generate schedule option is activated once all members have submitted their availability or the deadline has passed.</small>
+                    </span>
                 </button>
                 <div class="buttons">
                     @if (scheduleRange) {
                         <button class="select-all-days" (click)="applyShiftToScheduleRange()"> Select All Days </button>
-                        <button class="select-all-days" [disabled]="shifts.length === 0" (click)="removeAllShifts()"> Remove all shifts </button>
+                        <!-- <button class="select-all-days" [disabled]="shifts.length === 0" (click)="removeAllShifts()"> Remove all shifts </button> -->
                     }
                 </div>
             </div>
