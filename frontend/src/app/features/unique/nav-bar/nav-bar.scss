@@ -6,6 +6,8 @@
     justify-content: space-between;
     background-color: var(--primary-color);
     color: var(--primary-text);
+    box-sizing: border-box;
+    width: 100%;
 
     a {
         text-decoration: none;
@@ -40,6 +42,7 @@
     }
 
     .logout-button {
+        align-self: center;
         margin-left: 10px;
         margin-right: 25px;
     }
@@ -47,6 +50,7 @@
     .nav-bar-buttons {
         display: flex;
         gap: 15px;
+        flex-wrap: wrap;
 
         .active-button {
             background-color: var(--primary-white);
@@ -76,4 +80,60 @@
     }
 
     box-shadow: 0px 3px 10px 3px var(--primary-shadow);
+}
+
+
+@media (max-width: 900px) {
+    .nav-bar-container {
+        padding: 0 12px;
+    }
+
+    .nav-bar-container button {
+        padding: 6px 14px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 700px) {
+    .nav-bar-container {
+        height: auto;
+        flex-wrap: wrap;
+        row-gap: 6px;
+        padding: 8px 10px;
+    }
+
+    .nav-bar-container > a,
+    .logout-button {
+        align-self: center;
+        justify-self: center;
+        margin: 8px auto 0;
+    }
+
+    .nav-bar-buttons {
+        width: 100%;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .nav-bar-buttons button {
+        font-size: 14px;
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 500px) {
+    .nav-bar-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .nav-bar-buttons button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .logout-button {
+        margin: 6px 0 0;
+        width: 100%;
+    }
 }

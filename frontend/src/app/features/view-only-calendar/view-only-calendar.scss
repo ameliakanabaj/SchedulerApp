@@ -558,3 +558,105 @@
         }
     }
 }
+
+
+@media (max-width: 720px) {
+    .days-list {
+      display: none !important;
+    }
+  
+    .calendar-grid {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+    }
+  
+    .day-empty {
+      display: none !important;
+    }
+
+    .calendar-grid .day {
+        width: 100% !important;
+        height: auto !important;
+        min-height: unset !important;
+        max-width: 100% !important;
+        padding: 12px !important;
+        border-radius: 14px;
+    }
+  
+    .calendar-grid .day .date,
+    .calendar-grid .day .fancy-date {
+        font-size: 1rem !important;
+        padding: 6px 8px;
+        margin-bottom: 6px;
+    }
+  
+    .calendar-grid .shifts-list {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px;
+    }
+  
+    .fancy-assignments {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .calendar {
+        align-items: center;
+    }
+    
+    .calendar-header {
+        width: 95% !important;
+    }
+
+    .calendar-grid {
+        width: 95% !important;
+        margin: 0 auto;
+    }
+
+    .calendar-grid .day {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto;
+    }
+
+    .calendar-header {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px !important;
+        text-align: center;
+    }
+    
+    .calendar-header h3 {
+        flex: 1;
+        text-align: center;
+        margin: 0;
+        font-size: 1.2rem;
+    }
+    
+    .calendar-header .fa-backward,
+    .calendar-header .fa-forward {
+        font-size: 1.4rem;
+        cursor: pointer;
+    }
+    
+    .calendar-header small {
+        display: none;
+    }
+
+    .calendar-grid {
+        align-items: center !important;
+    }
+    
+    .calendar-grid .day {
+        position: relative;
+        right: 12px;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+}
+  
