@@ -19,8 +19,6 @@
  *               - organization_id
  *               - start_time
  *               - end_time
- *               - place
- *               - required_people
  *             properties:
  *               organization_id:
  *                 type: integer
@@ -42,10 +40,69 @@
  *     responses:
  *       201:
  *         description: Shift created
- *       403:
- *         description: ORG_ADMIN can only create shifts in their own organization
  *       400:
  *         description: Validation error
+ *       403:
+ *         description: ORG_ADMIN can only create shifts in their own organization
+ */
+
+/**
+ * @swagger
+ * /api/shifts/bulk:
+ *   post:
+ *     summary: Create multiple shifts at once
+ *     tags: [Shifts]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               required:
+ *                 - organization_id
+ *                 - start_time
+ *                 - end_time
+ *               properties:
+ *                 organization_id:
+ *                   type: integer
+ *                   example: 3
+ *                 start_time:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2025-01-20T09:00:00Z"
+ *                 end_time:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2025-01-20T17:00:00Z"
+ *                 place:
+ *                   type: string
+ *                   example: "Main Hall"
+ *                 required_people:
+ *                   type: integer
+ *                   example: 2
+ *     responses:
+ *       201:
+ *         description: Shifts created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 inserted:
+ *                   type: integer
+ *                   example: 5
+ *                 records:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: Validation error or start_time in the past
+ *       403:
+ *         description: Forbidden (wrong organization)
  */
 
 /**
@@ -60,12 +117,31 @@
  *       Returned shifts depend on the user's role:
  *       - **GLOBAL_ADMIN** - all shifts  
  *       - **ORG_ADMIN** - only shifts from their organization  
- *       - **EMPLOYEE** - only shifts they are assigned to
+ *       - **EMPLOYEE** - only shifts from their organization (based on controller logic)
  *     responses:
  *       200:
  *         description: List of shifts
  *       403:
  *         description: Forbidden
+ */
+
+/**
+ * @swagger
+ * /api/shifts/mine:
+ *   get:
+ *     summary: Get shifts assigned to the current user
+ *     tags: [Shifts]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of assigned shifts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
  */
 
 /**
@@ -78,9 +154,9 @@
  *       - bearerAuth: []
  *     description: |
  *       Access rules:
- *         - **GLOBAL_ADMIN** - always allowed  
- *         - **ORG_ADMIN** - only if shift belongs to their organization  
- *         - **EMPLOYEE** - only if assigned to that shift  
+ *       - **GLOBAL_ADMIN** - always allowed  
+ *       - **ORG_ADMIN** - only if shift belongs to their organization  
+ *       - **EMPLOYEE** - only if assigned to that shift
  *     parameters:
  *       - in: path
  *         name: id
@@ -154,7 +230,7 @@
  *     security:
  *       - bearerAuth: []
  *     description: |
- *       - Only **GLOBAL_ADMIN**  can delete any shift.  
+ *       - Only **GLOBAL_ADMIN** can delete any shift.  
  *       - **ORG_ADMIN** can delete a shift only if it belongs to their organization.
  *     parameters:
  *       - in: path

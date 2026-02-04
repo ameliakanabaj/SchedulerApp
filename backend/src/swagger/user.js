@@ -9,6 +9,20 @@
  *     responses:
  *       200:
  *         description: Logged user details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user_id:
+ *                   type: integer
+ *                 email:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *                 password_must_be_reset:
+ *                   type: boolean
+ *                   description: If true, force password change
  *       404:
  *         description: User not found
  */
@@ -23,8 +37,8 @@
  *       - bearerAuth: []
  *     description: |
  *       Access rules:
- *         - **GLOBAL_ADMIN** - can view any user  
- *         - **ORG_ADMIN** - can view only users from their organization
+ *       - **GLOBAL_ADMIN** - can view any user  
+ *       - **ORG_ADMIN** - can view only users from their organization
  *     parameters:
  *       - in: path
  *         name: id
@@ -35,6 +49,17 @@
  *     responses:
  *       200:
  *         description: User details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user_id:
+ *                   type: integer
+ *                 email:
+ *                   type: string
+ *                 password_must_be_reset:
+ *                   type: boolean
  *       403:
  *         description: Forbidden — user belongs to another organization
  *       404:
@@ -51,8 +76,8 @@
  *       - bearerAuth: []
  *     description: |
  *       Returned users depend on the logged-in user's role:
- *         - **GLOBAL_ADMIN** - all users  
- *         - **ORG_ADMIN** - only users in their organization
+ *       - **GLOBAL_ADMIN** - all users  
+ *       - **ORG_ADMIN** - only users in their organization
  *     responses:
  *       200:
  *         description: List of users
@@ -126,8 +151,8 @@
  *       - bearerAuth: []
  *     description: |
  *       Access rules:
- *         - **GLOBAL_ADMIN** - any organization  
- *         - **ORG_ADMIN** - only their own organization
+ *       - **GLOBAL_ADMIN** - any organization  
+ *       - **ORG_ADMIN** - only their own organization
  *     parameters:
  *       - in: path
  *         name: organization_id
@@ -170,51 +195,58 @@
  */
 
 /**
-* @swagger
-* /api/users/{id}:
-*   patch:
-*     summary: Update user information
-*     tags: [Users]
-*     security:
-*       - bearerAuth: []
-*     description: |
-*       - **GLOBAL_ADMIN** – can update ANY user  
-*       - **ORG_ADMIN** – can update ONLY users from their organization
-*     parameters:
-*       - in: path
-*         name: id
-*         required: true
-*         schema:
-*           type: integer
-*         description: ID of the user to update
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             type: object
-*             properties:
-*               first_name:
-*                 type: string
-*                 example: "John"
-*               last_name:
-*                 type: string
-*                 example: "Smith"
-*               role:
-*                 type: string
-*                 enum: [GLOBAL_ADMIN, ORG_ADMIN, EMPLOYEE]
-*                 example: "ORG_ADMIN"
-*               position:
-*                 type: string
-*                 example: "Manager"
-*     responses:
-*       200:
-*         description: User successfully updated
-*       403:
-*         description: Forbidden – insufficient permissions
-*       404:
-*         description: User not found
-*/
+ * @swagger
+ * /api/users/{id}:
+ *   patch:
+ *     summary: Update user information
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     description: |
+ *       - **GLOBAL_ADMIN** – can update ANY user  
+ *       - **ORG_ADMIN** – can update ONLY users from their organization
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *                 example: "John"
+ *               last_name:
+ *                 type: string
+ *                 example: "Smith"
+ *               role:
+ *                 type: string
+ *                 enum: [GLOBAL_ADMIN, ORG_ADMIN, EMPLOYEE]
+ *                 example: "ORG_ADMIN"
+ *               organization_id:
+ *                 type: integer
+ *                 description: Move user to another organization
+ *               position:
+ *                 type: string
+ *                 example: "Manager"
+ *               password_must_be_reset:
+ *                 type: boolean
+ *                 description: Set to true to force password change on next login
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: User successfully updated
+ *       403:
+ *         description: Forbidden – insufficient permissions
+ *       404:
+ *         description: User not found
+ */
 
 /**
  * @swagger

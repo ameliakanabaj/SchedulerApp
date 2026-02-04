@@ -15,7 +15,6 @@
  *             required:
  *               - start_time
  *               - end_time
- *               - status
  *             properties:
  *               user_id:
  *                 type: integer
@@ -32,19 +31,71 @@
  *               comments:
  *                 type: string
  *                 example: "Prefer morning shift"
- *               status:
- *                 type: string
- *                 enum: [PENDING, APPROVED, REJECTED]
- *                 example: "PENDING"
  *     responses:
  *       201:
  *         description: Availability created
  *       400:
- *         description: Invalid date or end_time before start_time
+ *         description: Invalid date logic (past date, end before start, different days)
  *       403:
- *         description: User not allowed to create availability for other users or ogranizations
+ *         description: User not allowed to create availability for other users
  *       404:
  *         description: User not found
+ */
+
+/**
+ * @swagger
+ * /api/availabilities/bulk:
+ *   post:
+ *     summary: Create multiple availability entries at once
+ *     tags: [Availability]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               required:
+ *                 - start_time
+ *                 - end_time
+ *               properties:
+ *                 user_id:
+ *                   type: integer
+ *                   example: 12
+ *                   description: Optional for admins.
+ *                 start_time:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2025-01-20T09:00:00Z"
+ *                 end_time:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2025-01-20T17:00:00Z"
+ *                 comments:
+ *                   type: string
+ *                   example: "Bulk entry"
+ *     responses:
+ *       201:
+ *         description: Bulk creation successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 inserted:
+ *                   type: integer
+ *                   example: 5
+ *                 records:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: Validation error or invalid body format
+ *       403:
+ *         description: Forbidden
  */
 
 /**
@@ -104,15 +155,11 @@
  *               comments:
  *                 type: string
  *                 example: "Updated comment"
- *               status:
- *                 type: string
- *                 enum: [PENDING, APPROVED, REJECTED]
- *                 example: "PENDING"
  *     responses:
  *       200:
  *         description: Availability updated
  *       400:
- *         description: Invalid date range
+ *         description: Invalid date range or start_time in past
  *       403:
  *         description: Forbidden – cannot update this availability
  *       404:
