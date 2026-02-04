@@ -117,7 +117,7 @@
  *       Returned shifts depend on the user's role:
  *       - **GLOBAL_ADMIN** - all shifts  
  *       - **ORG_ADMIN** - only shifts from their organization  
- *       - **EMPLOYEE** - only shifts from their organization (based on controller logic)
+ *       - **EMPLOYEE** - only shifts from their organization
  *     responses:
  *       200:
  *         description: List of shifts
