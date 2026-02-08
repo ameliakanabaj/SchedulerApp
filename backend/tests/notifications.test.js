@@ -181,7 +181,22 @@ describe("Notification System Tests", () => {
         }
       ]);
 
-      prisma.assignment.create.mockResolvedValue({});
+      prisma.assignment.create.mockResolvedValue({
+        assignment_id: 1,
+        user_id: 1,
+        schedule_id: scheduleId,
+        shift_id: 50,
+        user: {
+          email: "employee@test.pl",
+          google_refresh_token: null
+        },
+        shift: {
+          shift_id: 50,
+          place: "Office",
+          start_time: new Date(),
+          end_time: new Date()
+        }
+      });
 
       await scheduleGenerator.generateSchedule(scheduleId);
 
