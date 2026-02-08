@@ -19,6 +19,7 @@ const availabilityRoutes = require("./src/routes/availability.routes");
 const assignmentRoutes = require("./src/routes/assignment.routes");
 const scheduleRoutes = require("./src/routes/schedule.routes");
 const notificationsRoutes = require("./src/routes/notifications.routes");
+const googleAuthRoutes = require("./src/routes/googleAuth.routes");
 
 const app = express();
 const PORT = process.env.PORT || 8083;
@@ -37,6 +38,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 module.exports = app;
 
+app.use("/api/auth/google", googleAuthRoutes);
 app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
