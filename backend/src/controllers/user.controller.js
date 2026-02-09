@@ -3,13 +3,28 @@ const bcrypt = require("bcrypt");
 const { generateToken } = require("../services/auth.service");
 require("dotenv").config();
 
+function toSafeUser(user) {
+  if (!user) return null;
+  const { 
+    password, 
+    google_access_token, 
+    google_refresh_token, 
+    ...safeUser 
+  } = user;
+  
+  return {
+    ...safeUser,
+    is_google_connected: !!google_refresh_token
+  };
+}
+
 async function getMe(req, res, next) {
   try {
     const user = await userModel.getUserById(req.user.user_id);
     if (!user)
       return next({ type: "BUSINESS_LOGIC", message: "User not found", statusCode: 404 });
-    const { password, ...safeUser } = user;
-    res.json(safeUser);
+    
+    res.json(toSafeUser(user));
   } catch (err) {
     next(err);
   }
@@ -31,8 +46,7 @@ async function getUserById(req, res, next) {
       }
     }
 
-    const { password, ...safeUser } = user;
-    res.json(safeUser);
+    res.json(toSafeUser(user));
   } catch (err) {
     next(err);
   }
@@ -51,9 +65,7 @@ async function getAllUsers(req, res, next) {
       return next({ type: "BUSINESS_LOGIC", message: "Forbidden", statusCode: 403 });
     }
 
-    users.forEach(u => { if (u.password) delete u.password; });
-
-    res.json(users);
+    res.json(users.map(toSafeUser));
   } catch (err) {
     next(err);
   }
@@ -94,13 +106,11 @@ async function createUser(req, res, next) {
       position,
     });
 
-    if (newUser.password) delete newUser.password;
-
     const token = generateToken(newUser);
 
     res.status(201).json({
       message: "User created successfully",
-      user: newUser,
+      user: toSafeUser(newUser),
       token,
     });
   } catch (err) {
@@ -122,10 +132,7 @@ async function getUsersByOrganization(req, res, next) {
     }
 
     const users = await userModel.getUsersByOrganization(organization_id);
-    users.forEach(u => delete u.password);
-
-    res.json(users);
-
+    res.json(users.map(toSafeUser));
   } catch (err) {
     next(err);
   }
@@ -148,9 +155,7 @@ async function deleteUser(req, res, next) {
     }
 
     await userModel.deleteUser(req.params.id);
-
     res.json({ message: "User deleted" });
-
   } catch (err) {
     next(err);
   }
@@ -173,9 +178,7 @@ async function updateUser(req, res, next) {
     }
 
     const updated = await userModel.updateUser(req.params.id, req.body);
-    if (updated.password) delete updated.password;
-
-    res.json(updated);
+    res.json(toSafeUser(updated));
   } catch (err) {
     next(err);
   }
