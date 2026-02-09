@@ -76,20 +76,21 @@
                                     <button class="add-notes" [ngClass]="hasComments(day) ? 'with-notes' : 'without-notes'" (click)="openAddNoteModal(day);"> <i class="fa-regular fa-message"></i> </button>
                                 }
                             </span>
-                                @for (shift of getShiftsForDay(day); track $index) {
-                                    <div class="custom requested">
-                                        <small> Requested: </small>
-                                        <div class="shift-header">
-                                            <span class="shift-time">⏰ {{ shift.start_time | date:'HH:mm' }} – {{ shift.end_time | date:'HH:mm' }}</span>
-                                            @if (shift.place) {
-                                                <span class="shift-place">📍 {{ shift.place }}</span>
-                                            }
-                                        </div>
+                                <div class="day-shifts">
+                                    @for (shift of getShiftsForDay(day); track $index) {
+                                    <div class="custom requested compact">
+                                        <small>Requested</small>
+                                        <span>
+                                            ⏰{{ shift.start_time | date:'HH:mm' }} – {{ shift.end_time | date:'HH:mm' }}
+                                        </span>
                                     </div>
-                                }
+                                    @if (shift.place) {
+                                        <span class="shift-place">📍 {{ shift.place }}</span>
+                                    }
+                                    }
+                                </div>
 
-
-                            <div class="open-day">
+                            <div class="day-availability">
                                 <ng-container *ngTemplateOutlet="calendarMode, context: {
                                     mode,
                                     day,
@@ -101,7 +102,7 @@
                             <span class="date fancy-date">
                                 {{ day.getDate() }}, {{ day | date:'MMMM'}}
                             </span>
-                            <div class="open-day" [ngClass]="{'range-day': isDayInScheduleRange}">
+                            <div class="day-availability" [ngClass]="{'range-day': isDayInScheduleRange}">
                                 @for (shift of getShiftsForDay(day); track $index) {
                                     <div class="shift-entry" (click)="copyShift(shift)">
                                         <span> <i class="fa-solid fa-clock"></i>: {{ shift.start_time | date:'h:mm a' }} - {{ shift.end_time | date:'h:mm a' }} </span>
