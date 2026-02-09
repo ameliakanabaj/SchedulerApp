@@ -1,5 +1,44 @@
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         user_id:
+ *           type: integer
+ *           example: 1
+ *         organization_id:
+ *           type: integer
+ *           nullable: true
+ *           example: 5
+ *         first_name:
+ *           type: string
+ *           example: "John"
+ *         last_name:
+ *           type: string
+ *           example: "Smith"
+ *         email:
+ *           type: string
+ *           example: "john.smith@example.com"
+ *         role:
+ *           type: string
+ *           enum: [GLOBAL_ADMIN, ORG_ADMIN, EMPLOYEE]
+ *           example: "EMPLOYEE"
+ *         position:
+ *           type: string
+ *           example: "Waiter"
+ *         password_must_be_reset:
+ *           type: boolean
+ *           example: false
+ *         is_google_connected:
+ *           type: boolean
+ *           description: "Indicates if the user has linked their Google Calendar"
+ *           example: true
+ */
+
+/**
+ * @swagger
  * /api/users/me:
  *   get:
  *     summary: Get information about the currently authenticated user
@@ -9,6 +48,10 @@
  *     responses:
  *       200:
  *         description: Logged user details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
  */
@@ -35,6 +78,10 @@
  *     responses:
  *       200:
  *         description: User details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       403:
  *         description: Forbidden — user belongs to another organization
  *       404:
@@ -56,6 +103,12 @@
  *     responses:
  *       200:
  *         description: List of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       403:
  *         description: Forbidden
  */
@@ -110,6 +163,18 @@
  *     responses:
  *       201:
  *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User created successfully"
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 token:
+ *                   type: string
  *       400:
  *         description: Email already in use or validation error
  *       403:
@@ -137,6 +202,12 @@
  *     responses:
  *       200:
  *         description: List of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       403:
  *         description: Not allowed to view users from another organization
  *       404:
@@ -170,51 +241,55 @@
  */
 
 /**
-* @swagger
-* /api/users/{id}:
-*   patch:
-*     summary: Update user information
-*     tags: [Users]
-*     security:
-*       - bearerAuth: []
-*     description: |
-*       - **GLOBAL_ADMIN** – can update ANY user  
-*       - **ORG_ADMIN** – can update ONLY users from their organization
-*     parameters:
-*       - in: path
-*         name: id
-*         required: true
-*         schema:
-*           type: integer
-*         description: ID of the user to update
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             type: object
-*             properties:
-*               first_name:
-*                 type: string
-*                 example: "John"
-*               last_name:
-*                 type: string
-*                 example: "Smith"
-*               role:
-*                 type: string
-*                 enum: [GLOBAL_ADMIN, ORG_ADMIN, EMPLOYEE]
-*                 example: "ORG_ADMIN"
-*               position:
-*                 type: string
-*                 example: "Manager"
-*     responses:
-*       200:
-*         description: User successfully updated
-*       403:
-*         description: Forbidden – insufficient permissions
-*       404:
-*         description: User not found
-*/
+ * @swagger
+ * /api/users/{id}:
+ *   patch:
+ *     summary: Update user information
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     description: |
+ *       - **GLOBAL_ADMIN** – can update ANY user  
+ *       - **ORG_ADMIN** – can update ONLY users from their organization
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [GLOBAL_ADMIN, ORG_ADMIN, EMPLOYEE]
+ *               position:
+ *                 type: string
+ *               organization_id:
+ *                 type: integer
+ *               password_must_be_reset:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: User successfully updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       403:
+ *         description: Forbidden – insufficient permissions
+ *       404:
+ *         description: User not found
+ */
 
 /**
  * @swagger
@@ -275,7 +350,6 @@
  *             properties:
  *               new_password:
  *                 type: string
- *                 example: "NewStrongPassword123!"
  *     responses:
  *       200:
  *         description: Password reset successfully
