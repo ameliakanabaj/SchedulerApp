@@ -192,6 +192,50 @@
     }
 }
 
+.google-sync-mini-card {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+
+    .google-status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.9rem;
+
+        &.connected {
+            color: #38843c;
+            i { color: #4773b9; }
+        }
+
+        p { margin: 0; color: #6c757d; }
+    }
+
+    .btn-google-connect {
+        background: #5481c9;
+        color: white;
+        border: none;
+        padding: 4px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s;
+
+        &:hover { background: #5173bd; }
+    }
+
+    .btn-disconnect {
+        background: transparent;
+        border: none;
+        color: #ca606b;
+        cursor: pointer;
+        padding: 4px;
+        &:hover { opacity: 0.7; }
+    }
+}
+
 
 @media (max-width: 1400px) {
 

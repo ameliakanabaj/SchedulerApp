@@ -12,6 +12,8 @@ import { Shift } from '@app/shared/services/shift/shift';
 import { NotificationModel } from '@app/models/notification.model';
 import { Notification } from '@app/shared/services/notification/notification';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { GoogleAuth } from '@app/shared/services/google-auth/google-auth';
+import { ConfirmModal } from '@app/shared/components/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-dashboard',
@@ -130,6 +132,41 @@ export class Dashboard implements OnInit {
 
         modalRef.afterClosed$.subscribe((res: any) => {
             localStorage.setItem('wasPasswordNotifDisplayed', 'true');
+        });
+    }
+
+    private readonly googleAuthService = inject(GoogleAuth);
+
+    connectGoogle(): void {
+        this.googleAuthService.getConnectUrl().subscribe({
+        next: (res) => {
+            if (res.url) {
+            window.location.href = res.url;
+            }
+        },
+        error: (err) => console.error('Failed to get Google URL', err)
+        });
+    }
+
+    disconnectGoogle(): void {
+        const modalRef = this.modalService.openModal(ConfirmModal, {
+            data: {
+                title: 'Disconnect Google Calendar',
+                message: 'Your shifts will no longer be automatically synced to your Google Calendar. Are you sure?'
+            }
+        });
+
+        modalRef.afterClosed$.subscribe((confirmed: boolean) => {
+            if (confirmed) {
+                this.googleAuthService.disconnect().subscribe({
+                    next: () => {
+                        if (this.user) {
+                            this.user.is_google_connected = false;
+                        }
+                    },
+                    error: (err) => console.error('Failed to disconnect', err)
+                });
+            }
         });
     }
 }
