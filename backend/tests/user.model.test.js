@@ -214,4 +214,56 @@ describe("User Model", () => {
     });
     expect(res).toEqual(updated);
   });
+
+  test("storeGoogleTokens should update user with google tokens and expiry", async () => {
+    const userId = 1;
+    const tokens = {
+      access_token: "mock_access_token",
+      refresh_token: "mock_refresh_token",
+      expiry_date: 1712345678900,
+    };
+
+    const updatedUser = { 
+      user_id: userId, 
+      google_access_token: tokens.access_token 
+    };
+    
+    prisma.user.update.mockResolvedValue(updatedUser);
+
+    const result = await userModel.storeGoogleTokens(userId, tokens);
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { user_id: Number(userId) },
+      data: {
+        google_access_token: tokens.access_token,
+        google_refresh_token: tokens.refresh_token,
+        google_token_expiry: new Date(tokens.expiry_date),
+      },
+    });
+    expect(result).toEqual(updatedUser);
+  });
+
+  test("clearGoogleTokens should set all google related fields to null", async () => {
+    const userId = 10;
+    const updatedUser = { 
+      user_id: userId, 
+      google_access_token: null,
+      google_refresh_token: null,
+      google_token_expiry: null 
+    };
+    
+    prisma.user.update.mockResolvedValue(updatedUser);
+
+    const result = await userModel.clearGoogleTokens(userId);
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { user_id: Number(userId) },
+      data: {
+        google_access_token: null,
+        google_refresh_token: null,
+        google_token_expiry: null,
+      },
+    });
+    expect(result).toEqual(updatedUser);
+  });
 });

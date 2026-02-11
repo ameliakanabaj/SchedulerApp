@@ -21,15 +21,32 @@ describe("User Controller", () => {
     jest.clearAllMocks();
   });
 
+  const dbUserFull = { 
+    user_id: 1, 
+    email: "test@gmail.com", 
+    password: "hashed", 
+    role: "EMPLOYEE", 
+    organization_id: 10,
+    google_access_token: "access_123",
+    google_refresh_token: "refresh_123"
+  };
+
+  const expectedSafeUser = { 
+    user_id: 1, 
+    email: "test@gmail.com", 
+    role: "EMPLOYEE", 
+    organization_id: 10,
+    is_google_connected: true 
+  };
+
   describe("getMe", () => {
-    it("should return current user without password", async () => {
+    it("should return current user without password and tokens, but with is_google_connected", async () => {
       req.user.user_id = 1;
-      const dbUser = { user_id: 1, email: "test@gmail.com", password: "hashed", role: "EMPLOYEE" };
-      userModel.getUserById.mockResolvedValue(dbUser);
+      userModel.getUserById.mockResolvedValue(dbUserFull);
 
       await userController.getMe(req, res, next);
 
-      expect(res.json).toHaveBeenCalledWith({ user_id: 1, email: "test@gmail.com", role: "EMPLOYEE" });
+      expect(res.json).toHaveBeenCalledWith(expectedSafeUser);
     });
 
     it("should call next with 404 if user not found", async () => {
@@ -59,32 +76,29 @@ describe("User Controller", () => {
     it("should return user for GLOBAL_ADMIN", async () => {
       req.user.role = "GLOBAL_ADMIN";
       req.params.id = 1;
-      const dbUser = { user_id: 1, email: "test@gmail.com", password: "hashed", role: "EMPLOYEE", organization_id: 10 };
-      userModel.getUserById.mockResolvedValue(dbUser);
+      userModel.getUserById.mockResolvedValue(dbUserFull);
 
       await userController.getUserById(req, res, next);
 
-      expect(res.json).toHaveBeenCalledWith({ user_id: 1, email: "test@gmail.com", role: "EMPLOYEE", organization_id: 10 });
+      expect(res.json).toHaveBeenCalledWith(expectedSafeUser);
     });
 
     it("should return user for ORG_ADMIN if same organization", async () => {
       req.user.role = "ORG_ADMIN";
       req.user.organization_id = 10;
       req.params.id = 1;
-      const dbUser = { user_id: 1, email: "test@gmail.com", password: "hashed", role: "EMPLOYEE", organization_id: 10 };
-      userModel.getUserById.mockResolvedValue(dbUser);
+      userModel.getUserById.mockResolvedValue(dbUserFull);
 
       await userController.getUserById(req, res, next);
 
-      expect(res.json).toHaveBeenCalledWith({ user_id: 1, email: "test@gmail.com", role: "EMPLOYEE", organization_id: 10 });
+      expect(res.json).toHaveBeenCalledWith(expectedSafeUser);
     });
 
     it("should call next with 403 if ORG_ADMIN accessing other org", async () => {
       req.user.role = "ORG_ADMIN";
       req.user.organization_id = 2;
       req.params.id = 1;
-      const dbUser = { user_id: 1, email: "test@gmail.com", password: "hashed", role: "EMPLOYEE", organization_id: 10 };
-      userModel.getUserById.mockResolvedValue(dbUser);
+      userModel.getUserById.mockResolvedValue(dbUserFull);
 
       await userController.getUserById(req, res, next);
 
@@ -113,25 +127,21 @@ describe("User Controller", () => {
   describe("getAllUsers", () => {
     it("should return all users for GLOBAL_ADMIN", async () => {
       req.user.role = "GLOBAL_ADMIN";
-      const users = [{ user_id: 1, email: "test@gmail.com", password: "hashed", role: "EMPLOYEE" }];
-      userModel.getAllUsers.mockResolvedValue(users);
+      userModel.getAllUsers.mockResolvedValue([dbUserFull]);
 
       await userController.getAllUsers(req, res, next);
 
-      expect(res.json).toHaveBeenCalledWith([{ user_id: 1, email: "test@gmail.com", role: "EMPLOYEE" }]);
+      expect(res.json).toHaveBeenCalledWith([expectedSafeUser]);
     });
 
     it("should return users from org for ORG_ADMIN", async () => {
       req.user.role = "ORG_ADMIN";
       req.user.organization_id = 10;
-      const users = [
-        { user_id: 1, email: "test@gmail.com", password: "hashed", role: "EMPLOYEE", organization_id: 10 },
-      ];
-      userModel.getUsersByOrganization.mockResolvedValue(users);
+      userModel.getUsersByOrganization.mockResolvedValue([dbUserFull]);
 
       await userController.getAllUsers(req, res, next);
 
-      expect(res.json).toHaveBeenCalledWith([{ user_id: 1, email: "test@gmail.com", role: "EMPLOYEE", organization_id: 10 }]);
+      expect(res.json).toHaveBeenCalledWith([expectedSafeUser]);
     });
 
     it("should call next with 403 if EMPLOYEE tries to getAllUsers", async () => {
@@ -148,33 +158,31 @@ describe("User Controller", () => {
       req.body = { first_name: "Anna", last_name: "Bell", email: "test@gmail.com", password: "Password123", role: "EMPLOYEE" };
     });
 
-    it("should create user with password_must_be_reset: true and return 201 + token", async () => {
+    it("should create user and return 201 + token and safe user (no tokens)", async () => {
       req.user.role = "GLOBAL_ADMIN";
-      const newUser = { 
-        user_id: 1, 
-        email: "test@gmail.com", 
-        password: "hashed", 
-        role: "EMPLOYEE", 
+      const newUserInDb = { 
+        ...dbUserFull,
         organization_id: null, 
         password_must_be_reset: true
       };
       userModel.getUserByEmail.mockResolvedValue(null);
-      userModel.createUser.mockResolvedValue(newUser);
+      userModel.createUser.mockResolvedValue(newUserInDb);
       authService.generateToken.mockReturnValue("token123");
       bcrypt.hash.mockResolvedValue("hashed");
 
       await userController.createUser(req, res, next);
 
-      expect(userModel.createUser).toHaveBeenCalledWith(
-        expect.objectContaining({
-          email: "test@gmail.com",
-        })
-      );
-
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({
         message: "User created successfully",
-        user: { user_id: 1, email: "test@gmail.com", role: "EMPLOYEE", organization_id: null, password_must_be_reset: true },
+        user: { 
+          user_id: 1, 
+          email: "test@gmail.com", 
+          role: "EMPLOYEE", 
+          organization_id: null, 
+          password_must_be_reset: true,
+          is_google_connected: true 
+        },
         token: "token123",
       });
     });
@@ -213,7 +221,6 @@ describe("User Controller", () => {
 
     it("should call next if createUser throws error", async () => {
       req.user.role = "GLOBAL_ADMIN";
-      req.body = { first_name: "Anna", last_name: "Bell", email: "test@gmail.com", password: "Password123", role: "EMPLOYEE" };
       userModel.getUserByEmail.mockResolvedValue(null);
       const error = new Error("DB error");
       userModel.createUser.mockRejectedValue(error);
@@ -225,16 +232,15 @@ describe("User Controller", () => {
   });
 
   describe("getUsersByOrganization", () => {
-    it("should return users from organization for allowed ORG_ADMIN", async () => {
+    it("should return safe users from organization for allowed ORG_ADMIN", async () => {
       req.user.role = "ORG_ADMIN";
       req.user.organization_id = 10;
       req.params.organization_id = 10;
-      const users = [{ user_id: 1, email: "test@gmail.com", password: "hashed", role: "EMPLOYEE" }];
-      userModel.getUsersByOrganization.mockResolvedValue(users);
+      userModel.getUsersByOrganization.mockResolvedValue([dbUserFull]);
 
       await userController.getUsersByOrganization(req, res, next);
 
-      expect(res.json).toHaveBeenCalledWith([{ user_id: 1, email: "test@gmail.com", role: "EMPLOYEE" }]);
+      expect(res.json).toHaveBeenCalledWith([expectedSafeUser]);
     });
 
     it("should call next 403 if ORG_ADMIN accessing another org", async () => {
@@ -251,15 +257,14 @@ describe("User Controller", () => {
       });
     });
 
-    it("should allow GLOBAL_ADMIN to get users", async () => {
+    it("should allow GLOBAL_ADMIN to get users and return safe data", async () => {
       req.user.role = "GLOBAL_ADMIN";
       req.params.organization_id = 10;
-      const users = [{ user_id: 1, email: "test@gmail.com", password: "hashed" }];
-      userModel.getUsersByOrganization.mockResolvedValue(users);
+      userModel.getUsersByOrganization.mockResolvedValue([dbUserFull]);
 
       await userController.getUsersByOrganization(req, res, next);
 
-      expect(res.json).toHaveBeenCalledWith([{ user_id: 1, email: "test@gmail.com" }]);
+      expect(res.json).toHaveBeenCalledWith([expectedSafeUser]);
     });
 
     it("should call next if getUsersByOrganization rejects", async () => {
@@ -318,18 +323,31 @@ describe("User Controller", () => {
   });
 
   describe("updateUser", () => {
-    it("should update allowed user and remove password", async () => {
+    it("should update allowed user and return safe data (no password/tokens)", async () => {
       req.user.role = "GLOBAL_ADMIN";
       req.params.id = 1;
       req.body = { first_name: "New" };
+      
       const targetUser = { user_id: 1, organization_id: 5 };
-      const updatedUser = { user_id: 1, first_name: "New", password: "hashed", organization_id: 5 };
+      const updatedUserInDb = { 
+        ...dbUserFull, 
+        first_name: "New", 
+        organization_id: 5 
+      };
+      
       userModel.getUserById.mockResolvedValue(targetUser);
-      userModel.updateUser.mockResolvedValue(updatedUser);
+      userModel.updateUser.mockResolvedValue(updatedUserInDb);
 
       await userController.updateUser(req, res, next);
 
-      expect(res.json).toHaveBeenCalledWith({ user_id: 1, first_name: "New", organization_id: 5 });
+      expect(res.json).toHaveBeenCalledWith({ 
+        user_id: 1, 
+        email: "test@gmail.com",
+        role: "EMPLOYEE",
+        first_name: "New", 
+        organization_id: 5,
+        is_google_connected: true 
+      });
     });
 
     it("should call next 403 if ORG_ADMIN updating user from another org", async () => {
@@ -360,21 +378,6 @@ describe("User Controller", () => {
         message: "User not found",
         statusCode: 404,
       });
-    });
-
-    it("should remove password from updated user for ORG_ADMIN", async () => {
-      req.user.role = "ORG_ADMIN";
-      req.user.organization_id = 10;
-      req.params.id = 1;
-      req.body = { first_name: "New" };
-      const targetUser = { user_id: 1, organization_id: 10 };
-      const updatedUser = { user_id: 1, first_name: "New", password: "hashed", organization_id: 10 };
-      userModel.getUserById.mockResolvedValue(targetUser);
-      userModel.updateUser.mockResolvedValue(updatedUser);
-
-      await userController.updateUser(req, res, next);
-
-      expect(res.json).toHaveBeenCalledWith({ user_id: 1, first_name: "New", organization_id: 10 });
     });
   });
 

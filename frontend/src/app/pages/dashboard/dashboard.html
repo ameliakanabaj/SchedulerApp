@@ -25,6 +25,24 @@
 
                 <div class="card shifts">
                     <h3>Upcoming shifts</h3>
+
+                    <div class="google-sync-mini-card">
+                        @if (user?.is_google_connected) {
+                            <div class="google-status connected">
+                                <span><i class="fa-brands fa-google"></i> Calendar synced</span>
+                                <button (click)="disconnectGoogle()" class="btn-disconnect" title="Disconnect">
+                                    <i class="fa-solid fa-link-slash"></i>
+                                </button>
+                            </div>
+                        } @else {
+                            <div class="google-status disconnected">
+                                <p>Sync shifts to your google calendar</p>
+                                <button (click)="connectGoogle()" class="btn-google-connect">
+                                    <i class="fa-brands fa-google"></i> Connect
+                                </button>
+                            </div>
+                        }
+                    </div>
                     
                     <div class="shifts-list">
                         @for (shift of upcomingShifts; track $index) {

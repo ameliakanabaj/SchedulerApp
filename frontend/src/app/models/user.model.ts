@@ -12,5 +12,6 @@ export interface UserModel {
     role: string,
     position?: string,
     assignments: AssignmentModel[],
-    availabilities: AvailabilityModel[]
+    availabilities: AvailabilityModel[],
+    is_google_connected: boolean
 }
