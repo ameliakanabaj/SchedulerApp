@@ -52,20 +52,15 @@ async function createCalendarEvent(user, shift) {
 
   const calendar = google.calendar({ version: 'v3', auth });
 
-  const formatLocalTime = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toISOString().split('.')[0].replace('Z', '');
-  };
-
   const event = {
     summary: `Shift: ${shift.place || 'Work'}`,
     description: `Automatically generated shift in Scheduler system.`,
     start: { 
-      dateTime: formatLocalTime(shift.start_time),
+      dateTime: new Date(shift.start_time).toISOString(), 
       timeZone: 'Europe/Warsaw'
     },
     end: { 
-      dateTime: formatLocalTime(shift.end_time),
+      dateTime: new Date(shift.end_time).toISOString(),
       timeZone: 'Europe/Warsaw'
     },
   };
