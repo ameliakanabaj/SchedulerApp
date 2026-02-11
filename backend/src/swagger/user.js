@@ -66,8 +66,8 @@
  *       - bearerAuth: []
  *     description: |
  *       Access rules:
- *         - **GLOBAL_ADMIN** - can view any user  
- *         - **ORG_ADMIN** - can view only users from their organization
+ *       - **GLOBAL_ADMIN** - can view any user  
+ *       - **ORG_ADMIN** - can view only users from their organization
  *     parameters:
  *       - in: path
  *         name: id
@@ -98,8 +98,8 @@
  *       - bearerAuth: []
  *     description: |
  *       Returned users depend on the logged-in user's role:
- *         - **GLOBAL_ADMIN** - all users  
- *         - **ORG_ADMIN** - only users in their organization
+ *       - **GLOBAL_ADMIN** - all users  
+ *       - **ORG_ADMIN** - only users in their organization
  *     responses:
  *       200:
  *         description: List of users
@@ -191,8 +191,8 @@
  *       - bearerAuth: []
  *     description: |
  *       Access rules:
- *         - **GLOBAL_ADMIN** - any organization  
- *         - **ORG_ADMIN** - only their own organization
+ *       - **GLOBAL_ADMIN** - any organization  
+ *       - **ORG_ADMIN** - only their own organization
  *     parameters:
  *       - in: path
  *         name: organization_id
