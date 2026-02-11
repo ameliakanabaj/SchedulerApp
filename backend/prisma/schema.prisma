@@ -30,6 +30,10 @@ model User {
   assignments     Assignment[]
   availabilities  Availability[]
   notifications   Notification[]
+  google_calendar_id    String?
+  google_access_token   String?  @db.Text
+  google_refresh_token  String?  @db.Text
+  google_token_expiry   DateTime?
 
   organization Organization? @relation(fields: [organization_id], references: [organization_id], onDelete: Cascade, onUpdate: NoAction)
 

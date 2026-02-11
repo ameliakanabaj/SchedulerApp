@@ -1,0 +1,42 @@
+.modal-content {
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  min-width: 350px;
+
+  .modal-header h3 {
+    margin: 0 0 16px 0;
+    color: #333;
+  }
+
+  .modal-body p {
+    color: #666;
+    margin-bottom: 24px;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      border: none;
+    }
+
+    .btn-cancel {
+      background: #f3f4f6;
+      color: #374151;
+      &:hover { background: #e5e7eb; }
+    }
+
+    .btn-confirm {
+      background: #a03d47;
+      color: white;
+      &:hover { background: #a2222f; }
+    }
+  }
+}

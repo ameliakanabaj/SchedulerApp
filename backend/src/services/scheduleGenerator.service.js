@@ -1,6 +1,7 @@
 const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
 const notificationService = require("./notifications.service");
+const googleCalendarService = require("./googleCalendar.service");
 
 async function generateSchedule(schedule_id) {
 
@@ -88,14 +89,33 @@ async function generateSchedule(schedule_id) {
       }
   
       for (const a of assignments) {
-        await prisma.assignment.create({
+        const createdAssignment = await prisma.assignment.create({
           data: {
             schedule_id: scheduleIdInt,
             shift_id: a.shift_id,
             user_id: a.user_id,
             role_on_shift: a.role_on_shift,
           },
+          include: {
+            user: true,
+            shift: true
+          }
         });
+
+        if (createdAssignment.user.google_refresh_token) {
+          console.log(`[GOOGLE] User ${createdAssignment.user.email} has token. Sending...`);
+            try {
+                await googleCalendarService.createCalendarEvent(
+                    createdAssignment.user,
+                    createdAssignment.shift
+                );
+                console.log(`[GOOGLE] Successfully sent to calendar!`);
+            } catch (err) {
+                console.error(`[GOOGLE] Error for user ${createdAssignment.user_id}:`, err.message);
+            }
+        } else {
+            console.log(`[GOOGLE] User ${createdAssignment.user.email} has NO google_refresh_token.`);
+        }
       }
   
       await prisma.schedule.update({

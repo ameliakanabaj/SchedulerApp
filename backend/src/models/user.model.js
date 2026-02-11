@@ -105,6 +105,28 @@ async function updateUser(user_id, data) {
   });
 }
 
+async function storeGoogleTokens(user_id, tokens) {
+  return await prisma.user.update({
+    where: { user_id: Number(user_id) },
+    data: {
+      google_access_token: tokens.access_token,
+      google_refresh_token: tokens.refresh_token,
+      google_token_expiry: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
+    },
+  });
+}
+
+async function clearGoogleTokens(user_id) {
+  return await prisma.user.update({
+    where: { user_id: Number(user_id) },
+    data: {
+      google_access_token: null,
+      google_refresh_token: null,
+      google_token_expiry: null,
+    },
+  });
+}
+
 module.exports = {
   createUser,
   getUserByEmail,
@@ -114,4 +136,6 @@ module.exports = {
   getUsersByOrganization,
   deleteUser,
   updateUser,
+  storeGoogleTokens,
+  clearGoogleTokens,
 };
