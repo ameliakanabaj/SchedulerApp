@@ -66,12 +66,25 @@ async function deleteSchedule(id) {
 async function canGenerateSchedule(scheduleId) {
   const schedule = await prisma.schedule.findUnique({
     where: { schedule_id: Number(scheduleId) },
+  });
+
+  if (!schedule) return null;
+
+  const scheduleWithUsers = await prisma.schedule.findUnique({
+    where: { schedule_id: Number(scheduleId) },
     include: {
       organization: {
         include: {
           users: {
             include: {
-              availabilities: true,
+              availabilities: {
+                where: {
+                  AND: [
+                    { start_time: { lte: schedule.date_to } },
+                    { end_time: { gte: schedule.date_from } },
+                  ],
+                },
+              },
             },
           },
         },
@@ -79,13 +92,11 @@ async function canGenerateSchedule(scheduleId) {
     },
   });
 
-  if (!schedule) return null;
-
   const now = new Date();
 
-  const deadlineDatePassed = now >= schedule.deadline_generate_date;
+  const deadlineDatePassed = now >= scheduleWithUsers.deadline_generate_date;
 
-  const users = schedule.organization.users;
+  const users = scheduleWithUsers.organization.users;
 
   const allUsersSentAvailability =
     users.length > 0 &&
