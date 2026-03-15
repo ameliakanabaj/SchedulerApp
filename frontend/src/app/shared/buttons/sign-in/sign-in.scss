@@ -6,7 +6,7 @@ button {
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    box-shadow: 5px 5px 8px 2px var(--primary-shadow);
+    box-shadow: 3px 3px 8px 2px var(--primary-shadow);
 
     &:hover {
         transform: scale(1.05);
@@ -17,10 +17,10 @@ button {
 }
 
 .sign-in-button {
-
     margin-right: 10px;
-    background-color: var(--primary-dark);
-    color: var(--primary-white);
+    background-color: white;
+    color: var(--primary-color);
+    border: 1px solid gray;
 }
 
 .xl {
