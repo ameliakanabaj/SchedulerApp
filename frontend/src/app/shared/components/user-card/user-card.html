@@ -9,7 +9,7 @@
 
         <div class="user-actions">
             @if (isUserAdmin && isNotCurrentUser(user()!)) {
-                <button type="button" class="btn remove-btn" aria-label="Remove user" (click)="removeUser(user()?.user_id!)">
+                <button type="button" class="btn remove-btn" aria-label="Remove user" (click)="removeUser(user()!)">
                     Remove
                 </button>
             }

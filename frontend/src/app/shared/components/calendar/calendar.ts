@@ -13,6 +13,8 @@ import { ActivatedRoute } from '@angular/router';
 import { ChangeAssignmentModal } from '../change-assignment-modal/change-assignment-modal';
 import { Loading } from '../loading/loading';
 
+type CalendarShift = ShiftModel & { temp_id?: string };
+
 @Component({
   selector: 'app-calendar',
   imports: [NgClass, NgTemplateOutlet, DatePipe, Loading],
@@ -36,9 +38,10 @@ export class Calendar implements OnInit, OnChanges {
     // SHIFTS dane 
 
     shiftsFromDB: ShiftModel[] = [] // tylko do sprawdzenia czy trzeba robic api requesta z deletem (bo zmiany usuwaja sie instant)
-    shifts: ShiftModel[] = [];
+    shifts: CalendarShift[] = [];
     shiftCopied?: ShiftModel;
-    shiftClipboard?: ShiftModel;
+    shiftClipboard?: CalendarShift;
+    private tempShiftIdCounter = 0;
 
     // AVAILABILITY dane
     activeMode: 'all-day' | 'custom' | 'cannot' = 'all-day';
@@ -152,7 +155,7 @@ export class Calendar implements OnInit, OnChanges {
                     const local = localStorage.getItem('calendar_shifts');
                     if (local) {
                         try {
-                            this.shifts = JSON.parse(local);
+                            this.shifts = this.normalizeLocalShifts(JSON.parse(local));
                         } catch {
                             this.shifts = [];
                         }
@@ -169,10 +172,22 @@ export class Calendar implements OnInit, OnChanges {
         });
     }
 
-    removeShift(shift: ShiftModel): void {
-        this.shifts = this.shifts.filter(s => s.shift_id !== shift.shift_id);
+    removeShift(shift: CalendarShift): void {
+        if (this.isPersistedShift(shift)) {
+            this.shifts = this.shifts.filter(s => s.shift_id !== shift.shift_id);
+        } else if (shift.temp_id) {
+            this.shifts = this.shifts.filter(s => s.temp_id !== shift.temp_id);
+        } else {
+            const index = this.shifts.indexOf(shift);
+            if (index !== -1) {
+                this.shifts.splice(index, 1);
+                this.shifts = [...this.shifts];
+            }
+        }
+
         this.saveShiftsToLocalStorage();
-        if (this.shiftsFromDB.includes(shift)) {
+
+        if (this.isPersistedShift(shift) && this.shiftsFromDB.some(s => s.shift_id === shift.shift_id)) {
             this.shiftService.deleteShift(shift.shift_id).subscribe();
         }
     }
@@ -203,6 +218,7 @@ export class Calendar implements OnInit, OnChanges {
             end_time: `${iso}T${endTime}`,
             required_people: this.shiftClipboard.required_people,
             place: this.shiftClipboard.place,
+            temp_id: this.createTempShiftId(),
             assignments: []
         } as any);
         this.saveShiftsToLocalStorage();
@@ -502,7 +518,9 @@ export class Calendar implements OnInit, OnChanges {
     }
 
     sendShifts(): void {
-        const shiftsNotFromDb = this.shifts.filter(s => !this.shiftsFromDB.includes(s));
+        const shiftsNotFromDb = this.shifts
+            .filter(s => !this.isPersistedShift(s))
+            .map(({ temp_id, ...shift }) => shift);
 
         this.shiftService.createBulk(shiftsNotFromDb).subscribe({
             next: () => {
@@ -579,6 +597,7 @@ export class Calendar implements OnInit, OnChanges {
                 end_time: endTime,
                 required_people: data.required_people,
                 place: data.place,
+                temp_id: this.createTempShiftId(),
                 assignments: []
             } as any);
         }
@@ -601,6 +620,7 @@ export class Calendar implements OnInit, OnChanges {
                 end_time: endTime,
                 required_people: data.required_people,
                 place: data.place,
+                temp_id: this.createTempShiftId(),
                 assignments: []
             } as any);
         }
@@ -631,6 +651,34 @@ export class Calendar implements OnInit, OnChanges {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
+    }
+
+    private normalizeLocalShifts(shifts: unknown): CalendarShift[] {
+        if (!Array.isArray(shifts)) {
+            return [];
+        }
+
+        return shifts.map(raw => {
+            const shift = {
+                ...(raw as CalendarShift),
+                assignments: (raw as CalendarShift).assignments ?? []
+            };
+
+            if (!this.isPersistedShift(shift) && !shift.temp_id) {
+                shift.temp_id = this.createTempShiftId();
+            }
+
+            return shift;
+        });
+    }
+
+    private isPersistedShift(shift: CalendarShift): boolean {
+        return Number.isInteger(shift.shift_id) && shift.shift_id > 0;
+    }
+
+    private createTempShiftId(): string {
+        this.tempShiftIdCounter += 1;
+        return `tmp-${Date.now()}-${this.tempShiftIdCounter}`;
     }
 
     private buildUtcISOString(day: Date, time: string): string {
