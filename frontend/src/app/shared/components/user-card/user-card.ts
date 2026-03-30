@@ -1,7 +1,8 @@
 import { Component, inject, input, OnInit, output } from '@angular/core';
 import { Authentication } from '@app/core';
 import { UserModel } from '@app/models';
-import { Toastr, User } from '@app/shared/services';
+import { Modal, Toastr, User } from '@app/shared/services';
+import { RemoveUserConfirmationModal } from '../remove-user-confirmation-modal/remove-user-confirmation-modal';
 
 @Component({
   selector: 'app-user-card',
@@ -16,16 +17,28 @@ export class UserCard implements OnInit {
 
     private readonly authService = inject(Authentication);
     private readonly userService = inject(User);
+    private readonly modalService = inject(Modal);
     private readonly toastr = inject(Toastr);
 
     ngOnInit(): void {
         this.isUserAdmin = this.authService.hasRole('ORG_ADMIN');
     }
 
-    removeUser(userId: number): void {
-        this.userService.delete(userId).subscribe(() => {
-            this.toastr.success('User removed successfully.');
-            this.removed.emit();
+    removeUser(user: UserModel): void {
+        const fullName = `${user.first_name} ${user.last_name}`.trim();
+        const modalRef = this.modalService.openModal(RemoveUserConfirmationModal, {
+            data: { fullName }
+        });
+
+        modalRef.afterClosed$.subscribe((confirmed: boolean) => {
+            if (!confirmed) {
+                return;
+            }
+
+            this.userService.delete(user.user_id).subscribe(() => {
+                this.toastr.success('User removed successfully.');
+                this.removed.emit();
+            });
         });
     }
 
