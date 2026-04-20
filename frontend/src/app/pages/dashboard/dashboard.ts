@@ -108,7 +108,9 @@ export class Dashboard implements OnInit {
             'SCHEDULE_GENERATED': 'fa-calendar-check',
             'AVAILABILITY_OPEN': 'fa-calendar-days',
             'MISSING_AVAILABILITY': 'fa-triangle-exclamation',
-            'REMINDER_24H': 'fa-clock'
+            'REMINDER_24H': 'fa-clock',
+            'SCHEDULE_DELETED': 'fa-calendar-xmark',
+            'SCHEDULE_ERROR': 'fa-circle-exclamation',
         };
         return `fa-solid ${iconMap[type] || 'fa-bell'}`;
     }
