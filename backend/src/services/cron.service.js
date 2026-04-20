@@ -1,51 +1,10 @@
 const { PrismaClient } = require("../generated/prisma");
 const prisma = new PrismaClient();
 const notificationService = require("./notifications.service");
-const fs = require("fs");
-const path = require("path");
 
 const CHECK_INTERVAL = 60 * 1000; 
 const CLEANUP_INTERVAL = 60 * 60 * 1000;
-const REMINDERS_FILE = path.join(__dirname, "sent_reminders.json");
 
-let sentReminders = new Map();
-
-try {
-    if (fs.existsSync(REMINDERS_FILE)) {
-        const data = fs.readFileSync(REMINDERS_FILE, "utf8");
-        sentReminders = new Map(Object.entries(JSON.parse(data)));
-        console.log(`[CRON] Loaded sent reminders history: ${sentReminders.size} entries.`);
-    }
-} catch (err) {
-    console.error("[CRON] Failed to load reminders history, starting fresh.", err);
-}
-
-function saveRemindersToDisk() {
-    try {
-        const obj = Object.fromEntries(sentReminders);
-        fs.writeFileSync(REMINDERS_FILE, JSON.stringify(obj));
-    } catch (err) {
-        console.error("[CRON] Error saving reminders history:", err);
-    }
-}
-
-function cleanupOldReminders() {
-    const now = Date.now();
-    const TWO_DAYS_MS = 48 * 60 * 60 * 1000;
-    let deletedCount = 0;
-
-    for (const [key, timestamp] of sentReminders.entries()) {
-        if (now - timestamp > TWO_DAYS_MS) {
-            sentReminders.delete(key);
-            deletedCount++;
-        }
-    }
-
-    if (deletedCount > 0) {
-        console.log(`[CRON] Cleanup: Removed ${deletedCount} old reminder entries.`);
-        saveRemindersToDisk();
-    }
-}
 
 async function checkDeadlinesAndNotify() {
     console.log("[CRON] Checking deadlines...");
@@ -65,6 +24,9 @@ async function checkDeadlinesAndNotify() {
         });
 
         for (const schedule of schedulesEndingSoon) {
+            const deadlineDate = new Date(schedule.deadline_generate_date);
+            const hoursToDeadline = (deadlineDate - now) / (1000 * 60 * 60);
+
             const users = await prisma.user.findMany({
                 where: { 
                     organization_id: schedule.organization_id,
@@ -80,8 +42,28 @@ async function checkDeadlinesAndNotify() {
                 });
 
                 if (!hasAvailability) {
-                    
-                    const alreadySent = await prisma.notification.findFirst({
+                    if (hoursToDeadline <= 6) {
+                        const alreadySentUrgent = await prisma.notification.findFirst({
+                            where: {
+                                user_id: user.user_id,
+                                schedule_id: schedule.schedule_id,
+                                type: "MISSING_AVAILABILITY"
+                            }
+                        });
+
+                        if (!alreadySentUrgent) {
+                            console.log(`[CRON] Sending URGENT reminder to user ${user.user_id}`);
+                            await notificationService.sendNotification({
+                                userId: user.user_id,
+                                scheduleId: schedule.schedule_id,
+                                type: "MISSING_AVAILABILITY",
+                                message: `URGENT: Only 6 hours left to submit availability! Your schedule cannot be generated without your input.`
+                            }).catch(err => console.error("Urgent cron error:", err));
+                            continue;
+                        }
+                    }
+
+                    const alreadySent24h = await prisma.notification.findFirst({
                         where: {
                             user_id: user.user_id,
                             schedule_id: schedule.schedule_id,
@@ -89,20 +71,17 @@ async function checkDeadlinesAndNotify() {
                         }
                     });
 
-                    if (alreadySent) {
-                        continue; 
+                    if (!alreadySent24h) {
+                        console.log(`[CRON] Sending 24h reminder to user ${user.user_id}`);
+                        const deadlineStr = deadlineDate.toLocaleDateString("en-GB");
+
+                        await notificationService.sendNotification({
+                            userId: user.user_id,
+                            scheduleId: schedule.schedule_id,
+                            type: "REMINDER_24H",
+                            message: `Reminder: Less than 24h left to submit availability (deadline: ${deadlineStr}). Please submit now!`
+                        }).catch(err => console.error("24h cron error:", err));
                     }
-
-                    console.log(`[CRON] Sending reminder to user ${user.user_id}`);
-                    
-                    const deadlineStr = new Date(schedule.deadline_generate_date).toLocaleDateString("en-GB");
-
-                    await notificationService.sendNotification({
-                        userId: user.user_id,
-                        scheduleId: schedule.schedule_id,
-                        type: "REMINDER_24H",
-                        message: `Reminder: Less than 24h left to submit availability (deadline: ${deadlineStr}). Please submit now!`
-                    }).catch(err => console.error("Cron notification error:", err));
                 }
             }
         }
