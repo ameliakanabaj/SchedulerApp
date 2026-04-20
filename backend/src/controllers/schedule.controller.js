@@ -168,6 +168,20 @@ async function deleteSchedule(req, res, next) {
         });
     }
 
+    const users = await userModel.getUsersByOrganization(schedule.organization_id);
+    const employees = users.filter(u => u.role === "EMPLOYEE");
+
+    const dateStr = `${new Date(schedule.date_from).toLocaleDateString("en-GB")} - ${new Date(schedule.date_to).toLocaleDateString("en-GB")}`;
+
+    employees.forEach(user => {
+        notificationService.sendNotification({
+            userId: user.user_id,
+            scheduleId: null,
+            type: "SCHEDULE_DELETED",
+            message: `The schedule for period ${dateStr} has been cancelled by the administrator.`
+        }).catch(err => console.error("Deletion notification error:", err));
+    });
+
     await scheduleModel.deleteSchedule(scheduleId);
     res.json({ message: "Schedule deleted" });
   } catch (err) {
