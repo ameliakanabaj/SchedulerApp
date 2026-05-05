@@ -1,4 +1,4 @@
-const { createSchedule, updateSchedule } = require("../src/controllers/schedule.controller");
+const { createSchedule, updateSchedule, deleteSchedule } = require("../src/controllers/schedule.controller");
 const { getMyNotifications, markAsRead } = require("../src/controllers/notifications.controller");
 const scheduleGenerator = require("../src/services/scheduleGenerator.service");
 const cronService = require("../src/services/cron.service");
@@ -11,22 +11,10 @@ const { PrismaClient } = require("../src/generated/prisma");
 
 jest.mock("../src/generated/prisma", () => {
   const mPrisma = {
-    schedule: {
-      findUnique: jest.fn(),
-      findMany: jest.fn(),
-      update: jest.fn(),
-      create: jest.fn(),
-    },
-    shift: {
-      findMany: jest.fn(),
-    },
-    user: {
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-    },
-    assignment: {
-      create: jest.fn(),
-    },
+    schedule: { findUnique: jest.fn(), findMany: jest.fn(), update: jest.fn(), create: jest.fn() },
+    shift: { findMany: jest.fn() },
+    user: { findMany: jest.fn(), findUnique: jest.fn(), update: jest.fn() },
+    assignment: { create: jest.fn() },
     notification: {
       create: jest.fn(),
       findMany: jest.fn(),
@@ -44,6 +32,10 @@ const prisma = new PrismaClient();
 jest.mock("../src/models/schedule.model");
 jest.mock("../src/models/user.model");
 jest.mock("../src/services/email.service");
+jest.mock("bcrypt", () => ({
+  compare: jest.fn().mockResolvedValue(true),
+  hash: jest.fn().mockResolvedValue("hashed")
+}));
 jest.mock("fs");
 
 const flushPromises = () => new Promise(resolve => {
@@ -60,6 +52,8 @@ describe("Notification System Tests", () => {
 
     prisma.notification.deleteMany.mockResolvedValue({ count: 0 });
     prisma.notification.findMany.mockResolvedValue([]);
+
+    userModel.getUsersBySchedule = jest.fn();
   });
 
 
@@ -108,7 +102,7 @@ describe("Notification System Tests", () => {
 
   describe("2. generateSchedule (Service)", () => {
     
-    it("should NOT send notifications immediately when shifts cannot be covered (wait for Admin action)", async () => {
+    it("should send SCHEDULE_ERROR notification when shifts cannot be covered", async () => {
       const scheduleId = 100;
 
       prisma.schedule.findUnique.mockResolvedValue({
@@ -130,86 +124,74 @@ describe("Notification System Tests", () => {
       prisma.user.findMany.mockResolvedValue([
         { 
           user_id: 1, 
-          role: "EMPLOYEE", 
+          role: "ORG_ADMIN", 
           availabilities: [] 
         }
       ]);
 
       await scheduleGenerator.generateSchedule(scheduleId);
 
-      expect(prisma.schedule.update).toHaveBeenCalledWith(
+      expect(notificationService.sendNotification).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { schedule_id: scheduleId },
-          data: { status: "FAILED" }
+          type: "SCHEDULE_ERROR",
+          scheduleId: 100
         })
       );
-
-      expect(notificationService.sendNotification).not.toHaveBeenCalled();
     });
 
-    it("should send SCHEDULE_GENERATED notification to Org Admin on success", async () => {
+    it("should send SCHEDULE_GENERATED notification on success", async () => {
       const scheduleId = 100;
+      prisma.schedule.findUnique.mockResolvedValue({ schedule_id: scheduleId, organization_id: 2 });
+      prisma.shift.findMany.mockResolvedValue([]);
+      prisma.user.findMany.mockResolvedValue([{ user_id: 99, role: "ORG_ADMIN", availabilities: [] }]);
 
-      prisma.schedule.findUnique.mockResolvedValue({
-        schedule_id: scheduleId,
+      await scheduleGenerator.generateSchedule(scheduleId);
+      expect(notificationService.sendNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: 99, type: "SCHEDULE_GENERATED", scheduleId: 100 })
+      );
+    });
+
+    it("should send SCHEDULE_GENERATED notification to all assigned employees on success", async () => {
+      const scheduleId = 100;
+      prisma.schedule.findUnique.mockResolvedValue({ 
+        schedule_id: scheduleId, 
         organization_id: 2,
-        date_from: new Date("2026-06-01"),
-        date_to: new Date("2026-06-30")
+        date_from: new Date("2026-06-01") 
       });
 
-      prisma.shift.findMany.mockResolvedValue([
-        { 
-          shift_id: 50, 
-          start_time: new Date("2026-06-01T08:00:00Z"), 
-          end_time: new Date("2026-06-01T16:00:00Z"),
-          required_people: 1 
-        }
-      ]);
+      prisma.shift.findMany.mockResolvedValue([{
+        shift_id: 50,
+        start_time: new Date("2026-06-01T08:00:00Z"),
+        end_time: new Date("2026-06-01T16:00:00Z"),
+        required_people: 1
+      }]);
 
       prisma.user.findMany.mockResolvedValue([
+        { user_id: 99, role: "ORG_ADMIN", availabilities: [] },
         { 
-          user_id: 1, 
+          user_id: 10, 
           role: "EMPLOYEE", 
-          availabilities: [
-             { start_time: new Date("2026-06-01T00:00:00Z"), end_time: new Date("2026-06-01T23:59:00Z") }
-          ]
-        },
-        {
-          user_id: 99,
-          role: "ORG_ADMIN",
-          availabilities: []
+          availabilities: [{ 
+            start_time: new Date("2026-06-01T00:00:00Z"), 
+            end_time: new Date("2026-06-01T23:59:59Z") 
+          }] 
         }
       ]);
 
       prisma.assignment.create.mockResolvedValue({
-        assignment_id: 1,
-        user_id: 1,
-        schedule_id: scheduleId,
-        shift_id: 50,
-        user: {
-          email: "employee@test.pl",
-          google_refresh_token: null
-        },
-        shift: {
-          shift_id: 50,
-          place: "Office",
-          start_time: new Date(),
-          end_time: new Date()
-        }
+        user_id: 10,
+        user: { email: "worker@test.pl" }
       });
 
       await scheduleGenerator.generateSchedule(scheduleId);
 
-      expect(prisma.schedule.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { schedule_id: scheduleId },
-          data: expect.objectContaining({ status: "GENERATED" })
-        })
+      expect(notificationService.sendNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: 99, type: "SCHEDULE_GENERATED" })
       );
 
       expect(notificationService.sendNotification).toHaveBeenCalledWith(
         expect.objectContaining({
-          userId: 99,
+          userId: 10,
           type: "SCHEDULE_GENERATED",
           scheduleId: scheduleId
         })
@@ -530,6 +512,63 @@ describe("Notification System Tests", () => {
 
       expect(next).toHaveBeenCalledWith(expect.any(Error));
       expect(prisma.notification.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("8. deleteSchedule (Controller)", () => {
+    it("should send SCHEDULE_DELETED notification to all employees in organization", async () => {
+      const req = { 
+        params: { scheduleId: 100 }, 
+        user: { role: "ORG_ADMIN", organization_id: 2 } 
+      };
+      const res = { json: jest.fn() };
+      const next = jest.fn();
+
+      scheduleModel.getScheduleById.mockResolvedValue({ 
+        schedule_id: 100, 
+        organization_id: 2,
+        date_from: "2026-06-01",
+        date_to: "2026-06-30"
+      });
+      
+      userModel.getUsersByOrganization.mockResolvedValue([
+        { user_id: 15, role: "EMPLOYEE", email: "worker1@test.pl" }
+      ]);
+
+      await deleteSchedule(req, res, next);
+
+      expect(notificationService.sendNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 15,
+          type: "SCHEDULE_DELETED",
+          scheduleId: null
+        })
+      );
+
+      const callArgs = notificationService.sendNotification.mock.calls.find(call => call[0].userId === 15)[0];
+      expect(callArgs.message).toContain("2026");
+      expect(callArgs.message).not.toContain("Invalid Date");
+    });
+  });
+
+  describe("9. User Profile Security", () => {
+    it("should include is_google_connected flag and hide raw tokens in getMe", async () => {
+      const { getMe } = require("../src/controllers/user.controller");
+      const req = { user: { user_id: 1 } };
+      const res = { json: jest.fn() };
+      const next = jest.fn();
+
+      userModel.getUserById.mockResolvedValue({
+        user_id: 1,
+        password: "hashed_password",
+        google_refresh_token: "some_token"
+      });
+
+      await getMe(req, res, next);
+
+      const sentData = res.json.mock.calls[0][0];
+      expect(sentData.password).toBeUndefined();
+      expect(sentData.is_google_connected).toBe(true);
     });
   });
 

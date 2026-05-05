@@ -4,6 +4,7 @@ const notificationService = require("./notifications.service");
 const googleCalendarService = require("./googleCalendar.service");
 
 async function generateSchedule(schedule_id) {
+    let admins = [];
 
     try {
       const scheduleIdInt = parseInt(schedule_id, 10);
@@ -15,6 +16,13 @@ async function generateSchedule(schedule_id) {
       if (!schedule) {
         throw new Error("Schedule not found");
       }
+
+      admins = await prisma.user.findMany({
+          where: { 
+            organization_id: schedule.organization_id,
+            role: "ORG_ADMIN" 
+          }
+      });
 
       const dateToEnd = new Date(schedule.date_to);
       dateToEnd.setHours(23, 59, 59, 999);
@@ -65,6 +73,16 @@ async function generateSchedule(schedule_id) {
                 where: { schedule_id: scheduleIdInt },
                 data: { status: "FAILED" },
             });
+
+
+            for (const admin of admins) {
+                notificationService.sendNotification({
+                    userId: admin.user_id,
+                    scheduleId: scheduleIdInt,
+                    type: "SCHEDULE_ERROR",
+                    message: `Generation failed: Not enough available employees for shift on ${shiftStart.toLocaleString()}.`
+                }).catch(err => console.error("Error notification fail:", err));
+            }
   
             return [];
         }
@@ -126,12 +144,6 @@ async function generateSchedule(schedule_id) {
         },
       });
 
-      const admins = await prisma.user.findMany({
-          where: { 
-            organization_id: schedule.organization_id,
-            role: "ORG_ADMIN" 
-          }
-      });
 
       for (const admin of admins) {
           notificationService.sendNotification({
@@ -140,6 +152,18 @@ async function generateSchedule(schedule_id) {
             type: "SCHEDULE_GENERATED",
             message: `Schedule #${schedule_id} has been successfully generated.`
           }).catch(err => console.error("Notification error:", err));
+      }
+
+
+      const assignedUserIds = [...new Set(assignments.map(a => a.user_id))];
+      
+      for (const userId of assignedUserIds) {
+          notificationService.sendNotification({
+              userId: userId,
+              scheduleId: scheduleIdInt,
+              type: "SCHEDULE_GENERATED",
+              message: `Your new work schedule for period starting ${schedule.date_from.toLocaleDateString()} is ready! Check your shifts.`
+          }).catch(err => console.error("User notification error:", err));
       }
 
       console.log(assignments);
@@ -155,6 +179,15 @@ async function generateSchedule(schedule_id) {
           generated_at: new Date(), 
         },
       });
+
+      for (const admin of admins) {
+          notificationService.sendNotification({
+              userId: admin.user_id,
+              scheduleId: scheduleIdInt,
+              type: "SCHEDULE_ERROR",
+              message: `Critical error during schedule generation: ${error.message}`
+          }).catch(err => console.error("Critical error notification fail:", err));
+      }
   
       throw error;
     }

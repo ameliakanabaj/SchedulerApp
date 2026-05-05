@@ -131,6 +131,8 @@ enum NotificationType {
   AVAILABILITY_OPEN
   MISSING_AVAILABILITY
   REMINDER_24H
+  SCHEDULE_ERROR
+  SCHEDULE_DELETED
 }
 
 enum NotificationStatus {

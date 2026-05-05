@@ -42,6 +42,10 @@ function mapTypeToSubject(type) {
   switch (type) {
     case "SCHEDULE_GENERATED":
       return "New schedule generated";
+    case "SCHEDULE_ERROR":
+      return "Urgent: Schedule generation failed";
+    case "SCHEDULE_DELETED":
+      return "Notice: A schedule has been cancelled";
     case "AVAILABILITY_OPEN":
       return "Availability window is now open";
     case "MISSING_AVAILABILITY":
