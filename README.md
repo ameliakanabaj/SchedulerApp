@@ -1,50 +1,114 @@
-# Docsy
+# Scheduler.pl
 
-## mergowanie
+Scheduler.pl is a web application designed to simplify employee availability management and automatic work schedule generation for organizations.  
+The system allows an organization administrator to create an organization, add employees, define shifts, collect availability, and automatically generate schedules for a selected time period.
 
-mergujemy pr'y od 1 approve
-mergujemy za pomoca Squash and merge
-potem delete branch
+---
 
-## deployment
+## Features
 
-FRONTEND POWINIEN BYĆ DOSTĘPNY POD ADRESEM: https://www.scheduler.pl/
+### Organization & user management
 
-BACKEND POWINIEN BYĆ DOSTĘPNY POD ADRESEM: https://api.scheduler.pl/
+- Creating and managing organizations
+- Adding users to organizations
+- Role-based access control
 
-## docker
+### Availability management
 
-Uruchamiamy frontend, backend oraz bazę danych jednym poleceniem:
+- Employees can provide detailed availability within selected time ranges
+- Availability can include additional comments
 
-`docker-compose up --build`
+### Shift & schedule management
 
-## frontend - Angular (./frontend)
+- Creating shifts for specific days and time ranges
+- Defining required number of workers per shift
+- Automatic schedule generation for a chosen period
+- Manual schedule editing and approval by an administrator
 
-odpalenie lokalne:
+### Notifications
 
-`cd frontend/`
+- Notification system displayed on the main application screen
+- Admin notifications when a schedule has been generated
 
-` npm i --legacy-peer-deps`
+### Google Calendar integration
 
-`ng serve`
+- Optional integration with Google Calendar
+- Automatically creates calendar events for assigned shifts
 
-odpalenie unit test:
+### API Documentation
 
-`npm run test`
+- Swagger documentation available at:  
+  `GET /api-docs`
 
-## backend - Express.js (./backend)
+---
 
-odpalenie lokalne:
-`cd backend/`
+## Tech Stack
 
-`npm i`
+- **Frontend:** Angular
+- **Backend:** Node.js + Express.js
+- **Database:** PostgreSQL
+- **ORM & migrations:** Prisma
+- **Containerization:** Docker + Docker Compose
+- **API documentation:** Swagger
 
-`npm run start`
+---
 
-odpalenie unit test:
-// TO DO - ogarnac unit testy
+## Getting Started
 
-<img width="196" height="257" alt="image" src="https://github.com/user-attachments/assets/5e5c67a2-0398-4449-8962-46babea8e687" />
-<img width="276" height="182" alt="image" src="https://github.com/user-attachments/assets/7217950d-182c-4d10-a5c5-955013788d50" />
-<img width="220" height="142" alt="image" src="https://github.com/user-attachments/assets/e9dbc810-7f80-4856-8753-8330fe874eea" />
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/6fcdfaeb-9a2f-45cd-a661-5d55e2960eb2" />
+### Requirements
+
+- Docker + Docker Compose
+
+---
+
+## Running the project (Docker Compose)
+
+This project contains a `docker-compose.yml` file.
+
+Start the full application:
+
+```bash
+docker compose up --build
+```
+
+After startup, services are available under:
+
+- Frontend: `http://localhost:4200`
+- Backend API: `http://localhost:8083`
+- Swagger docs: `http://localhost:8083/api-docs`
+
+> Ports may differ depending on your local configuration.
+
+---
+
+## Prisma migrations
+
+Because the backend runs in Docker, Prisma commands should be executed inside the backend container.
+
+Check migration status:
+
+```bash
+docker compose exec backend npx prisma migrate status
+```
+
+Apply migrations:
+
+```bash
+docker compose exec backend npx prisma migrate dev
+```
+
+---
+
+## Running tests
+
+### Backend tests
+
+```bash
+docker compose exec backend npm run test
+```
+
+### Frontend tests
+
+```bash
+docker compose exec frontend npm run test
+```
